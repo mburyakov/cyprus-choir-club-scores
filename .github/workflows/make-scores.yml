@@ -1,0 +1,12 @@
+name: learn-github-actions
+run-name: Compiling lilypond scores for Cyprus Choir Club
+on: [push]
+jobs:
+  check-bats-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: codello/setup-lilypond@main
+        with:
+          lilypond-version: 2.24
+      - run: lilypond score.ly
