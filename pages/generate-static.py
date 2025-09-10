@@ -14,6 +14,7 @@ if __name__ == "__main__":
     template = environment.get_template("index.html")
     ly_root = project_root
     ly_root_list = os.listdir(ly_root)
+    ly_root_list.sort()
     ly_sources = [f for f in ly_root_list if f.endswith(".ly")]
     files = []
     for ly_source in ly_sources:
