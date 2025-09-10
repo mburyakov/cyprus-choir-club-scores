@@ -10,3 +10,7 @@ jobs:
         with:
           lilypond-version: 2.24
       - run: lilypond yesterday.ly
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yesterday.pdf
+          path: yesterday.pdf
