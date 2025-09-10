@@ -19,7 +19,7 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: yesterday-d.pdf
+          path: .
 
   deploy:
     needs: build
