@@ -1,4 +1,4 @@
-name: learn-github-actions
+name: compile-all-scores
 run-name: Compiling lilypond scores for Cyprus Choir Club
 on: [push]
 jobs:
@@ -9,7 +9,7 @@ jobs:
       - uses: codello/setup-lilypond@main
         with:
           lilypond-version: 2.24
-      - run: lilypond yesterday.ly
+      - run: lilypond *.ly
       - uses: actions/upload-artifact@v4
         with:
           name: pdf-scores
