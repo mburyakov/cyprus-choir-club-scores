@@ -45,5 +45,4 @@ if __name__ == "__main__":
     }
     content = template.render(context)
     index_page = out_root / "index.html"
-    print(index_page)
-    open(index_page, "w").write(content)
+    index_page.write_text(content)
