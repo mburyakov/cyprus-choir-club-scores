@@ -12,5 +12,5 @@ jobs:
       - run: lilypond yesterday.ly
       - uses: actions/upload-artifact@v4
         with:
-          name: yesterday.pdf
-          path: yesterday.pdf
+          name: pdf-scores
+          path: *.pdf
