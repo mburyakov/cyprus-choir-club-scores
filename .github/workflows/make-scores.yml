@@ -9,4 +9,4 @@ jobs:
       - uses: codello/setup-lilypond@main
         with:
           lilypond-version: 2.24
-      - run: lilypond score.ly
+      - run: lilypond yesterday.ly
