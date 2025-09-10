@@ -5,7 +5,7 @@ import shutil
 import jinja2
 
 if __name__ == "__main__":
-    project_root = ".."
+    project_root = "."
 
     out_root = project_root + "/out/pages"
     os.makedirs(out_root, exist_ok=True)
