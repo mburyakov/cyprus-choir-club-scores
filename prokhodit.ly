@@ -218,7 +218,7 @@ LyrPageΑ = \lyricmode {
   Про -- хо -- дит    ле -- то,
   и    солн -- це    не    гре -- ет,
   и,   в_снег   о -- де -- та,
-  зем -- ля   це -- пе    не -- ет,
+  зем -- ля   це -- пе -- не -- ет,
   и    мрак    уг -- рю -- мый
   пу -- га -- ет    нам    о -- чи,
   тре -- во -- жит    ду -- мы
@@ -227,7 +227,7 @@ LyrPageΑ = \lyricmode {
 
 LyrPedalΑ = \lyricmode {
   Про -- хо -- дит    ле -- то,
-  зем -- ля   це -- пе    не -- ет,
+  зем -- ля   це -- пе -- не -- ет,
   тре -- во -- жит    ду -- мы
   без -- мол -- ви -- е    но -- чи.
 }
@@ -403,7 +403,7 @@ LyrAAPageC = \lyricmode {
         \new Staff = "B" <<
           \clef "bass"
           \key f \minor
-          \new Voice = "PartB" { \ppppp \transpose g f { \PartBpageA \PartBpageB } }
+          \new Voice = "PartB" { \transpose g f { \PartBpageA \PartBpageB } }
         >>
         \new Lyrics \lyricsto "PartB" {
           \LyrPageΑ

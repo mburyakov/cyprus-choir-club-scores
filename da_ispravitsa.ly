@@ -8,6 +8,7 @@ taglineLanguage = "russian"
 \include "include/choir-setup.ly"
 
 \header {
+  title = "Да исправится молитва моя"
   composer = "П. Г. Чесноков"
 }
 
