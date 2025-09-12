@@ -113,12 +113,20 @@ PartATwoChorus = \relative c' {
 
 PartTTwoChorus = \relative c' {
   b8 b8 b4 as8[( c8])
-  b8 des8 c4 f,4
+  b8 des8 c4
+}
+
+PartTTwoChorusEnd = \relative c' {
+  f,4
 }
 
 PartBTwoChorus = \relative c' {
   b,8 b8 es4 as4
-  b16[( as16]) g8 c,4 f4
+  b16[( as16]) g8
+}
+
+PartBTwoChorusEnd = \relative c' {
+  c,4 f4
 }
 
 LyrStanzaOne = \lyricmode {
@@ -149,6 +157,78 @@ LyrStanzaFive = \lyricmode {
   А    звив -- ши    вi -- нок,
   по -- нес -- ла    в_та -- нок.
 }
+
+
+LyrFull = \markup {
+  \fontsize #1
+  \column {
+    \line {
+      \hspace #12
+      \column {
+        \line {
+          1.
+          \column {
+            \line { Павочка ходить, }
+            \line { пiр’ячко ронить. }
+            \vspace #0.5
+            \line { \italic { Щедрий вечiр, } }
+            \line { \italic { добрим людям. } }
+          }
+        }
+        \vspace #2
+        \line {
+          2.
+          \column {
+            \line { За нею ходить }
+            \line { краcна дiвонька. }
+            \vspace #0.5
+            \line { \italic { Щедрий вечiр, } }
+            \line { \italic { добрим людям. } }
+          }
+        }
+      }
+      \hspace #6
+      \column {
+        \line {
+          3.
+          \column {
+            \line { Пiр’я збирає, }
+            \line { в рукав ховає. }
+            \vspace #0.5
+            \line { Щедрий вечiр, }
+            \line { добрим людям. }
+          }
+        }
+        \vspace #2
+        \line {
+          4.
+          \column {
+            \line { З рукава бере, }
+            \line { вiночок плете. }
+            \vspace #0.5
+            \line { \italic { Щедрий вечiр, } }
+            \line { \italic { добрим людям. } }
+          }
+        }
+      }
+      \hspace #6
+      \column {
+        \line {
+          5.
+          \column {
+            \line { А звивши вiнок, }
+            \line { понесла в танок. }
+            \vspace #0.5
+            \line { \italic { Щедрий вечiр, } }
+            \line { \italic { добрим людям. } }
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 \book {
   
@@ -247,6 +327,7 @@ LyrStanzaFive = \lyricmode {
             \PartTTwo
             \clef bass
             \PartTTwoChorus
+            \PartTTwoChorusEnd
           }
           \new Voice = "PartB" {
             \voiceTwo
@@ -256,6 +337,7 @@ LyrStanzaFive = \lyricmode {
             \PartBOneChorus
             \PartBTwo
             \PartBTwoChorus
+            \PartBTwoChorusEnd
           }
         >>
       >>
@@ -277,7 +359,7 @@ LyrStanzaFive = \lyricmode {
 
 \book {
   
-  \bookOutputSuffix "full"
+  \bookOutputSuffix "full-g"
   
   \markup \vspace #0.7
   
@@ -286,25 +368,27 @@ LyrStanzaFive = \lyricmode {
       \new ChoirStaff <<
         \new Staff = "S" <<
           \clef "treble"
-          \key f \minor
+          \key g \minor
           \time 3/4
           \new Voice = "PartSolo" {
             s2.*2
-            \PartSoloOne
+            \transpose f g \PartSoloOne
           }
           \new Voice = "PartS" {
-            \PartAPre
-            \PartSPre
-            \textEndMark \markup \musicglyph "scripts.segno"
-            \set Score.repeatCommands = #'((start-repeat))
-            s2.*2
-            \PartSOneChorus
-            \once\override Score.BreakAlignment.break-align-orders = \break-align-orders-on-repeat
-            \set Score.repeatCommands = #'((end-repeat) (start-repeat))
-            \PartSTwo
-            \PartSTwoChorus
-            \textEndMark \markup \musicglyph "scripts.segno"
-            \set Score.repeatCommands = #'((end-repeat))
+            \transpose f g {
+              \PartAPre
+              \PartSPre
+              \textEndMark \markup \musicglyph "scripts.segno"
+              \set Score.repeatCommands = #'((start-repeat))
+              s2.*2
+              \PartSOneChorus
+              \once\override Score.BreakAlignment.break-align-orders = \break-align-orders-on-repeat
+              \set Score.repeatCommands = #'((end-repeat) (start-repeat))
+              \PartSTwo
+              \PartSTwoChorus
+              \textEndMark \markup \musicglyph "scripts.segno"
+              \set Score.repeatCommands = #'((end-repeat))
+            }
           }
           \new NullVoice = "LyrTwo" {
             s2.*6
@@ -352,27 +436,32 @@ LyrStanzaFive = \lyricmode {
         }
         \new Staff = "A" <<
           \clef "treble"
-          \key f \minor
+          \key g \minor
           \time 3/4
           \new Voice = "PartA" {
-            \PartAPre
-            \PartAPre
-            \PartAOne
-            \PartAOneChorus
-            \PartATwo
-            \PartATwoChorus
+            \transpose f g {
+              \PartAPre
+              \PartAPre
+              \PartAOne
+              \PartAOneChorus
+              \PartATwo
+              \PartATwoChorus
+            }
           }
         >>
         \new Staff = "T" <<
-          \clef "treble_8"
-          \key f \minor
+          \clef "treble"
+          \key g \minor
           \new Voice = "PartT" {
-            \PartTPre
-            \PartTPre
-            \PartTOne
-            \PartTOneChorus
-            \PartTTwo
-            \PartTTwoChorus
+            \transpose f g {
+              \PartTPre
+              \PartTPre
+              \PartTOne
+              \PartTOneChorus
+              \PartTTwo
+              \PartTTwoChorus
+              \transpose g g' \PartTTwoChorusEnd
+            }
           }
         >>
         \new Lyrics \lyricsto "LyrTwo" {
@@ -390,23 +479,37 @@ LyrStanzaFive = \lyricmode {
         }
         \new Staff = "B" <<
           \clef "bass"
-          \key f \minor
+          \key g \minor
           \new Voice = "PartB" {
-            \PartBPre
-            \PartBPre
-            \break
-            \PartBOne
-            \PartBOneChorus
-            \break
-            \PartBTwo
-            \PartBTwoChorus
+            \transpose f g {
+              \PartBPre
+              \PartBPre
+              \break
+              \PartBOne
+              \PartBOneChorus
+              \break
+              \PartBTwo
+              \PartBTwoChorus
+              c'4 f4
+            }
           }
         >>
       >>
     >>
     \layout {}
+    \midi {}
   }
   \paper {
+    oddFooterMarkup = \markup {
+      \unless \on-last-page {
+        \fill-line { \hspace #1.0 } {
+        \combine
+        \path #0.2 #'((lineto 2 0) (curveto 4 0 4 2 2 2))
+        \fontsize #4
+        \arrow-head #X #LEFT ##f
+        }
+      }
+    }
     system-count = #5
     system-system-spacing =
       #'((basic-distance . 8) 
@@ -414,4 +517,6 @@ LyrStanzaFive = \lyricmode {
          (padding . 8)
          (stretchability . 60)) % defaults: 12, 8, 1, 60
   }
+  
+  \LyrFull
 }
