@@ -11,7 +11,15 @@ taglineLanguage = "horvatian"
   title = "Vilo moja"
 }
 
-PartSolo = \relative c' {
+\layout {
+    \context {
+    \Staff {
+      \set autoBeaming=##f
+    }
+  }
+}
+
+PartSoloU = \relative c' {
   r2 c8 d8 f8 d8 |
   g2~ g8 r8 d8 f8 |
   g2~ g8 r8 r8 g8 |
@@ -28,25 +36,66 @@ PartSolo = \relative c' {
   g2~ g8 r8 r4 |
 }
 
-PartS = \relative c' {
+PartSoloV = \relative c' {
+  f2 g4. a8 |
+  a2~ a8 b8 b8. a16 |
+  a2~ a8 g8 g8. f16 |
+  f4. f8 f8 g8 a8 c8 |
+  \repeat volta 2 {
+    f2 f8 e8 c8. a16 |
+    c2 d8 c8 f,8 g8 |
+    a2~ a8 g8 g8. f16 |
+    \alternative {
+      \volta 1 { f4. f8 f8 g8 a8 c8 }
+      \volta 2 { f,2 r8 b8 b8. a16 }
+    }
+  }
+  a2~ a8 g8 g8. f16 |
+  f2~ f8 b8 b8. a16 |
+  a2 r2 |
+  R1 |
+  \bar "|."
+}
+
+PartSU = \relative c' {
   R1
   d1 |
   e2.~ e8 r8 |
   f4. f8 e2 |
   f1 |
-  g2 f2~ |
+  g2. f4~ |
   f2 e2 |
   d'4. c8 c2 |
   d2 cis2 |
-  r8 f,4 f8 f4 r4 |
-  r8 e4 e8 e4 e8 e8 |
-  f4 f4 f4 f4 |
-  g4. r8 r4 r4 |
-  r2 f'8 e4 d8 |
+  r8 d4 d8 d4 r4 |
+  r8 c4 c8 c4 c8 c8 |
+  d4 d4 d4 d4 |
+  e4. r8 r2 |
+  r2 f8 e4 d16[( e16]) |
   e2~ e8 r8 r4 |
 }
 
-PartA = \relative c' {
+PartSV = \relative c' {
+  f2 g4. a8 |
+  a2~ a8 d8 d8. c16 |
+  c2~ c8 b8 b8. a16 |
+  a4. r8 r2 |
+  \repeat volta 2 {
+    d2 d8 d8 d4 |
+    e2 d8 d8 d8 d8 |
+    f,2( e8) e8 e8 e8 |
+    \alternative {
+      \volta 1 { f4. r8 r2 }
+      \volta 2 { f2 r8 d'8 d8. c16 }
+    }
+  }
+  c2~ c8 b8 b8. a16 |
+  a2~ a8 d8 d8. c16 |
+  c2 r8 b8 b8 b8 |
+  f'1 |
+}
+
+PartAU = \relative c' {
   R1
   b1 |
   c2.~ c8 r8 |
@@ -54,15 +103,37 @@ PartA = \relative c' {
   d1 |
   d1 |
   c1 |
-  r8 d'4 d8 d4 r4 |
-  r8 c4 c8 c4 c8 c8 |
-  d4 d4 d4 d4 |
-  e4. r8 r4 r4 |
+  f4. f8 e2 |
+  e1 |
+  r8 f4 f8 f4 r4 |
+  r8 e4 e8 e4 e8 e8 |
+  f4 f4 f4 f4 |
+  g4. r8 r2 |
   r2 c8 c4 c8 |
   c2~ c8 r8 r4 |
 }
 
-PartT = \relative c' {
+PartAV = \relative c' {
+  f2 g4. a8 |
+  a2~ a8 b8 b8. a16 |
+  a2~ a8 g8 g8. f16 |
+  f4. r8 r2 |
+  \repeat volta 2 {
+    f2 f8 f8 f4 |
+    a2 f8 f8 f8 f8 |
+    c2( c8) c8 c8 c8 |
+    \alternative {
+      \volta 1 { c4. r8 r2 }
+      \volta 2 { c2 r8 b'8 b8. a16 }
+    }
+  }
+  a2~ a8 g8 g8. f16 |
+  f2~ f8 b8 b8. a16 |
+  a2 r8 <d, f>8 <des f>8 <des f>8 |
+  <c f>1 |
+}
+
+PartTU = \relative c' {
   R1
   g1 |
   g2.~ g8 r8 |
@@ -72,18 +143,36 @@ PartT = \relative c' {
   g1 |
   b4. a8 a2 |
   a1 |
-  f4. f8 e2 |
-  e1 |
-  r8 a,4 a8 a4 r4 |
+  r8 a4 a8 a4 r4 |
   r8 a4 a8 a4 a8 a8 |
   b4 b4 b4 b4 |
-  b4. r8 r4 r4 |
+  a4. r8 r2 |
   r2 c8 c4 c8 |
   c2~ c8 r8 r4 |
 }
 
+PartTV = \relative c {
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 r8 r4 |
+  R1 |
+  \repeat volta 2 {
+    a2 a8 a8 a4 |
+    c2 f,8 f8 f8 f8 |
+    a2( g8) g8 g8 g8 |
+    \alternative {
+      \volta 1 { a4. r8 r2 }
+      \volta 2 { a8 f8 f8. f16 f8 r8 r4 }
+    }
+  }
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 f8 f8. f16 |
+  f2 r8 f8 f8 f16[( g16]) |
+  a1 |
+}
 
-PartB = \relative c {
+
+PartBU = \relative c {
   R1
   g1 |
   c2.~ c8 r8 |
@@ -96,14 +185,32 @@ PartB = \relative c {
   r8 d4 d8 d4 r4 |
   r8 a4 a8 a4 a8 a8 |
   b4 b4 b4 b4 |
-  a4. r8 r4 r4 |
+  a4. r8 r2 |
   r2 c8 c4 c8 |
   c2~ c8 r8 r4 |
 }
 
-\book {
-  \bookOutputSuffix "d"
-  \score {
+PartBV = \relative c {
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 r8 r4 |
+  R1 |
+  \repeat volta 2 {
+    d2 d8 d8 d4 |
+    a2 b8 b8 b8 b8 |
+    f2( c'8) c8 c8 c8 |
+    \alternative {
+      \volta 1 { f,4. r8 r2 }
+      \volta 2 { f8 f'8 f8. f16 f8 r8 r4  }
+    }
+  }
+  r8 f8 f8. f16 f8 r8 r4 |
+  r8 f8 f8. f16 f8 f8 f8. f16 |
+  f2 r8 b,8 b8 b8 |
+  f1 |
+}
+
+Music = {
     <<
       \new Staff = "Solo" \with {
         %midiMaximumVolume = 1.0
@@ -111,26 +218,41 @@ PartB = \relative c {
       } <<
         \clef "treble"
         \key f \major
-        \new Voice = "PartSolo" { \PartSolo }
+        \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
       >>
       \new ChoirStaff <<
         \new Staff = "A" <<
           \clef "treble	"
           \key f \major
-          \new Voice = "PartS" { \voiceOne \PartS }
-          \new Voice = "PartA" { \voiceTwo \PartA }
+          \new Voice = "PartS" { \voiceOne \PartSU \PartSV }
+          \new Voice = "PartA" { \voiceTwo \PartAU \PartAV }
         >>
         \new Staff = "B" <<
           \clef "bass"
           \key f \major
-          \new Voice = "PartT" { \voiceOne \PartT }
-          \new Voice = "PartB" { \voiceTwo \PartB }
+          \new Voice = "PartT" { \voiceOne \PartTU \PartTV }
+          \new Voice = "PartB" { \voiceTwo \PartBU \PartBV }
         >>
       >>
     >>
-    \layout {}
+}
+
+\book {
+  \bookOutputSuffix "d"
+  \score {
+    \Music
+    \layout{
+      \context {
+        \Score
+        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+      }
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \Music
     \midi {
-      \tempo 4 = 80
+      \tempo 4 = 40
       \context {
         \Staff
         % midiInstrument = "viola"
