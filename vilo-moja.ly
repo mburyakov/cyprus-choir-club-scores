@@ -2,7 +2,7 @@
 
 \language "deutsch"
 
-taglineLanguage = "horvatian"
+taglineLanguage = "croatian"
 \include "include/cyprus-logo.ly"
 \include "include/tagline-lilypond.ly"
 \include "include/choir-setup.ly"
@@ -71,7 +71,7 @@ PartSU = \relative c' {
   r8 c4 c8 c4 c8 c8 |
   d4 d4 d4 d4 |
   e4. r8 r2 |
-  r2 f8 e4 d16[( e16]) |
+  r2 f8 e4 d8 |
   e2~ e8 r8 r4 |
 }
 
@@ -81,9 +81,9 @@ PartSV = \relative c' {
   c2~ c8 b8 b8. a16 |
   a4. r8 r2 |
   \repeat volta 2 {
-    d2 d8 d8 d4 |
-    e2 d8 d8 d8 d8 |
-    f,2( e8) e8 e8 e8 |
+    d2 d8 d8 d8. f16 |
+    e2 b8 b8 b8 b8 |
+    f2( e8) e8 e8 e8 |
     \alternative {
       \volta 1 { f4. r8 r2 }
       \volta 2 { f2 r8 d'8 d8. c16 }
@@ -119,8 +119,8 @@ PartAV = \relative c' {
   a2~ a8 g8 g8. f16 |
   f4. r8 r2 |
   \repeat volta 2 {
-    f2 f8 f8 f4 |
-    a2 f8 f8 f8 f8 |
+    f2 f8 f8 f8. f16 |
+    a2 d,8 d8 d8 d8 |
     c2( c8) c8 c8 c8 |
     \alternative {
       \volta 1 { c4. r8 r2 }
@@ -157,7 +157,7 @@ PartTV = \relative c {
   r8 f8 f8. f16 f8 r8 r4 |
   R1 |
   \repeat volta 2 {
-    a2 a8 a8 a4 |
+    a2 a8 a8 a8. a16 |
     c2 f,8 f8 f8 f8 |
     a2( g8) g8 g8 g8 |
     \alternative {
@@ -196,9 +196,9 @@ PartBV = \relative c {
   r8 f8 f8. f16 f8 r8 r4 |
   R1 |
   \repeat volta 2 {
-    d2 d8 d8 d4 |
+    d2 d8 d8 d8. d16 |
     a2 b8 b8 b8 b8 |
-    f2( c'8) c8 c8 c8 |
+    f'2( c8) c8 c8 c8 |
     \alternative {
       \volta 1 { f,4. r8 r2 }
       \volta 2 { f8 f'8 f8. f16 f8 r8 r4  }
@@ -252,7 +252,7 @@ Music = {
     \unfoldRepeats
     \Music
     \midi {
-      \tempo 4 = 40
+      \tempo 4 = 70
       \context {
         \Staff
         % midiInstrument = "viola"
