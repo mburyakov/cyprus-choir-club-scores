@@ -6,6 +6,7 @@ taglineLanguage = "english"
 \include "include/cyprus-logo.ly"
 \include "include/tagline-lilypond.ly"
 \include "include/choir-setup.ly"
+\include "include/lyrics-not-affecting-layout.ly"
 
 \header {
   title = "Yesterday"
@@ -125,7 +126,7 @@ PartB = \relative c {
 LyricsSolo = \lyricmode {
   Yes -- ter -- day,
   all  my  trou -- bles  seemed  so  far  a -- way.
-  Now  it  looks  as  though  they  here  to  stay.
+  Now_it_looks as though the're _ _ here  to  stay.
   Oh,  I  be -- leive 
   in  yes -- ter -- day.
   
@@ -243,7 +244,7 @@ LyricsTutti = \lyricmode {
       %#(layout-set-staff-size 19)
       \context {
         \Lyrics {
-          \set fontSize = #-1
+          \set fontSize = #-2
           \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = ##f
         }
       }
@@ -256,5 +257,8 @@ LyricsTutti = \lyricmode {
         }
       }
     }
+  }
+  \paper {
+    system-count = 6
   }
 }
