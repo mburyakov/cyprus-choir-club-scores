@@ -9,6 +9,9 @@ taglineLanguage = "croatian"
 
 \header {
   title = "Vilo moja"
+  poet = \markup { \italic { "Stihovi: V. Juretić" } }
+  composer = \markup { \italic { "Glazba: I. Badurina" } }
+  arranger = \markup { \italic { "Obrada: I. Frleta ml." } }
 }
 
 \layout {
@@ -26,7 +29,7 @@ PartSoloU = \relative c' {
   b4. a8 a2~ |
   a4. r8 c,8 d8 f8 d8 |
   g8 g4.~ g8 r8 d8 f8 |
-  g2~ g8 r8 f8 g8 b4. a8 a2~ |
+  g2~ g8 r8 f8 g8 b4.( a8) a2~ |
   a4 a8 h8 cis8 d8 e8 a,8 |
   f'2~ f8 e8 d8 f8 |
   e2~ e8 r8 c8 e8 |
@@ -65,7 +68,7 @@ PartSU = \relative c' {
   f1 |
   g2. f4~ |
   f2 e2 |
-  d'4. c8 c2 |
+  d'4.( c8) c2 |
   d2 cis2 |
   r8 d4 d8 d4 r4 |
   r8 c4 c8 c4 c8 c8 |
@@ -103,7 +106,7 @@ PartAU = \relative c' {
   d1 |
   d1 |
   c1 |
-  f4. f8 e2 |
+  f4.( f8) e2 |
   e1 |
   r8 f4 f8 f4 r4 |
   r8 e4 e8 e4 e8 e8 |
@@ -141,7 +144,7 @@ PartTU = \relative c' {
   a1 |
   b1 |
   g1 |
-  b4. a8 a2 |
+  b4.( a8) a2 |
   a1 |
   r8 a4 a8 a4 r4 |
   r8 a4 a8 a4 a8 a8 |
@@ -180,7 +183,7 @@ PartBU = \relative c {
   d1 |
   g,2. b4 |
   c1 |
-  b4. f8 f2 |
+  b4.( f8) f2 |
   a1 |
   r8 d4 d8 d4 r4 |
   r8 a4 a8 a4 a8 a8 |
@@ -210,6 +213,96 @@ PartBV = \relative c {
   f1 |
 }
 
+LyricsSolo = \lyricmode {
+  Sko -- ro sva -- ki put
+  kad se mi
+  po -- gle -- da -- mo
+  ti i ne od -- zdra -- viš
+  ko da se ne po -- zna -- mo
+  a da mi te k_se -- bi zvat
+  kad ćeš za -- spat
+  pr -- vo sna da ti re -- čen
+  da vo -- lin te još.
+  
+  Vi -- lo mo -- ja
+  ti si moj san, ti si moj san,
+  al la -- gje bi -- lo
+  \repeat volta 2 {
+    bi
+    da si tu -- ja mi
+    da te ne po -- znan
+    da te ne \alternative {
+      \volta 1 { znan, al la -- gje bi -- lo }
+      \volta 2 { znan. Vi -- lo mo -- }
+    }
+  }
+  ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja.
+}
+
+LyricsS = \lyricmode {
+  _
+  gle -- da -- mo
+  _
+  _ _ _ _
+  zna -- mo
+  _ _
+  se -- bi zvat
+  ćeš za -- spat
+  pr -- vo sna da ti re -- čen
+  vo -- lin te još.
+  
+  Vi -- lo mo -- ja
+  ti si moj san, ti si moj san,
+  
+  \repeat volta 2 {
+    bi
+    da si tu -- ja mi
+    da te ne po -- znan
+    da te ne \alternative {
+      \volta 1 { znan, }
+      \volta 2 { znan. Vi -- lo mo -- }
+    }
+  }
+  ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja.
+}
+
+LyricsB = \lyricmode {
+  _
+  _ _ _
+  _
+  _ _ _ _
+  _ _
+  _
+  _ _ _
+  _ _ _
+  _ _ _ _ _ _ _
+  _ _ _ _
+  
+  Vi -- lo mo -- ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja
+  
+  \repeat volta 2 {
+    bi
+    da si tu -- ja mi
+    da te ne po -- znan
+    da te ne \alternative {
+      \volta 1 { znan. }
+      \volta 2 { znan. Vi -- lo mo -- }
+    }
+  }
+  ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja,
+  vi -- lo mo -- ja.
+}
+
 Music = {
     <<
       \new Staff = "Solo" \with {
@@ -220,6 +313,9 @@ Music = {
         \key f \major
         \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
       >>
+      \new Lyrics \lyricsto "PartSolo" {
+        \LyricsSolo
+      }
       \new ChoirStaff <<
         \new Staff = "A" <<
           \clef "treble	"
@@ -227,12 +323,18 @@ Music = {
           \new Voice = "PartS" { \voiceOne \PartSU \PartSV }
           \new Voice = "PartA" { \voiceTwo \PartAU \PartAV }
         >>
+        \new Lyrics \lyricsto "PartS" {
+          \LyricsS
+        }
         \new Staff = "B" <<
           \clef "bass"
           \key f \major
           \new Voice = "PartT" { \voiceOne \PartTU \PartTV }
           \new Voice = "PartB" { \voiceTwo \PartBU \PartBV }
         >>
+        \new Lyrics \lyricsto "PartB" {
+          \LyricsB
+        }
       >>
     >>
 }
@@ -258,5 +360,8 @@ Music = {
         % midiInstrument = "viola"
       }
     }
+  }
+  \paper {
+    system-count = 8
   }
 }
