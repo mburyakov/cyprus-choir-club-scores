@@ -348,6 +348,10 @@ Music = {
         \Score
         \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
       }
+      \context {
+        \Staff
+        \consists Merge_rests_engraver
+      }
     }
   }
   \score {
