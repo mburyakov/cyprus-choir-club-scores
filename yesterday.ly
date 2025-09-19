@@ -58,7 +58,7 @@ PartA = \relative c' {
   b2 g2 a1 |
   g2( h2) a2 h2 |
   c1 a2 g2 |
-  r4 c,4 d4 f4 g1 |
+  a1 h1 |
   a4. f8~ f2 f4. g8~ g2 |
   f4 f8 f8~ f2 a4 g4 f4 f4 |
   f2 g2 g1 |
@@ -77,7 +77,7 @@ PartAA = \relative c' {
   a4( f4) e4( f4) f1 |
   e2( g2) f2 f2 |
   des1 f1 |
-  a1 d,2( cis2) |
+  r4 c4 d4 f4 g1 |
   f4. e8~ e2 d4. es8~ es2 |
   des4 des8 des8~ des2 |
   c4 c4 c4 c4 |
@@ -97,7 +97,7 @@ PartS = \relative c'' {
   d2 c4( b4) c1 |
   d2( cis2) d2 e2 |
   f1 des2 b2 |
-  c1 h1 |
+  c1 d2( cis2) |
   c4. h8~ h2 b4. a8~ a2 |
   as4 as8 g8~ g2 |
   f4 e4 d4 f4 |
@@ -151,9 +151,9 @@ LyricsSolo = \lyricmode {
   
 }
 
-LyricsA = \lyricmode {
+LyricsAA = \lyricmode {
   \set Lyrics.ignoreMelismata = ##t
-  \repeat unfold 53 { _ }
+  \repeat unfold 49 { _ }
   Oh, yes -- ter -- day
 }
 
@@ -205,16 +205,16 @@ LyricsTutti = \lyricmode {
           \key d \major
           \new Voice = "PartA" { \transpose f d \PartA }
         >>
-        \new Lyrics \with {
-          alignBelowContext = "A"
-        } \lyricsto "PartA" {
-          \LyricsA
-        }
         \new Staff = "AA" <<
           \clef "treble"
           \key d \major
           \new Voice = "PartAA" { \transpose f d \PartAA }
         >>
+        \new Lyrics \with {
+          alignBelowContext = "AA"
+        } \lyricsto "PartAA" {
+          \LyricsAA
+        }
         \new Staff = "B" <<
           \clef "bass"
           \key d \major
@@ -250,7 +250,7 @@ LyricsTutti = \lyricmode {
       }
     }
     \midi {
-      \tempo 4 = 65
+      \tempo 4 = 60
       \context {
         \Staff {
           %\set midiInstrument = "viola"
