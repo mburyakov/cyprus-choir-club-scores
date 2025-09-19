@@ -33,7 +33,7 @@ PartSoloForth = \relative c' {
   r4 a8 h8 cis8 d8 e8 f8 |
   e4 d8 d8~ d2 |
   R1 R1 |
-  f4 e4 d4 c4 b2 b2 a1
+  f4 e4 d4 c4 b1 b1 a1~ a1
 }
 
 PartSolo = {
@@ -61,7 +61,7 @@ PartA = \relative c' {
   a1 h1 |
   a4. f8~ f2 f4. g8~ g2 |
   f4 f8 f8~ f2 a4 g4 f4 f4 |
-  f2 g2 g1 |
+  f1 g1 g1~ g1 |
 }
 
 PartAA = \relative c' {
@@ -81,7 +81,7 @@ PartAA = \relative c' {
   f4. e8~ e2 d4. es8~ es2 |
   des4 des8 des8~ des2 |
   c4 c4 c4 c4 |
-  es2 f2 f1
+  es1 f1 f1~ f1
   
 }
 
@@ -101,7 +101,7 @@ PartS = \relative c'' {
   c4. h8~ h2 b4. a8~ a2 |
   as4 as8 g8~ g2 |
   f4 e4 d4 f4 |
-  g2 d'2 c1
+  g1 d'1 c1~ c1
 }
 
 
@@ -120,7 +120,7 @@ PartB = \relative c {
   f,1 e2( a,2) |
   d4. g8~ g2 c,4. f8~ f2 |
   b,4 b8 es8~ es2 f4 a4 b4 a4 |
-  as2 c,2 f1 | 
+  as1 c,1 f1~ f1 | 
 }
 
 LyricsSolo = \lyricmode {

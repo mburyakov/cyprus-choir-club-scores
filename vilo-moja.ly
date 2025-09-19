@@ -95,7 +95,7 @@ PartSV = \relative c' {
   c2~ c8 b8 b8. a16 |
   a2~ a8 d8 d8. c16 |
   c2 r8 b8 b8 b8 |
-  f'1 |
+  <c f>1 |
 }
 
 PartAU = \relative c' {
@@ -112,8 +112,8 @@ PartAU = \relative c' {
   r8 e4 e8 e4 e8 e8 |
   f4 f4 f4 f4 |
   g4. r8 r2 |
-  r2 c8 c4 c8 |
-  c2~ c8 r8 r4 |
+  r2 <\parenthesize g c>8 <\parenthesize g c>4 <\parenthesize g c>8 |
+  <\parenthesize g c>2~ <\parenthesize g c>8 r8 r4 |
 }
 
 PartAV = \relative c' {
@@ -242,9 +242,8 @@ LyricsSolo = \lyricmode {
 }
 
 LyricsS = \lyricmode {
-  _
+  _ _
   gle -- da -- mo
-  _
   _ _ _ _
   zna -- mo
   _ _
@@ -272,10 +271,10 @@ LyricsS = \lyricmode {
 }
 
 LyricsB = \lyricmode {
-  _
+  _ _
   _ _ _
   _
-  _ _ _ _
+  _ _
   _ _
   _
   _ _ _
@@ -303,6 +302,8 @@ LyricsB = \lyricmode {
   vi -- lo mo -- ja.
 }
 
+use-treble-key-for-bass-and-tenor = #'t
+
 Music = {
     <<
       \new Staff = "Solo" \with {
@@ -327,12 +328,17 @@ Music = {
           \LyricsS
         }
         \new Staff = "B" <<
-          \clef "bass"
+          \tag #'use-treble-key-for-bass-and-tenor {
+            \clef "treble_8"
+          }
+          \tag #'use-bass-key-for-bass-and-tenor {
+            \clef "bass"
+          }
           \key f \major
           \new Voice = "PartT" { \voiceOne \PartTU \PartTV }
           \new Voice = "PartB" { \voiceTwo \PartBU \PartBV }
         >>
-        \new Lyrics \lyricsto "PartB" {
+        \new Lyrics \lyricsto "PartT" {
           \LyricsB
         }
       >>
@@ -340,7 +346,6 @@ Music = {
 }
 
 \book {
-  \bookOutputSuffix "d"
   \score {
     \Music
     \layout{
@@ -366,6 +371,41 @@ Music = {
     }
   }
   \paper {
+    systems-per-page = 4
+    system-count = 8
+  }
+}
+
+\book {
+  \bookOutputSuffix "treble"
+  \score {
+    \keepWithTag #'use-treble-key-for-bass-and-tenor {
+      \Music
+    }
+    \layout{
+      \context {
+        \Score
+        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+      }
+      \context {
+        \Staff
+        \consists Merge_rests_engraver
+      }
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \Music
+    \midi {
+      \tempo 4 = 70
+      \context {
+        \Staff
+        % midiInstrument = "viola"
+      }
+    }
+  }
+  \paper {
+    systems-per-page = 4
     system-count = 8
   }
 }
