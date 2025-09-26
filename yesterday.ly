@@ -267,7 +267,7 @@ MusicArticulated = {
 }
 
 SetLeftBalance = \midi {
-  \set Staff.midiMaximumVolume = #0.8
+  \set Staff.midiMaximumVolume = #0.6
   \set Staff.midiPanPosition = -1
 }
 
@@ -310,7 +310,9 @@ SetLeftBalance = \midi {
     \keepWithTag #'nothing {
       \MusicArticulated
     }
-    \midi {}
+    \midi {
+      \set Staff.midiMaximumVolume = #0.4
+    }
   }
 }
 

@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install jinja2
+          pip install jinja2 mido
       - run: lilypond *.ly
       - run: python3 pages/generate-static.py
       - uses: actions/upload-artifact@v4
