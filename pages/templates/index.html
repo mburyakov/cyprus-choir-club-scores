@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Results</title>
+    <meta charset="utf-8">
+    <title>Results</title>
 </head>
 
 <body>
-  <h1>Index</h1>
-  <ul>
-  {% for item in items %}
-    <li>
-      <a href="{{ item.name }}">{{ item.display_name }}</a>
-      <ul>
-          {% for file in item.files %}
-          <li>
-              <a href="{{ file.name }}">{{ file.display_name }}</a>
-          </li>
-          {% endfor %}
-      </ul>
-    </li>
-  {% endfor %}
-  </ul>
+<h1>Index</h1>
+<ul>
+    {% for item in items %}
+        <li>
+            <a href="{{ item.name }}">{{ item.display_name }}</a>
+            <ul>
+                {% for file in item.files %}
+                    <li>
+                        <a href="{{ file.name }}">{{ file.display_name }}</a>
+                        {% if file.isMidi %}
+                            <form action="midiplayer/midiplayer.html">
+                                <input type="hidden" name="midiFile" value="{{ file.name }}"/>
+                                <input type="submit" value="Play"/>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
 </body>
 </html>

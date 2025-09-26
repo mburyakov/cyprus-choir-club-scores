@@ -50,6 +50,9 @@ if __name__ == "__main__":
     project_root = path_to_script.parent.parent
 
     out_root = project_root / "out" / "pages"
+
+    shutil.rmtree(out_root)
+
     os.makedirs(out_root, exist_ok=True)
 
     merge_midi_files(project_root / "yesterday-d-all.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-all-mixed-solo.midi")
@@ -81,7 +84,7 @@ if __name__ == "__main__":
             shutil.copy(ly_root / pdf_output, out_root / pdf_output.name)
         midi_outputs = [f for f in ly_root_list if f.name.endswith(".midi") and f.name.startswith(ly_source_prefix)]
         for midi_output in midi_outputs:
-            item_files.append({"name": midi_output.name, "display_name": midi_output.name})
+            item_files.append({"name": midi_output.name, "display_name": midi_output.name, "isMidi": True})
             shutil.copy(ly_root / midi_output, out_root / midi_output.name)
         item_data = {"name": ly_source.name, "display_name": display_name, "files": item_files}
         files.append(item_data)
@@ -91,3 +94,4 @@ if __name__ == "__main__":
     content = template.render(context)
     index_page = out_root / "index.html"
     index_page.write_text(content)
+    shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
