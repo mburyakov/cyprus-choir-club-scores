@@ -1,3 +1,4 @@
+import math
 import os
 import pathlib
 import re
@@ -5,6 +6,44 @@ import shutil
 import sys
 
 import jinja2
+import mido
+
+def adjust_track(track, channel, fraction):
+    result = mido.MidiTrack()
+    for event in track:
+        if event.is_meta:
+            result.append(event.copy(time=int(int(event.time) * fraction)))
+        elif event.channel is not None and event.time is not None:
+            result.append(event.copy(channel = channel, time=int(int(event.time) * fraction)))
+        elif event.channel is not None:
+            print(f"not adjusting time for {event} with time {event.time} and channel {event.channel}")
+            result.append(event.copy(channel = channel))
+        elif event.time is not None:
+            result.append(event.copy(time=int(int(event.time) * fraction)))
+        else:
+            print(f"not adjusting time for {event}")
+            result.append(event)
+    return result
+
+def merge_midi_files(*args, output_path):
+
+    inputs = [mido.MidiFile(file) for file in args]
+    output_ticks_per_beat = math.lcm(*[input.ticks_per_beat for input in inputs])
+    output = mido.MidiFile()
+    output.ticks_per_beat = output_ticks_per_beat
+    print(f"output will have ticks per beat: {output.ticks_per_beat}")
+    channels_num = 0
+
+    for input_num, input in enumerate(inputs):
+        print(f"input {input_num} has ticks per beat: {input.ticks_per_beat}")
+        tempo_marks = [event for track in input.tracks for event in track if event.is_meta and event.type == "set_tempo"]
+        print(f"input {input_num} has tempo marks: {tempo_marks}")
+        for track in input.tracks:
+            output.tracks.append(adjust_track(track, channels_num, output_ticks_per_beat / input.ticks_per_beat))
+            channels_num += 1
+
+    print(f"Writing merged midi to {output_path}.")
+    output.save(output_path)
 
 if __name__ == "__main__":
     path_to_script = pathlib.Path(sys.argv[0])
@@ -12,6 +51,8 @@ if __name__ == "__main__":
 
     out_root = project_root / "out" / "pages"
     os.makedirs(out_root, exist_ok=True)
+
+    merge_midi_files(project_root / "yesterday-d-all.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-all-mixed-solo.midi")
 
     environment = jinja2.Environment(loader=jinja2.FileSystemLoader(project_root / "pages" / "templates"))
     template = environment.get_template("index.html")
