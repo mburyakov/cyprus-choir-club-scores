@@ -274,7 +274,7 @@ SetLeftBalance = \midi {
 \midi {
   \context {
     \Staff {
-      \set midiInstrument = "piano"
+      \set midiInstrument = "acoustic grand"
     }
   }
 }

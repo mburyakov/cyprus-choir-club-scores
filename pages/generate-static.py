@@ -52,11 +52,11 @@ if __name__ == "__main__":
     out_root = project_root / "out" / "pages"
     os.makedirs(out_root, exist_ok=True)
 
-    merge_midi_files(project_root / "yesterday-d-all.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-all-mixed-solo.midi")
-    merge_midi_files(project_root / "yesterday-d-S.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-S-mixed-solo.midi")
-    merge_midi_files(project_root / "yesterday-d-A.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-A-mixed-solo.midi")
-    merge_midi_files(project_root / "yesterday-d-AA.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-AA-mixed-solo.midi")
-    merge_midi_files(project_root / "yesterday-d-B.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=out_root / "yesterday-d-B-mixed-solo.midi")
+    merge_midi_files(project_root / "yesterday-d-all.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-all-mixed-solo.midi")
+    merge_midi_files(project_root / "yesterday-d-S.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-S-mixed-solo.midi")
+    merge_midi_files(project_root / "yesterday-d-A.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-A-mixed-solo.midi")
+    merge_midi_files(project_root / "yesterday-d-AA.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-AA-mixed-solo.midi")
+    merge_midi_files(project_root / "yesterday-d-B.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-B-mixed-solo.midi")
 
     environment = jinja2.Environment(loader=jinja2.FileSystemLoader(project_root / "pages" / "templates"))
     template = environment.get_template("index.html")
