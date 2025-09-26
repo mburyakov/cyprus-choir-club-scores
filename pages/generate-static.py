@@ -51,7 +51,8 @@ if __name__ == "__main__":
 
     out_root = project_root / "out" / "pages"
 
-    shutil.rmtree(out_root)
+    if out_root.exists():
+        shutil.rmtree(out_root)
 
     os.makedirs(out_root, exist_ok=True)
 
