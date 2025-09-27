@@ -8,7 +8,9 @@
 
 <body>
 	<div id='cntls'></div>
-	<script>
+	<script type="module">
+        import { joinRoom } from 'https://cdn.skypack.dev/pin/trystero@v0.11.8-pxKZpWfVVzXootkGlZMp/mode=imports,min/optimized/trystero.js';
+
 		console.log('start');
 		var audioContext = null;
 		var player = null;
@@ -16,47 +18,143 @@
 		var equalizer = null;
 		var songStart = 0;
 		var input = null;
-		var currentSongTime = 0;
-		var nextStepTime = 0;
-		var nextPositionTime = 0;
+        var playing = false;
+        var room = null;
+        var isControl = false;
+        var sendMessage = true;
+        var peers = [];
+		var playerSongTime = 0;
 		var loadedsong = null;
-		function go() {
-			document.getElementById('tmr').innerHTML = 'starting...';
-			try {
-				startPlay(loadedsong);
-				document.getElementById('tmr').innerHTML = 'playing...';
-			} catch (expt) {
-				document.getElementById('tmr').innerHTML = 'error ' + expt;
-			}
+
+        function setupRoom() {
+            const roomid = (Math.random() + 1).toString(36).substring(7);
+            let url = window.location.href;
+            if (url.indexOf('?') > -1) {
+                url += '&room=' + roomid
+            } else {
+                url += '?room=' + roomid
+            }
+            window.location.href = url;
+        }
+
+        function enterRoom(roomid) {
+            room = joinRoom({appId: 'sumserum.nomeata.de'}, roomid);
+
+            const [sendTick1, getTick1] = room.makeAction('message')
+            sendMessage = sendTick1
+            document.getElementById("room_url").innerHTML = "joined " + roomid;
+            getTick1((data, peerId) => {
+                if (data.isControl && !isControl) {
+                    adjustStateFromControl(data)
+                }
+            })
+        }
+
+        function setControl(value) {
+            isControl = value;
+            if (value) {
+                document.getElementById('mode').innerHTML = 'Control mode';
+            } else {
+                document.getElementById('mode').innerHTML = 'Follow mode';
+            }
+        }
+
+        function adjustStateFromControl(data) {
+            var wasPlaying = playing;
+            var contextTime = audioContext.currentTime;
+
+            songStart = data.songStart - data.contextTime + contextTime;
+
+            if (wasPlaying !== data.playing) {
+                if (!wasPlaying) {
+                    playerSongTime = audioContext.currentTime - songStart;
+                }
+                playOrPause();
+            }
+        }
+
+        function startFollowing() {
+            setControl(false)
+        }
+
+        function playButtonClick() {
+            setControl(true)
+            playOrPause()
+        }
+
+		function playOrPause() {
+            if (!playing) {
+                playing = true;
+                document.getElementById('tmr').innerHTML = 'starting...';
+                try {
+                    startPlay(loadedsong);
+                    document.getElementById('tmr').innerHTML = 'playing...';
+                    document.getElementById('playbtn').innerHTML = 'Pause';
+                } catch (expt) {
+                    document.getElementById('tmr').innerHTML = 'error ' + expt;
+                }
+            } else {
+                playing = false
+                playerSongTime = audioContext.currentTime - songStart;
+                renderProgress(loadedsong, playerSongTime);
+                document.getElementById('tmr').innerHTML = 'paused';
+                document.getElementById('playbtn').innerHTML = 'Play';
+                player.cancelQueue(audioContext)
+                sendStatus(true)
+            }
 		}
 		function startPlay(song) {
-			currentSongTime = 0;
-			songStart = audioContext.currentTime;
-			nextStepTime = audioContext.currentTime;
-			var stepDuration = 44 / 1000;
-			tick(song, stepDuration);
+			songStart = audioContext.currentTime - playerSongTime;
+			var stepDuration = 5000 / 1000;
+			startTicks(song, stepDuration);
 		}
-		function tick(song, stepDuration) {
-			if (audioContext.currentTime > nextStepTime - stepDuration) {
-				sendNotes(song, songStart, currentSongTime, currentSongTime + stepDuration, audioContext, input, player);
-				currentSongTime = currentSongTime + stepDuration;
-				nextStepTime = nextStepTime + stepDuration;
-				if (currentSongTime > song.duration) {
-					currentSongTime = currentSongTime - song.duration;
-					sendNotes(song, songStart, 0, currentSongTime, audioContext, input, player);
-					songStart = songStart + song.duration;
-				}
-			}
-			if (nextPositionTime < audioContext.currentTime) {
-				var o = document.getElementById('position');
-				o.value = 100 * currentSongTime / song.duration;
-				document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
-				nextPositionTime = audioContext.currentTime + 3;
-			}
-			window.requestAnimationFrame(function (t) {
-				tick(song, stepDuration);
-			});
+        function startTicks(song, stepDuration) {
+            tickByInterval(song, stepDuration);
+        }
+        function tickByInterval(song, stepDuration) {
+            tick(song, stepDuration);
+            var timer = setInterval(function () {
+                var requiresNext = tick(song, stepDuration);
+                if (!requiresNext) {
+                    clearInterval(timer);
+                }
+            }, stepDuration * 1000);
+        }
+		function tick(song, advance) {
+            var currentSongTime = audioContext.currentTime - songStart;
+            sendStatus();
+            if (!playing) return false
+
+            console.log('player at ' + playerSongTime + ', advance ' + advance);
+            sendNotes(song, songStart, playerSongTime, currentSongTime + advance, audioContext, input, player);
+            playerSongTime = currentSongTime + advance;
+            console.log('played to ' + playerSongTime);
+            if (playerSongTime > song.duration) {
+                return false
+            }
+
+            renderProgress(song, currentSongTime);
+            return true;
 		}
+        function sendStatus(fromAction = false) {
+            for (const friendId of room.getPeers()) {
+                sendMessage({
+                    songStart: songStart,
+                    contextTime: audioContext.currentTime,
+                    playing: playing,
+                    fromAction: fromAction,
+                    isControl: isControl,
+                }, friendId)
+            }
+        }
+        function renderProgress(song, currentSongTime) {
+            var o = document.getElementById('position');
+            o.value = 100 * currentSongTime / song.duration;
+            document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
+            document.getElementById('currentTime').innerHTML = '' + Math.round(audioContext.currentTime * 1000);
+            document.getElementById('currentSongTime').innerHTML = '' + Math.round(currentSongTime * 1000);
+            document.getElementById('songStart').innerHTML = '' + Math.round(songStart * 1000);
+        }
 		function sendNotes(song, songStart, start, end, audioContext, input, player) {
 			for (var t = 0; t < song.tracks.length; t++) {
 				var track = song.tracks[t];
@@ -135,7 +233,14 @@
 			audioContext.resume();
 			var o = document.getElementById('cntls');
 			var html = '<h2 id="wrng">Midi player by <a href="https://github.com/surikov/webaudiofont/tree/master">WebAudioFont</a></h2>';
-			html = html + '<p id="tmr"><button onclick="go();">Play</button></p>';
+			html = html + '<p><button id="playbtn"">Play</button></p>';
+			html = html + '<p><button id="followbtn">Follow</button></p>';
+            html = html + '<p id="mode">Player mode</p>';
+            html = html + '<p id="tmr">sdfsdf</p>';
+            html = html + '<p id="room_url">room_url</p>';
+            html = html + '<p id="currentTime">currentTime</p>';
+            html = html + '<p id="songStart">songStart</p>';
+            html = html + '<p id="currentSongTime">currentSongTime</p>';
 			html = html + '<p><input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
@@ -148,14 +253,24 @@
 				html = html + '<p>' + chooserDrum(song.beats[i].id, i) + '<input id="drum' + i + '" type="range" min="0" max="100" value="' + v + '" step="1" /></p>';
 			}
 			o.innerHTML = html;
+            document.getElementById('playbtn').addEventListener('click', playButtonClick)
+            document.getElementById('followbtn').addEventListener('click', startFollowing)
 			console.log('Loaded');
+            var roomid = getParam("room");
+            if (roomid) {
+                enterRoom(roomid)
+                setControl(true)
+            } else {
+                setupRoom()
+            }
 			var pos = document.getElementById('position');
 			pos.oninput = function (e) {
 				if (loadedsong) {
 					player.cancelQueue(audioContext);
 					var next = song.duration * pos.value / 100;
-					songStart = songStart - (next - currentSongTime);
-					currentSongTime = next;
+					songStart = songStart - (next - playerSongTime);
+					playerSongTime = next;
+                    console.log('positioned at ' + playerSongTime)
 				}
 			};
 			console.log('Tracks');
@@ -264,9 +379,10 @@
 			};
 			xmlHttpRequest.send(null);
 		}
-        handleExample("../" + new URL(document.URL).searchParams.get("midiFile"))
-        document.url
-		document.getElementById('filesinput').addEventListener('change', handleFileSelect, false);
+        function getParam(param) {
+            return new URL(document.URL).searchParams.get(param)
+        }
+        handleExample("../" + getParam("midiFile"))
 	</script>
 </body>
 

@@ -18,7 +18,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install jinja2 mido
       - run: lilypond *.ly
-      - run: python3 pages/generate-static.py
+      - run: python3 pages/generate_static.py
       - uses: actions/upload-artifact@v4
         with:
           name: pdf-scores

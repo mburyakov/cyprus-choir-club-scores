@@ -45,7 +45,7 @@ def merge_midi_files(*args, output_path):
     print(f"Writing merged midi to {output_path}.")
     output.save(output_path)
 
-if __name__ == "__main__":
+def main():
     path_to_script = pathlib.Path(sys.argv[0])
     project_root = path_to_script.parent.parent
 
@@ -96,3 +96,6 @@ if __name__ == "__main__":
     index_page = out_root / "index.html"
     index_page.write_text(content)
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
+
+if __name__ == "__main__":
+    main()
