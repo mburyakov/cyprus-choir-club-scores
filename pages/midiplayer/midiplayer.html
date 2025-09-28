@@ -9,9 +9,12 @@
 <body>
 	<div id='cntls'></div>
 	<script type="module">
-        import { joinRoom } from 'https://cdn.skypack.dev/pin/trystero@v0.11.8-pxKZpWfVVzXootkGlZMp/mode=imports,min/optimized/trystero.js';
+        import { joinRoom, selfId } from 'https://cdn.skypack.dev/pin/trystero@v0.11.8-pxKZpWfVVzXootkGlZMp/mode=imports,min/optimized/trystero.js';
 
-		console.log('start');
+        const MODE_STANDALONE = "standalone"
+        const MODE_CONTROL = "control"
+        const MODE_FOLLOW = "follow"
+
 		var audioContext = null;
 		var player = null;
 		var reverberator = null;
@@ -20,9 +23,10 @@
 		var input = null;
         var playing = false;
         var room = null;
-        var isControl = false;
-        var sendMessage = true;
-        var peers = [];
+        var mode = MODE_STANDALONE;
+        var currentControl = null;
+        var sendMessage = null;
+        var peerTimeDiff = {};
 		var playerSongTime = 0;
 		var loadedsong = null;
 
@@ -44,68 +48,124 @@
             sendMessage = sendTick1
             document.getElementById("room_url").innerHTML = "joined " + roomid;
             getTick1((data, peerId) => {
-                if (data.isControl && !isControl) {
-                    adjustStateFromControl(data)
-                }
+                receiveMessage(data, peerId)
             })
         }
 
-        function setControl(value) {
-            isControl = value;
-            if (value) {
-                document.getElementById('mode').innerHTML = 'Control mode';
-            } else {
-                document.getElementById('mode').innerHTML = 'Follow mode';
+        function receiveMessage(data, peerId) {
+            if (data.mode === MODE_CONTROL) {
+                currentControl = peerId;
             }
+            if (data.mode === MODE_CONTROL && mode === MODE_CONTROL) {
+                setControl(MODE_FOLLOW)
+            }
+            if (data.mode === MODE_FOLLOW && mode === MODE_CONTROL || data.mode === MODE_CONTROL && mode === MODE_FOLLOW) {
+                updatePeerTimeDiff(data, peerId)
+            }
+            if (data.mode === MODE_CONTROL && mode === MODE_FOLLOW) {
+                adjustStateFromControl(data, peerId)
+            }
+            renderPeers()
         }
 
-        function adjustStateFromControl(data) {
-            var wasPlaying = playing;
-            var contextTime = audioContext.currentTime;
-
-            songStart = data.songStart - data.contextTime + contextTime;
-
-            if (wasPlaying !== data.playing) {
-                if (!wasPlaying) {
-                    playerSongTime = audioContext.currentTime - songStart;
+        function updatePeerTimeDiff(data, peerId) {
+            console.log('updating peer time diff, data.contextTime: ' + data.contextTime + ', audioContext.currentTime: ' + audioContext.currentTime + ', peerTimeDiff[' + peerId + ']: ' + peerTimeDiff[peerId]);
+            if (data.contextTime > 0 && audioContext.currentTime > 0) {
+                var timeDiff = data.contextTime - audioContext.currentTime;
+                if (peerTimeDiff[peerId]) {
+                    peerTimeDiff[peerId] = (peerTimeDiff[peerId] * 9 + timeDiff) / (9 + 1);
+                } else {
+                    peerTimeDiff[peerId] = timeDiff;
                 }
-                playOrPause();
             }
         }
 
-        function startFollowing() {
-            setControl(false)
+        function setControl(value) {
+            mode = value;
+            if (mode === MODE_STANDALONE) {
+                document.getElementById('standalone').checked = true;
+            }
+            if (mode === MODE_CONTROL) {
+                currentControl = selfId;
+                document.getElementById('control').checked = true;
+            }
+            if (mode === MODE_FOLLOW) {
+                document.getElementById('follow').checked = true;
+            }
+            sendStatus()
+            renderPeers()
+        }
+
+        function adjustStateFromControl(data, peerId) {
+            var wasPlaying = playing;
+
+            var contextTimeDiff;
+            if (peerTimeDiff[peerId] && data.timeDiff) {
+                contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff) / 2;
+            } else {
+                contextTimeDiff = data.contextTime - audioContext.currentTime;
+            }
+
+            songStart = data.songStart - contextTimeDiff;
+
+            if (!wasPlaying && data.playing) {
+                playerSongTime = audioContext.currentTime - songStart;
+                play()
+            }
+            if (wasPlaying && !data.playing) {
+                pause()
+            }
+        }
+
+        function modeSelectChange() {
+            if (document.getElementById('standalone').checked) {
+                setControl(MODE_STANDALONE)
+            }
+            if (document.getElementById('control').checked) {
+                setControl(MODE_CONTROL)
+            }
+            if (document.getElementById('follow').checked) {
+                pause()
+                setControl(MODE_FOLLOW)
+            }
         }
 
         function playButtonClick() {
-            setControl(true)
-            playOrPause()
+            if (mode === MODE_FOLLOW) {
+                setControl(MODE_STANDALONE)
+            }
+            if (!playing) {
+                play()
+            } else {
+                pause()
+            }
         }
 
-		function playOrPause() {
-            if (!playing) {
-                playing = true;
-                document.getElementById('tmr').innerHTML = 'starting...';
-                try {
-                    startPlay(loadedsong);
-                    document.getElementById('tmr').innerHTML = 'playing...';
-                    document.getElementById('playbtn').innerHTML = 'Pause';
-                } catch (expt) {
-                    document.getElementById('tmr').innerHTML = 'error ' + expt;
-                }
-            } else {
-                playing = false
-                playerSongTime = audioContext.currentTime - songStart;
-                renderProgress(loadedsong, playerSongTime);
-                document.getElementById('tmr').innerHTML = 'paused';
-                document.getElementById('playbtn').innerHTML = 'Play';
-                player.cancelQueue(audioContext)
-                sendStatus(true)
+        function play() {
+            if (playing) return;
+            playing = true;
+            document.getElementById('tmr').innerHTML = 'starting...';
+            try {
+                startPlay(loadedsong);
+                document.getElementById('tmr').innerHTML = 'playing...';
+                document.getElementById('playbtn').innerHTML = 'Pause';
+            } catch (expt) {
+                document.getElementById('tmr').innerHTML = 'error ' + expt;
             }
-		}
+        }
+        function pause() {
+            if (!playing) return;
+            playing = false
+            playerSongTime = audioContext.currentTime - songStart;
+            renderProgress(loadedsong, playerSongTime);
+            document.getElementById('tmr').innerHTML = 'paused';
+            document.getElementById('playbtn').innerHTML = 'Play';
+            player.cancelQueue(audioContext)
+            sendStatus()
+        }
 		function startPlay(song) {
-			songStart = audioContext.currentTime - playerSongTime;
-			var stepDuration = 5000 / 1000;
+            songStart = audioContext.currentTime - playerSongTime;
+			var stepDuration = 176 / 1000;
 			startTicks(song, stepDuration);
 		}
         function startTicks(song, stepDuration) {
@@ -114,7 +174,7 @@
         function tickByInterval(song, stepDuration) {
             tick(song, stepDuration);
             var timer = setInterval(function () {
-                var requiresNext = tick(song, stepDuration);
+                var requiresNext = tick(song, stepDuration * 3);
                 if (!requiresNext) {
                     clearInterval(timer);
                 }
@@ -125,27 +185,45 @@
             sendStatus();
             if (!playing) return false
 
-            console.log('player at ' + playerSongTime + ', advance ' + advance);
             sendNotes(song, songStart, playerSongTime, currentSongTime + advance, audioContext, input, player);
             playerSongTime = currentSongTime + advance;
-            console.log('played to ' + playerSongTime);
             if (playerSongTime > song.duration) {
+                pause()
+                playerSongTime = 0
                 return false
             }
 
             renderProgress(song, currentSongTime);
             return true;
 		}
-        function sendStatus(fromAction = false) {
-            for (const friendId of room.getPeers()) {
-                sendMessage({
-                    songStart: songStart,
-                    contextTime: audioContext.currentTime,
-                    playing: playing,
-                    fromAction: fromAction,
-                    isControl: isControl,
-                }, friendId)
+        function sendStatus() {
+            for (const peerId of room.getPeers()) {
+                if (mode === MODE_CONTROL || peerId === currentControl) {
+                    sendMessage({
+                        songStart: songStart,
+                        contextTime: audioContext.currentTime,
+                        timeDiff: peerTimeDiff[peerId],
+                        playing: playing,
+                        mode: mode,
+                    }, peerId)
+                }
             }
+        }
+        function renderPeers() {
+            var list = "";
+            if (mode === MODE_CONTROL) {
+                list = list + `<li>self: ${selfId} (control)</li>`
+            } else {
+                list = list + `<li>self: ${selfId}</li>`
+            }
+            room.getPeers().forEach(function (peerId) {
+                if (peerId === currentControl) {
+                    list = list + '<br>' + `<li>peer: ${peerId} (control), diff ${peerTimeDiff[peerId]}</li>`;
+                } else {
+                    list = list + '<br>' + `<li>peer: ${peerId}, diff ${peerTimeDiff[peerId]}</li>`;
+                }
+            })
+            document.getElementById('peers_list').innerHTML = `<ul>${list}</ul>`;
         }
         function renderProgress(song, currentSongTime) {
             var o = document.getElementById('position');
@@ -154,6 +232,8 @@
             document.getElementById('currentTime').innerHTML = '' + Math.round(audioContext.currentTime * 1000);
             document.getElementById('currentSongTime').innerHTML = '' + Math.round(currentSongTime * 1000);
             document.getElementById('songStart').innerHTML = '' + Math.round(songStart * 1000);
+
+            renderPeers()
         }
 		function sendNotes(song, songStart, start, end, audioContext, input, player) {
 			for (var t = 0; t < song.tracks.length; t++) {
@@ -191,11 +271,11 @@
 			player = new WebAudioFontPlayer();
 
 			equalizer = player.createChannel(audioContext);
-			reverberator = player.createReverberator(audioContext);
+			// reverberator = player.createReverberator(audioContext);
 			//input = reverberator.input;
 			input = equalizer.input;
-			equalizer.output.connect(reverberator.input);
-			reverberator.output.connect(audioContext.destination);
+			equalizer.output.connect(audioContext.destination);
+			// reverberator.output.connect(audioContext.destination);
 
 			for (var i = 0; i < song.tracks.length; i++) {
 				var nn = player.loader.findInstrument(song.tracks[i].program);
@@ -233,11 +313,24 @@
 			audioContext.resume();
 			var o = document.getElementById('cntls');
 			var html = '<h2 id="wrng">Midi player by <a href="https://github.com/surikov/webaudiofont/tree/master">WebAudioFont</a></h2>';
-			html = html + '<p><button id="playbtn"">Play</button></p>';
-			html = html + '<p><button id="followbtn">Follow</button></p>';
-            html = html + '<p id="mode">Player mode</p>';
-            html = html + '<p id="tmr">sdfsdf</p>';
+            html = html + '<form id="modeSelect"><fieldset>\n' +
+                '  <legend>Player mode:</legend>\n' +
+                '\n' +
+
+                '    <input type="radio" id="standalone" name="mode" value="standalone" checked />\n' +
+                '    <label for="standalone">Standalone</label>\n' +
+
+                '    <input type="radio" id="control" name="mode" value="control" />\n' +
+                '    <label for="control">Control</label>\n' +
+
+                '    <input type="radio" id="follow" name="mode" value="follow" />\n' +
+                '    <label for="follow">Follow</label>\n' +
+
+                '</fieldset></form>';
+            html = html + '<p><button id="playbtn"">Play</button></p>';
+            html = html + '<p id="tmr">Press Play to start or switch to Follow mode</p>';
             html = html + '<p id="room_url">room_url</p>';
+            html = html + '<p id="peers_list">peers_list</p>';
             html = html + '<p id="currentTime">currentTime</p>';
             html = html + '<p id="songStart">songStart</p>';
             html = html + '<p id="currentSongTime">currentSongTime</p>';
@@ -254,12 +347,12 @@
 			}
 			o.innerHTML = html;
             document.getElementById('playbtn').addEventListener('click', playButtonClick)
-            document.getElementById('followbtn').addEventListener('click', startFollowing)
+            document.getElementById('modeSelect').addEventListener('change', modeSelectChange)
 			console.log('Loaded');
             var roomid = getParam("room");
             if (roomid) {
                 enterRoom(roomid)
-                setControl(true)
+                setControl(MODE_STANDALONE)
             } else {
                 setupRoom()
             }
