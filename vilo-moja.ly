@@ -409,3 +409,74 @@ Music = {
     system-count = 8
   }
 }
+
+\book {
+  \bookOutputSuffix "full"
+  \score {
+    <<
+      \new Staff = "Solo" \with {
+        %midiMaximumVolume = 1.0
+        %midiInstrument = "viola"
+      } <<
+        \clef "treble"
+        \key f \major
+        \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
+      >>
+      \new Lyrics \lyricsto "PartSolo" {
+        \LyricsSolo
+      }
+      \new ChoirStaff <<
+        \new Staff = "S" <<
+          \clef "treble	"
+          \key f \major
+          \new Voice = "PartS" { \PartSU \PartSV }
+        >>
+        \new Lyrics \lyricsto "PartS" {
+          \LyricsS
+        }
+        \new Staff = "A" <<
+          \clef "treble	"
+          \key f \major
+          \new Voice = "PartA" { \PartAU \PartAV }
+        >>
+        \new Staff = "T" <<
+          \clef "treble_8"
+          \key f \major
+          \new Voice = "PartT" { \PartTU \PartTV }
+        >>
+        \new Lyrics \lyricsto "PartT" {
+          \LyricsB
+        }
+        \new Staff = "B" <<
+          \clef "bass"
+          \key f \major
+          \new Voice = "PartB" { \PartBU \PartBV }
+        >>
+      >>
+    >>
+    \layout{
+      \context {
+        \Score
+        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+      }
+      \context {
+        \Staff
+        \consists Merge_rests_engraver
+      }
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \Music
+    \midi {
+      \tempo 4 = 70
+      \context {
+        \Staff
+        % midiInstrument = "viola"
+      }
+    }
+  }
+  \paper {
+    system-count = 8
+  }
+}
