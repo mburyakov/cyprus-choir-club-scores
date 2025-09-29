@@ -31,18 +31,18 @@ def merge_midi_files(*args, output_path):
     output_ticks_per_beat = math.lcm(*[input.ticks_per_beat for input in inputs])
     output = mido.MidiFile()
     output.ticks_per_beat = output_ticks_per_beat
-    print(f"output will have ticks per beat: {output.ticks_per_beat}")
+    # print(f"output will have ticks per beat: {output.ticks_per_beat}")
     channels_num = 0
 
     for input_num, input in enumerate(inputs):
-        print(f"input {input_num} has ticks per beat: {input.ticks_per_beat}")
+        # print(f"input {input_num} has ticks per beat: {input.ticks_per_beat}")
         tempo_marks = [event for track in input.tracks for event in track if event.is_meta and event.type == "set_tempo"]
-        print(f"input {input_num} has tempo marks: {tempo_marks}")
+        # print(f"input {input_num} has tempo marks: {tempo_marks}")
         for track in input.tracks:
             output.tracks.append(adjust_track(track, channels_num, output_ticks_per_beat / input.ticks_per_beat))
             channels_num += 1
 
-    print(f"Writing merged midi to {output_path}.")
+    # print(f"Writing merged midi to {output_path}.")
     output.save(output_path)
 
 def main():
@@ -96,6 +96,7 @@ def main():
     index_page = out_root / "index.html"
     index_page.write_text(content)
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
+    shutil.copy(project_root / "include" / "cyprus-accolada.svg", out_root / "cyprus-accolada.svg")
 
 if __name__ == "__main__":
     main()

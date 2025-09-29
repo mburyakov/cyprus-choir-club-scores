@@ -30,7 +30,7 @@
 		var playerSongTime = 0;
 		var loadedsong = null;
 
-        function setupRoom() {
+        function chooseRandomRoom() {
             const roomid = (Math.random() + 1).toString(36).substring(7);
             let url = window.location.href;
             if (url.indexOf('?') > -1) {
@@ -354,7 +354,7 @@
                 enterRoom(roomid)
                 setControl(MODE_STANDALONE)
             } else {
-                setupRoom()
+                chooseRandomRoom()
             }
 			var pos = document.getElementById('position');
 			pos.oninput = function (e) {
