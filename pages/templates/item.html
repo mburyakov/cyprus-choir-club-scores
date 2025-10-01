@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ item.display_name }}</title>
+    <link rel="icon" href="cyprus-accolada.svg" sizes="any" type="image/svg+xml">
+</head>
+
+<body>
+<h1>{{ item.display_name }}</h1>
+<ul>
+    {% for file in item.files %}
+        <li>
+            {% if file.isMidi %}
+            {{ file.display_name }}
+            (<a href="{{ file.name }}">Download</a>)
+            (<a href="midiplayer/midiplayer.html?midiFile={{ file.name }}&room=default">Play online</a>)
+            {% else %}
+              <a href="{{ file.name }}">{{ file.display_name }}</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+<p><a href="https://www.videolan.org/vlc/">VLC</a> player is recommended for playing midi files.</p>
+
+</body>
+</html>

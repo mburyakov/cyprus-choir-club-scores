@@ -63,7 +63,8 @@ def main():
     merge_midi_files(project_root / "yesterday-d-B.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-B-mixed-solo.midi")
 
     environment = jinja2.Environment(loader=jinja2.FileSystemLoader(project_root / "pages" / "templates"))
-    template = environment.get_template("index.html")
+    index_template = environment.get_template("index.html")
+    item_template = environment.get_template("item.html")
     ly_root = project_root
     ly_root_list = list(ly_root.iterdir())
     ly_root_list.sort(reverse=True)
@@ -88,14 +89,14 @@ def main():
             index_to_insert = index_to_insert_list[0] + 1 if len(index_to_insert_list) > 0 else len(item_files)
             item_files.insert(index_to_insert, {"name": midi_output.name, "display_name": midi_output.name, "isMidi": True})
             shutil.copy(ly_root / midi_output, out_root / midi_output.name)
-        item_data = {"name": ly_source.name, "display_name": display_name, "files": item_files}
+        item_data = {"name": ly_source_prefix, "display_name": display_name, "files": item_files}
+        item_page_content = item_template.render({ "item": item_data })
+        item_page = out_root / f"{ly_source_prefix}.html"
+        item_page.write_text(item_page_content)
         files.append(item_data)
-    context = {
-        "items": files,
-    }
-    content = template.render(context)
+    index_page_content = index_template.render({ "items": files })
     index_page = out_root / "index.html"
-    index_page.write_text(content)
+    index_page.write_text(index_page_content)
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
     shutil.copy(project_root / "include" / "cyprus-accolada.svg", out_root / "cyprus-accolada.svg")
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
-    <title>Results</title>
+    <title>Scores</title>
     <link rel="icon" href="cyprus-accolada.svg" sizes="any" type="image/svg+xml">
 </head>
 
@@ -11,7 +11,7 @@
 <ul>
     {% for item in items %}
         <li>
-            {{ item.display_name }}
+            <a href="{{ item.name }}.html">{{ item.display_name }}</a>
             <ul>
                 {% for file in item.files %}
                     <li>
