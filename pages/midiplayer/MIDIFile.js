@@ -1091,64 +1091,56 @@ MIDIFile.prototype.parseSong = function () {
                     console.log('wrong tone', events[i]);
                 }
             }
-        } else {
-            if (events[i].subtype == MIDIEvents.EVENT_MIDI_NOTE_OFF) {
-                if (events[i].channel != 9) {
-                    this.closeNote(events[i], song);
-                    //console.log('close', events[i].param1);
+        } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_NOTE_OFF) {
+            if (events[i].channel != 9) {
+                this.closeNote(events[i], song);
+                //console.log('close', events[i].param1);
+            }
+        } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_PROGRAM_CHANGE) {
+            if (events[i].channel != 9) {
+                var track = this.takeTrack(events[i].channel, song);
+                track.program = events[i].param1;
+            } else {
+                console.log('skip program for drums');
+            }
+        } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_CONTROLLER) {
+            if (events[i].param1 == 7) {
+                if (events[i].channel != 9) { // TODO why not set loudness for drums?
+                    var track = this.takeTrack(events[i].channel, song);
+                    track.volume = events[i].param2/127||0.000001;
+                    //console.log('volume', track.volume,'for',events[i].channel);
+                }
+            } else if (
+                (expectedPitchBendRangeMessageNumber == 1 && events[i].param1 == 0x65 && events[i].param2 == 0x00) ||
+                (expectedPitchBendRangeMessageNumber == 2 && events[i].param1 == 0x64 && events[i].param2 == 0x00) ||
+                (expectedPitchBendRangeMessageNumber == 3 && events[i].param1 == 0x06) ||
+                (expectedPitchBendRangeMessageNumber == 4 && events[i].param1 == 0x26)
+            ) {
+                if (expectedPitchBendRangeMessageNumber > 1 && events[i].channel != expectedPitchBendRangeChannel) {
+                    //throw Error('Unexpected channel number in non-first pitch-bend RANGE (SENSITIVITY) message. MIDI file might be corrupt.');
+                    //don't care
+                }
+                expectedPitchBendRangeChannel = events[i].channel;
+                if (expectedPitchBendRangeMessageNumber == 3) {
+                    pitchBendRange[events[i].channel] = events[i].param2; // in semitones
+                    console.log('pitchBendRange', pitchBendRange);
+                }
+                if (expectedPitchBendRangeMessageNumber == 4) {
+                    pitchBendRange[events[i].channel] += events[i].param2 / 100; // convert cents to semitones, add to semitones set in the previous MIDI message
+                    console.log('pitchBendRange', pitchBendRange);
+                }
+                expectedPitchBendRangeMessageNumber++;
+                if (expectedPitchBendRangeMessageNumber == 5) {
+                    expectedPitchBendRangeMessageNumber = 1;
                 }
             } else {
-                if (events[i].subtype == MIDIEvents.EVENT_MIDI_PROGRAM_CHANGE) {
-                    if (events[i].channel != 9) {
-                        var track = this.takeTrack(events[i].channel, song);
-                        track.program = events[i].param1;
-                    } else {
-                        console.log('skip program for drums');
-                    }
-                } else {
-                    if (events[i].subtype == MIDIEvents.EVENT_MIDI_CONTROLLER) {
-                        if (events[i].param1 == 7) {
-                            if (events[i].channel != 9) { // TODO why not set loudness for drums?
-                                var track = this.takeTrack(events[i].channel, song);
-                                track.volume = events[i].param2/127||0.000001;
-                                //console.log('volume', track.volume,'for',events[i].channel);
-                            }
-                        } else if (
-                            (expectedPitchBendRangeMessageNumber == 1 && events[i].param1 == 0x65 && events[i].param2 == 0x00) ||
-                            (expectedPitchBendRangeMessageNumber == 2 && events[i].param1 == 0x64 && events[i].param2 == 0x00) ||
-                            (expectedPitchBendRangeMessageNumber == 3 && events[i].param1 == 0x06) ||
-                            (expectedPitchBendRangeMessageNumber == 4 && events[i].param1 == 0x26)
-                        ) {
-                            if (expectedPitchBendRangeMessageNumber > 1 && events[i].channel != expectedPitchBendRangeChannel) {
-                                //throw Error('Unexpected channel number in non-first pitch-bend RANGE (SENSITIVITY) message. MIDI file might be corrupt.');
-                                //don't care
-                            }
-                            expectedPitchBendRangeChannel = events[i].channel;
-                            if (expectedPitchBendRangeMessageNumber == 3) {
-                                pitchBendRange[events[i].channel] = events[i].param2; // in semitones
-                                console.log('pitchBendRange', pitchBendRange);
-                            }
-                            if (expectedPitchBendRangeMessageNumber == 4) {
-                                pitchBendRange[events[i].channel] += events[i].param2 / 100; // convert cents to semitones, add to semitones set in the previous MIDI message
-                                console.log('pitchBendRange', pitchBendRange);
-                            }
-                            expectedPitchBendRangeMessageNumber++;
-                            if (expectedPitchBendRangeMessageNumber == 5) {
-                                expectedPitchBendRangeMessageNumber = 1;
-                            }
-                        } else {
-                            //console.log('controller', events[i]);
-                        }
-                    } else {
-                        if (events[i].subtype == MIDIEvents.EVENT_MIDI_PITCH_BEND) {
-                            //console.log('	bend', events[i].channel, events[i].param1, events[i].param2);
-                            this.addSlide(events[i], song, pitchBendRange[events[i].channel]);
-                        } else {
-                            console.log('unknown', events[i].channel, events[i]);
-                        };
-                    }
-                }
+                //console.log('controller', events[i]);
             }
+        } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_PITCH_BEND) {
+            //console.log('	bend', events[i].channel, events[i].param1, events[i].param2);
+            this.addSlide(events[i], song, pitchBendRange[events[i].channel]);
+        } else {
+            console.log('unknown', events[i].channel, events[i]);
         }
         if (expectedPitchBendRangeMessageNumberOld == expectedPitchBendRangeMessageNumber) { // If the current message wasn't an expected pitch-bend range message
             if (expectedPitchBendRangeMessageNumberOld >= 2 && expectedPitchBendRangeMessageNumberOld <= 3) {
