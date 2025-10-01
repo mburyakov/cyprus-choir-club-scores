@@ -240,7 +240,7 @@ LyrFull = \markup {
   \score {
     <<      
       \new ChoirStaff <<
-        \new Staff = "S" <<
+        \new Staff = "S+A" <<
           \clef "treble"
           \key f \major
           \new Voice = "PartS" {
@@ -293,7 +293,7 @@ LyrFull = \markup {
   \score {
     <<      
       \new ChoirStaff <<
-        \new Staff = "S" <<
+        \new Staff = "S+A" <<
           \clef "treble"
           \key f \major
           \new Voice = "PartS" {
