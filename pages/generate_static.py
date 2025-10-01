@@ -66,7 +66,7 @@ def main():
     template = environment.get_template("index.html")
     ly_root = project_root
     ly_root_list = list(ly_root.iterdir())
-    ly_root_list.sort()
+    ly_root_list.sort(reverse=True)
     ly_sources = [f for f in ly_root_list if f.name.endswith(".ly")]
     files = []
     for ly_source in ly_sources:
