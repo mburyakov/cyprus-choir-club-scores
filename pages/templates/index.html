@@ -11,17 +11,16 @@
 <ul>
     {% for item in items %}
         <li>
-            <a href="{{ item.name }}">{{ item.display_name }}</a>
+            {{ item.display_name }}
             <ul>
                 {% for file in item.files %}
                     <li>
-                        <a href="{{ file.name }}">{{ file.display_name }}</a>
                         {% if file.isMidi %}
-                            <form action="midiplayer/midiplayer.html">
-                                <input type="hidden" name="midiFile" value="{{ file.name }}"/>
-                                <input type="hidden" name="room" value="default"/>
-                                <input type="submit" value="Play"/>
-                            </form>
+                        {{ file.display_name }}
+                        (<a href="{{ file.name }}">Download</a>)
+                        (<a href="midiplayer/midiplayer.html?midiFile={{ file.name }}&room=default">Play online</a>)
+                        {% else %}
+                          <a href="{{ file.name }}">{{ file.display_name }}</a>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -29,5 +28,8 @@
         </li>
     {% endfor %}
 </ul>
+
+<p><a href="https://www.videolan.org/vlc/">VLC</a> player is recommended for playing midi files.</p>
+
 </body>
 </html>

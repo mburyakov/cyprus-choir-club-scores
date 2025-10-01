@@ -78,14 +78,15 @@ def main():
         else:
             display_name = title_found.groups()[0]
         item_files = []
-        shutil.copy(ly_source, out_root / ly_source.name)
         pdf_outputs = [f for f in ly_root_list if f.name.endswith(".pdf") and f.name.startswith(ly_source_prefix)]
         for pdf_output in pdf_outputs:
             item_files.append({"name": pdf_output.name, "display_name": pdf_output.name})
             shutil.copy(ly_root / pdf_output, out_root / pdf_output.name)
         midi_outputs = [f for f in ly_root_list if f.name.endswith(".midi") and f.name.startswith(ly_source_prefix)]
         for midi_output in midi_outputs:
-            item_files.append({"name": midi_output.name, "display_name": midi_output.name, "isMidi": True})
+            index_to_insert_list = [index for (index, item_file) in enumerate(item_files) if item_file["name"].removesuffix('.pdf') == midi_output.name.removesuffix('.midi')]
+            index_to_insert = index_to_insert_list[0] + 1 if len(index_to_insert_list) > 0 else len(item_files)
+            item_files.insert(index_to_insert, {"name": midi_output.name, "display_name": midi_output.name, "isMidi": True})
             shutil.copy(ly_root / midi_output, out_root / midi_output.name)
         item_data = {"name": ly_source.name, "display_name": display_name, "files": item_files}
         files.append(item_data)
