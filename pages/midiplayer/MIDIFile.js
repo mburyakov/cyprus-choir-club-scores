@@ -987,7 +987,7 @@ function MIDIFile(buffer, strictMode) {
     }
 }
 MIDIFile.prototype.startNote = function (event, song) {
-    var track = this.takeTrack(event.channel, song);
+    var track = this.takeTrack(event.channel, event.track, song);
     track.notes.push({
         when: event.playTime / 1000,
         pitch: event.param1,
@@ -996,7 +996,7 @@ MIDIFile.prototype.startNote = function (event, song) {
     });
 }
 MIDIFile.prototype.closeNote = function (event, song) {
-    var track = this.takeTrack(event.channel, song);
+    var track = this.takeTrack(event.channel, event.track, song);
     for (var i = 0; i < track.notes.length; i++) {
         if (track.notes[i].duration == 0.0000001 //
             && track.notes[i].pitch == event.param1 //
@@ -1007,7 +1007,7 @@ MIDIFile.prototype.closeNote = function (event, song) {
     }
 }
 MIDIFile.prototype.addSlide = function (event, song, pitchBendRange) {
-    var track = this.takeTrack(event.channel, song);
+    var track = this.takeTrack(event.channel, event.track, song);
     for (var i = 0; i < track.notes.length; i++) {
         if (track.notes[i].duration == 0.0000001 //
             && track.notes[i].when < event.playTime / 1000) {
@@ -1029,14 +1029,15 @@ MIDIFile.prototype.startDrum = function (event, song) {
         when: event.playTime / 1000
     });
 }
-MIDIFile.prototype.takeTrack = function (n, song) {
+MIDIFile.prototype.takeTrack = function (channelNum, trackNum, song) {
     for (var i = 0; i < song.tracks.length; i++) {
-        if (song.tracks[i].n == n) {
+        if (song.tracks[i].channelNum == channelNum && song.tracks[i].trackNum == trackNum) {
             return song.tracks[i];
         }
     }
     var track = {
-        n: n,
+        channelNum: channelNum,
+        trackNum: trackNum,
         notes: [],
         volume: 1,
         program: 0
@@ -1098,7 +1099,7 @@ MIDIFile.prototype.parseSong = function () {
             }
         } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_PROGRAM_CHANGE) {
             if (events[i].channel != 9) {
-                var track = this.takeTrack(events[i].channel, song);
+                var track = this.takeTrack(events[i].channel, events[i].track, song);
                 track.program = events[i].param1;
             } else {
                 console.log('skip program for drums');
@@ -1106,7 +1107,7 @@ MIDIFile.prototype.parseSong = function () {
         } else if (events[i].subtype == MIDIEvents.EVENT_MIDI_CONTROLLER) {
             if (events[i].param1 == 7) {
                 if (events[i].channel != 9) { // TODO why not set loudness for drums?
-                    var track = this.takeTrack(events[i].channel, song);
+                    var track = this.takeTrack(events[i].channel, events[i].track, song);
                     track.volume = events[i].param2/127||0.000001;
                     //console.log('volume', track.volume,'for',events[i].channel);
                 }
