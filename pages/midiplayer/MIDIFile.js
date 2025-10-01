@@ -297,6 +297,8 @@ MIDIEvents.createParser = function midiEventsCreateParser(stream, startAt, stric
                         case MIDIEvents.EVENT_META_TEXT:
                         case MIDIEvents.EVENT_META_COPYRIGHT_NOTICE:
                         case MIDIEvents.EVENT_META_TRACK_NAME:
+                            event.data = stream.readBytes(event.length);
+                            return event;
                         case MIDIEvents.EVENT_META_INSTRUMENT_NAME:
                         case MIDIEvents.EVENT_META_LYRICS:
                         case MIDIEvents.EVENT_META_MARKER:
@@ -1045,6 +1047,15 @@ MIDIFile.prototype.takeTrack = function (channelNum, trackNum, song) {
     song.tracks.push(track);
     return track;
 }
+MIDIFile.prototype.takeTracks = function (trackNum, song) {
+    var result = []
+    for (var i = 0; i < song.tracks.length; i++) {
+        if (song.tracks[i].trackNum == trackNum) {
+            result.push(song.tracks[i]);
+        }
+    }
+    return result
+}
 MIDIFile.prototype.takeBeat = function (n, song) {
     for (var i = 0; i < song.beats.length; i++) {
         if (song.beats[i].n == n) {
@@ -1153,6 +1164,27 @@ MIDIFile.prototype.parseSong = function () {
             }
         }
     }
+    var metaEvents = this.getEvents(MIDIEvents.EVENT_META);
+    for (var i = 0; i < metaEvents.length; i++) {
+        if (metaEvents[i].subtype == MIDIEvents.EVENT_META_TRACK_NAME) {
+            console.log('tracks: ', song.tracks)
+            var name = UTF8.getStringFromBytes(metaEvents[i].data, 0, metaEvents[i].length, true);
+            let trackNum = metaEvents[i].track;
+            if (trackNum == 0) {
+                song.name2 = name;
+            } else {
+                var tracks = this.takeTracks(trackNum, song);
+                console.log('track name event', metaEvents[i]);
+                console.log('tracks', tracks);
+                console.log('trackNum', trackNum);
+                console.log('name', name);
+                for (var j = 0; j < tracks.length; j++) {
+                    tracks[j].name = name;
+                }
+            }
+        }
+    }
+    console.log('song', song);
     return song;
 }
 // Events reading helpers

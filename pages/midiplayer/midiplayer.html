@@ -338,7 +338,7 @@
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
 				var v = 100 * song.tracks[i].volume;
-				html = html + '<p>' + chooserIns(song.tracks[i].id, i) + '<input id="channel' + i + '" type="range" min="0" max="100" value="' + v + '" step="1" /></p>';
+				html = html + '<p>' + song.tracks[i].name + chooserIns(song.tracks[i].id, i) + '<input id="channel' + i + '" type="range" min="0" max="100" value="' + v + '" step="1" /></p>';
 			}
 			html = html + '<h3>Drums</h3>';
 			for (var i = 0; i < song.beats.length; i++) {
@@ -465,10 +465,16 @@
 			xmlHttpRequest.open("GET", path, true);
 			xmlHttpRequest.responseType = "arraybuffer";
 			xmlHttpRequest.onload = function (e) {
-				var arrayBuffer = xmlHttpRequest.response;
-				var midiFile = new MIDIFile(arrayBuffer);
-				var song = midiFile.parseSong();
-				startLoad(song);
+                try {
+                    var arrayBuffer = xmlHttpRequest.response;
+                    var midiFile = new MIDIFile(arrayBuffer);
+                    var song = midiFile.parseSong();
+                    startLoad(song);
+                } catch (e) {
+                    var o = document.getElementById('cntls');
+                    o.innerHTML = `<h2>Could not load the midi file ${path}</h2>`;
+                    console.log(e);
+                }
 			};
 			xmlHttpRequest.send(null);
 		}
