@@ -8,7 +8,7 @@ taglineLanguage = "ukrainian"
 \include "include/choir-setup.ly"
 
 \header {
-  title = "Щедрик - Carol of the Bells"
+  title = "Щедрик — Carol of the Bells"
   composer = "Mykola Leontovich"
 }
 
@@ -445,32 +445,64 @@ LyricsInterleavedA = \lyricmode {
   \voltaLyric "LyrA" {
     \LyricsUkrCrescA
     \LyricsUkrCrescT
-    \LyricsUkrHorn
-    \LyricsUkrUpper
-    \LyricsUkrCulm
+    \volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    }
+    \unfolded {
+      \LyricsUkrHorn
+      \LyricsUkrUpper
+      \LyricsUkrCulm
+    }
+    
     \LyricsUkrScalesA
     _
   } {
     \LyricsEngCresc
     \LyricsEngCresc
-    \LyricsEngHorn
-    \LyricsEngUpper
-    \LyricsEngCulm
+    \volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    }
+    \unfolded {
+      \LyricsEngHorn
+      \LyricsEngUpper
+      \LyricsEngCulm
+    }
     \LyricsEngScalesA
+  }
+  _
+  \volta #'() {
+    \repeat unfold 4 _
+  }
+  \unfolded {
+    \LyricsUkrCodaS
   }
 }
 
 
 LyricsInterleavedT = \lyricmode {
   \voltaLyric "LyrT" {
-    \LyricsUkrCrescT
+    \volta #'() {
+      \repeat unfold 4 _
+    }
+    \unfolded {
+      \LyricsUkrCrescT
+    }
     \LyricsUkrHorn
     \LyricsUkrUpperT
     \LyricsUkrCulm
     \LyricsUkrScalesT
     _
   } {
-    \LyricsEngCresc
+    \volta #'() {
+      \repeat unfold 4 _
+    }
+    \unfolded {
+      \LyricsEngCresc
+    }
     \LyricsEngHorn
     \LyricsEngUpperT
     \LyricsEngCulm
@@ -484,15 +516,29 @@ LyricsInterleavedT = \lyricmode {
 
 LyricsInterleavedB = \lyricmode {
   \voltaLyric "LyrB" {
-    \LyricsUkrHorn
-    \LyricsUkrUpper
-    \LyricsUkrCulm
+    \volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    }
+    \unfolded {
+      \LyricsUkrHorn
+      \LyricsUkrUpper
+      \LyricsUkrCulm
+    }
     _ _
     _
   } {
-    \LyricsEngHorn
-    \LyricsEngUpper
-    \LyricsEngCulm
+    \volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    }
+    \unfolded {
+      \LyricsEngHorn
+      \LyricsEngUpper
+        \LyricsEngCulm
+    }
     _ _
     _
   }
@@ -501,6 +547,8 @@ LyricsInterleavedB = \lyricmode {
 Score = <<      
       \new ChoirStaff <<
         \new Staff = "S" <<
+          \set Staff.instrumentName = "S"
+          \set Staff.shortInstrumentName = "S"
           \clef "treble"
           \key g \minor
           \time 3/4
@@ -512,6 +560,8 @@ Score = <<
           \LyricsInterleavedS
         }
         \new Staff = "A" <<
+          \set Staff.instrumentName = "A"
+          \set Staff.shortInstrumentName = "A"
           \clef "treble"
           \key g \minor
           \time 3/4
@@ -523,6 +573,8 @@ Score = <<
           \LyricsInterleavedA
         }
         \new Staff = "T" <<
+          \set Staff.instrumentName = "T"
+          \set Staff.shortInstrumentName = "T"
           \clef "treble_8"
           \key g \minor
           \time 3/4
@@ -534,6 +586,8 @@ Score = <<
           \LyricsInterleavedT
         }
         \new Staff = "B" <<
+          \set Staff.instrumentName = "B"
+          \set Staff.shortInstrumentName = "B"
           \clef "bass"
           \key g \minor
           \time 3/4
@@ -551,17 +605,12 @@ Score = <<
   \score {
     \Score
     \layout {
+      #(layout-set-staff-size 17)
       \context {
         \Staff
         \RemoveAllEmptyStaves
       }
     }
-    \midi {
-      \tempo 4=90
-    }
-  }
-  \paper {
-    %system-count = 9
   }
 }
 
@@ -577,10 +626,42 @@ Score = <<
       }
     }
     \midi {
-      \tempo 4=90
+      \tempo 4=125
     }
   }
-  \paper {
-    %system-count = 9
+}
+
+\book {
+  \bookOutputSuffix "fis"
+  \score {
+    \transpose g fis {
+      \Score
+    }
+    \layout {
+      #(layout-set-staff-size 17)
+      \context {
+        \Staff
+        \RemoveAllEmptyStaves
+      }
+    }
+  }
+}
+
+\book {
+  \bookOutputSuffix "fis-unfolded"
+  \score {
+    \unfoldRepeats
+    \transpose g fis {
+      \Score
+    }
+    \layout {
+      \context {
+        \Staff
+        \RemoveAllEmptyStaves
+      }
+    }
+    \midi {
+      \tempo 4=125
+    }
   }
 }

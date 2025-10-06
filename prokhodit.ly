@@ -413,7 +413,7 @@ LyrAAPageC = \lyricmode {
       >>
     >>
     \layout {
-      #(layout-set-staff-size 17) % Sets global staff size to 10
+      #(layout-set-staff-size 17)
     }
     \midi {
       \tempo 4 = 40
