@@ -75,7 +75,19 @@ PartCulmT = \relative g' {
 }
 
 PartDoricT = \relative g' {
-  d2. e2. f4( es4) d4 g8( f8) es4 d4
+  d2. e2.
+  \volta #'() {
+    \once\slurDotted f4( es4)
+  }
+  \unfolded {
+    \volta 1 {
+      f4( es4)
+    }
+    \volta 2 {
+      f4 es4
+    }
+  }
+  d4 g8( f8) es4 d4
 }
 
 PartScalesS = \relative g' {
@@ -294,7 +306,7 @@ LyricsUkrCodaT = \lyricmode {
 }
 
 LyricsUkrCodaS = \lyricmode {
-  лас -- тi -- воч  -- ка,
+  лас -- тi -- воч  -- ка.
 }
 
 LyricsUkrCrescA = \lyricmode {
@@ -306,7 +318,11 @@ LyricsUkrCrescT = \lyricmode {
 }
 
 LyricsUkrUpperT = \lyricmode {
-  в_те -- бе то -- вар хо -- ро -- ший,
+  в_те -- бе
+  \set Lyrics.ignoreMelismata = ##t
+  то -- _ вар
+  \set Lyrics.ignoreMelismata = ##f
+  хо -- ро -- ший,
 }
 
 LyricsUkrScalesA = \lyricmode {
@@ -365,9 +381,11 @@ LyricsEngCresc = \lyricmode {
 }
 
 LyricsEngUpperT = \lyricmode {
+  ding, dong,
   \set Lyrics.ignoreMelismata = ##t
-  ding, dong, ding, dong, ding, dong, _ ding, dong,
+  ding, dong, ding,
   \set Lyrics.ignoreMelismata = ##f
+  dong, ding, dong.
 }
 
 LyricsEngScalesA = \lyricmode {
@@ -418,9 +436,9 @@ LyricsInterleavedS = \lyricmode {
     \LyricsEngStart
     \LyricsEngScales
     \LyricsUkrCresc
-    _
-    \LyricsUkrCodaS
   }
+  _
+  \LyricsUkrCodaS
 }
 
 LyricsInterleavedA = \lyricmode {
@@ -459,9 +477,9 @@ LyricsInterleavedT = \lyricmode {
     \LyricsUkrInit
     \LyricsUkrInitt
     _
-    \LyricsUkrInit
-    \LyricsUkrCodaT
   }
+  \LyricsUkrInit
+  \LyricsUkrCodaT
 }
 
 LyricsInterleavedB = \lyricmode {
@@ -543,7 +561,7 @@ Score = <<
     }
   }
   \paper {
-    system-count = 9
+    %system-count = 9
   }
 }
 
