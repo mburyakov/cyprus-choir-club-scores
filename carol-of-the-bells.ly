@@ -261,7 +261,7 @@ PartB = \relative g, {
       }
       \volta 2 {
         \volta #'() {
-          g2.^~\repeatTie
+          g2.^~^\repeatTie
         }
         \unfolded {
           g2.^~)
@@ -300,11 +300,13 @@ PartDynamics = {
     s2.\mf\< s2\> s4\!
     s2.\pp\< s2\> s4\!
     s2.\mp s2. s2. s2.
-    \volta 1 {
-      s2.\mf
-    }
-    \volta 2 {
-      s2.\pp
+    \alternative {
+      \volta 1 {
+        s2.\mf
+      }
+      \volta 2 {
+        s2.\pp
+      }
     }
   }
   s2. s2.
@@ -691,7 +693,7 @@ Score = <<
     }
   }
   \paper {
-    %page-count = 2
+    page-count = 2
   }
 }
 
@@ -731,7 +733,7 @@ Score = <<
     }
   }
   \paper {
-    %page-count = 2
+    page-count = 2
   }
 }
 
