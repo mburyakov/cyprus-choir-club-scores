@@ -18,6 +18,18 @@ taglineLanguage = "ukrainian"
       \set autoBeaming=##f
     }
   }
+  \context {
+    \Lyrics
+    \override VerticalAxisGroup.nonstaff-relatedstaff-spacing.basic-distance = #0
+  }
+  \context {
+    \Dynamics
+    \override VerticalAxisGroup.nonstaff-relatedstaff-spacing.basic-distance = #0
+  }
+  \context {
+    \Staff
+    \override VerticalAxisGroup.nonstaff-relatedstaff-spacing.basic-distance = #0
+  }
 }
 
 PartOstinato = \relative c'' {
@@ -261,6 +273,64 @@ PartB = \relative g, {
   \bar "|."
 }
 
+PartDynamics = {
+  \textMark "solo"
+  s2.\mf
+  \repeat volta 2 {
+    s2.
+    \volta 1 {
+      \textMark "tutti"
+      s2.*0\pp
+    }
+    s2.
+    s2.
+    \volta 2 {
+      s2.*0\pp
+    }
+    \override DynamicTextSpanner.style = #'none
+    \once\set crescendoSpanner = #'text
+    \once\set crescendoText = \markup { \italic { poco cresc. } }
+    s2.\< s2.
+    s2. s2.
+    s2.\p s2. s2. s2.
+    s2.\mp s2. s2. s2.
+    s2.\mf
+    s2.\< s2. s2 s4\!
+    s2.\f s2. s2. s2.\dim
+    s2.\mf\< s2\> s4\!
+    s2.\pp\< s2\> s4\!
+    s2.\mp s2. s2. s2.
+    \volta 1 {
+      s2.\mf
+    }
+    \volta 2 {
+      s2.\pp
+    }
+  }
+  s2. s2.
+  \textMark "solo"
+  s8. \textMark \markup { \italic "rit." } s16 s2
+}
+
+PartDynamicsA = {
+  s2.
+  \repeat volta 2 {
+    s2.
+    s2. s2. 
+  
+    \once\override DynamicText.X-offset = #5
+    s2.\pp s2. s2. s2.
+    \once\override DynamicText.X-offset = #5
+    s2.\p s2. s2. s2.
+    s2.\mp s2. s2. s2.
+    s2. s2. s2. s2.
+    s2. s2. s2. s2.
+    s2. s2. s2. s2.
+    s2. s2. s2. s2.
+    s2.
+  }
+}
+
 LyricsUkrInit = \lyricmode {
   Щед -- рик, щед -- рик,
 }
@@ -291,7 +361,7 @@ LyricsUkrUpper = \lyricmode {
 }
 
 LyricsUkrCulm = \lyricmode {
-  в_те -- бе то -- вар весь хо -- ро -- ший,
+  В_те -- бе то -- вар весь хо -- ро -- ший,
   бу -- деш ма -- ти мір -- ку гро -- шей.
 }
 
@@ -445,32 +515,32 @@ LyricsInterleavedA = \lyricmode {
   \voltaLyric "LyrA" {
     \LyricsUkrCrescA
     \LyricsUkrCrescT
-    \volta #'() {
+    %\volta #'() {
       \repeat unfold 16 _
       \repeat unfold 16 _
       \repeat unfold 16 _
-    }
-    \unfolded {
-      \LyricsUkrHorn
-      \LyricsUkrUpper
-      \LyricsUkrCulm
-    }
+    %}
+    %\unfolded {
+    %  \LyricsUkrHorn
+    %  \LyricsUkrUpper
+    %  \LyricsUkrCulm
+    %}
     
     \LyricsUkrScalesA
     _
   } {
     \LyricsEngCresc
     \LyricsEngCresc
-    \volta #'() {
+    %\volta #'() {
       \repeat unfold 16 _
       \repeat unfold 16 _
       \repeat unfold 16 _
-    }
-    \unfolded {
-      \LyricsEngHorn
-      \LyricsEngUpper
-      \LyricsEngCulm
-    }
+    %}
+    %\unfolded {
+    %  \LyricsEngHorn
+    %  \LyricsEngUpper
+    %  \LyricsEngCulm
+    %}
     \LyricsEngScalesA
   }
   _
@@ -485,24 +555,24 @@ LyricsInterleavedA = \lyricmode {
 
 LyricsInterleavedT = \lyricmode {
   \voltaLyric "LyrT" {
-    \volta #'() {
+    %\volta #'() {
       \repeat unfold 4 _
-    }
-    \unfolded {
-      \LyricsUkrCrescT
-    }
+    %}
+    %\unfolded {
+    %  \LyricsUkrCrescT
+    %}
     \LyricsUkrHorn
     \LyricsUkrUpperT
     \LyricsUkrCulm
     \LyricsUkrScalesT
     _
   } {
-    \volta #'() {
+    %\volta #'() {
       \repeat unfold 4 _
-    }
-    \unfolded {
-      \LyricsEngCresc
-    }
+    %}
+    %\unfolded {
+    %  \LyricsEngCresc
+    %}
     \LyricsEngHorn
     \LyricsEngUpperT
     \LyricsEngCulm
@@ -546,6 +616,9 @@ LyricsInterleavedB = \lyricmode {
 
 Score = <<      
       \new ChoirStaff <<
+        \new Dynamics {
+          \PartDynamics
+        }
         \new Staff = "S" <<
           \set Staff.instrumentName = "S"
           \set Staff.shortInstrumentName = "S"
@@ -569,6 +642,11 @@ Score = <<
             \PartA
           }
         >>
+        \new Dynamics {
+          \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = ##f
+          \override VerticalAxisGroup.nonstaff-relatedstaff-spacing = ##f
+          \PartDynamicsA
+        }
         \new Lyrics = "LyrA" \lyricsto "PartA" {
           \LyricsInterleavedA
         }
@@ -612,6 +690,9 @@ Score = <<
       }
     }
   }
+  \paper {
+    %page-count = 2
+  }
 }
 
 \book {
@@ -620,6 +701,7 @@ Score = <<
     \unfoldRepeats
     \Score
     \layout {
+      %#(layout-set-staff-size 17)
       \context {
         \Staff
         \RemoveAllEmptyStaves
@@ -628,6 +710,9 @@ Score = <<
     \midi {
       \tempo 4=125
     }
+  }
+  \paper {
+    %page-count = 4
   }
 }
 
@@ -644,6 +729,9 @@ Score = <<
         \RemoveAllEmptyStaves
       }
     }
+  }
+  \paper {
+    %page-count = 2
   }
 }
 
@@ -663,5 +751,8 @@ Score = <<
     \midi {
       \tempo 4=125
     }
+  }
+  \paper {
+    %page-count = 4
   }
 }
