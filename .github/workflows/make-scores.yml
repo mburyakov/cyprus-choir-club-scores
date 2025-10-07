@@ -13,18 +13,24 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
-      - name: Install dependencies
+      - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install jinja2 mido
-      - run: lilypond *.ly
-      - run: python3 pages/generate_static.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pdf-scores
-          path: |
-            *.pdf
-            *.midi
+      - name: Install VLC
+        run: sudo apt install -y vlc
+      - name: Build Lilypond scores
+        run: lilypond *.ly
+      - name: Generate index pages
+        run: python3 pages/generate_static.py
+      - name: Convert MIDI files to MP3
+        run: vlc -I "dummy" yesterday-d-all-mixed-solo.midi --sout "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=out/pages/yesterday-d-all-mixed-solo.mp3}" --sout-keep vlc://quit
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: pdf-scores
+#          path: |
+#            *.pdf
+#            *.midi
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
