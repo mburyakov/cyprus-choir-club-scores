@@ -321,9 +321,6 @@ wordsF = \lyricmode {
       >>
     >>
     \layout {}
-    \midi {
-      \tempo 4 = 80
-    }
   }
 
   \paper {
@@ -404,7 +401,6 @@ wordsF = \lyricmode {
         }
       >>
     >>
-    \layout {}
     \midi {
       \tempo 4 = 80
     }

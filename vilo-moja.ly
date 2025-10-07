@@ -362,13 +362,6 @@ Music = {
   \score {
     \unfoldRepeats
     \Music
-    \midi {
-      \tempo 4 = 70
-      \context {
-        \Staff
-        % midiInstrument = "viola"
-      }
-    }
   }
   \paper {
     systems-per-page = 4
@@ -396,13 +389,6 @@ Music = {
   \score {
     \unfoldRepeats
     \Music
-    \midi {
-      \tempo 4 = 70
-      \context {
-        \Staff
-        % midiInstrument = "viola"
-      }
-    }
   }
   \paper {
     systems-per-page = 4
