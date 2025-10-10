@@ -90,7 +90,7 @@ def main():
             subprocess.run(["vlc", "-I" "dummy", midi_output.name, "--sout", "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=" + mp3_name + "}", "--sout-keep", "vlc://quit"])
             index_to_insert_list = [index for (index, item_file) in enumerate(item_files) if item_file["name"].removesuffix('.pdf') == midi_output.name.removesuffix('.midi')]
             index_to_insert = index_to_insert_list[0] + 1 if len(index_to_insert_list) > 0 else len(item_files)
-            item_files.insert(index_to_insert, {"name": midi_output.name, "display_name": midi_output.name, "isMidi": True})
+            item_files.insert(index_to_insert, {"name": midi_output.name, "display_name": midi_output.name, "mp3_name": mp3_name, "isMidi": True})
             shutil.copy(ly_root / midi_output.name, out_root / midi_output.name)
             shutil.copy(ly_root / mp3_name, out_root / mp3_name)
         item_data = {"name": ly_source_prefix, "display_name": display_name, "files": item_files}

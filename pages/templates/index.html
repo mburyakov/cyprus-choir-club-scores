@@ -17,7 +17,8 @@
                     <li>
                         {% if file.isMidi %}
                         {{ file.display_name }}
-                        (<a href="{{ file.name }}">Download</a>)
+                        (<a href="{{ file.name }}">Download midi</a>)
+                        (<a href="{{ file.mp3_name }}">Download mp3</a>)
                         (<a href="midiplayer/midiplayer.html?midiFile={{ file.name }}&room=default">Play online</a>)
                         {% else %}
                           <a href="{{ file.name }}">{{ file.display_name }}</a>
