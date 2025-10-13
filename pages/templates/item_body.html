@@ -1,0 +1,21 @@
+<ul>
+    {% for file in item.files %}
+        <li>
+            {% if file.has_midi and file.has_pdf %}
+                <a href="{{ file.pdf_name }}">{{ file.display_name }}</a>
+                (<a href="{{ file.midi_name }}">Download midi</a>)
+                (<a href="{{ file.mp3_name }}">Download mp3</a>)
+                (<a href="midiplayer/midiplayer.html?midiFile={{ file.midi_name }}&room=default">Play online</a>)
+            {% elif file.has_midi %}
+                {{ file.display_name }}
+                (<a href="{{ file.midi_name }}">Download midi</a>)
+                (<a href="{{ file.mp3_name }}">Download mp3</a>)
+                (<a href="midiplayer/midiplayer.html?midiFile={{ file.midi_name }}&room=default">Play online</a>)
+            {% elif file.has_pdf %}
+                <a href="{{ file.pdf_name }}">{{ file.display_name }}</a>
+            {% else %}
+
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

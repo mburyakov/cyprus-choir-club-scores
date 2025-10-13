@@ -9,19 +9,7 @@
 <body>
 <p><a href="index.html">back to index</a></p>
 <h1>{{ item.display_name }}</h1>
-<ul>
-    {% for file in item.files %}
-        <li>
-            {% if file.isMidi %}
-            {{ file.display_name }}
-            (<a href="{{ file.name }}">Download</a>)
-            (<a href="midiplayer/midiplayer.html?midiFile={{ file.name }}&room=default">Play online</a>)
-            {% else %}
-              <a href="{{ file.name }}">{{ file.display_name }}</a>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+{% include('item_body.html') %}
 <p><a href="https://www.videolan.org/vlc/">VLC</a> player is recommended for playing midi files.</p>
 
 </body>

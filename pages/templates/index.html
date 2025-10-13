@@ -12,20 +12,7 @@
     {% for item in items %}
         <li>
             <a href="{{ item.name }}.html">{{ item.display_name }}</a>
-            <ul>
-                {% for file in item.files %}
-                    <li>
-                        {% if file.isMidi %}
-                        {{ file.display_name }}
-                        (<a href="{{ file.name }}">Download midi</a>)
-                        (<a href="{{ file.mp3_name }}">Download mp3</a>)
-                        (<a href="midiplayer/midiplayer.html?midiFile={{ file.name }}&room=default">Play online</a>)
-                        {% else %}
-                          <a href="{{ file.name }}">{{ file.display_name }}</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+            {% include('item_body.html') %}
         </li>
     {% endfor %}
 </ul>

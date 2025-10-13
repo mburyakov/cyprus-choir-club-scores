@@ -23,8 +23,6 @@ jobs:
         run: lilypond *.ly
       - name: Generate index pages
         run: python3 pages/generate_static.py
-      - name: Convert MIDI files to MP3
-        run: vlc -I "dummy" yesterday-d-all-mixed-solo.midi --sout "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=out/pages/yesterday-d-all-mixed-solo.mp3}" --sout-keep vlc://quit
 #      - uses: actions/upload-artifact@v4
 #        with:
 #          name: pdf-scores
