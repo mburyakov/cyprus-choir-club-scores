@@ -20,6 +20,18 @@ taglineLanguage = "croatian"
       \set autoBeaming=##f
     }
   }
+  \context {
+    \Score
+    \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+  }
+  \context {
+    \Staff
+    \consists Merge_rests_engraver
+  }
+}
+
+\midi {
+  \tempo 4 = 70
 }
 
 PartSoloU = \relative c' {
@@ -319,7 +331,7 @@ Music = {
       }
       \new ChoirStaff <<
         \new Staff = "A" <<
-          \clef "treble	"
+          \clef "treble"
           \key f \major
           \new Voice = "PartS" { \voiceOne \PartSU \PartSV }
           \new Voice = "PartA" { \voiceTwo \PartAU \PartAV }
@@ -345,60 +357,7 @@ Music = {
     >>
 }
 
-\book {
-  \score {
-    \Music
-    \layout{
-      \context {
-        \Score
-        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
-      }
-      \context {
-        \Staff
-        \consists Merge_rests_engraver
-      }
-    }
-  }
-  \score {
-    \unfoldRepeats
-    \Music
-  }
-  \paper {
-    systems-per-page = 4
-    system-count = 8
-  }
-}
-
-\book {
-  \bookOutputSuffix "treble"
-  \score {
-    \keepWithTag #'use-treble-key-for-bass-and-tenor {
-      \Music
-    }
-    \layout{
-      \context {
-        \Score
-        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
-      }
-      \context {
-        \Staff
-        \consists Merge_rests_engraver
-      }
-    }
-  }
-  \score {
-    \unfoldRepeats
-    \Music
-  }
-  \paper {
-    systems-per-page = 4
-    system-count = 8
-  }
-}
-
-\book {
-  \bookOutputSuffix "full"
-  \score {
+MusicFourLines = {
     <<
       \new Staff = "Solo" \with {
         %midiMaximumVolume = 1.0
@@ -440,27 +399,55 @@ Music = {
         >>
       >>
     >>
-    \layout{
-      \context {
-        \Score
-        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
-      }
-      \context {
-        \Staff
-        \consists Merge_rests_engraver
-      }
+}
+
+\book {
+  \score {
+    \Music
+    \layout {
+      
     }
   }
   \score {
     \unfoldRepeats
     \Music
-    \midi {
-      \tempo 4 = 70
-      \context {
-        \Staff
-        % midiInstrument = "viola"
-      }
+    \midi {}
+  }
+  \paper {
+    systems-per-page = 4
+    system-count = 8
+  }
+}
+
+\book {
+  \bookOutputSuffix "treble"
+  \score {
+    \keepWithTag #'use-treble-key-for-bass-and-tenor {
+      \Music
     }
+    \layout {}
+  }
+  \score {
+    \unfoldRepeats
+    \Music
+    \midi {}
+  }
+  \paper {
+    systems-per-page = 4
+    system-count = 8
+  }
+}
+
+\book {
+  \bookOutputSuffix "full"
+  \score {
+    \MusicFourLines
+    \layout {}
+  }
+  \score {
+    \unfoldRepeats
+    \MusicFourLines
+    \midi {}
   }
   \paper {
     system-count = 8
