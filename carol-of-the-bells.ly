@@ -680,8 +680,13 @@ Score = <<
         }
       >>
     >>
+    
+\midi {
+  \tempo 4=125
+}
 
 \book {
+  \bookOutputSuffix "compact"
   \score {
     \Score
     \layout {
@@ -698,63 +703,131 @@ Score = <<
 }
 
 \book {
-  \bookOutputSuffix "unfolded"
   \score {
     \unfoldRepeats
     \Score
     \layout {
-      %#(layout-set-staff-size 17)
       \context {
         \Staff
         \RemoveAllEmptyStaves
       }
     }
-    \midi {
-      \tempo 4=125
-    }
-  }
-  \paper {
-    %page-count = 4
   }
 }
 
 \book {
-  \bookOutputSuffix "fis"
+  \bookOutputSuffix "S"
   \score {
-    \transpose g fis {
-      \Score
-    }
-    \layout {
-      #(layout-set-staff-size 17)
-      \context {
-        \Staff
-        \RemoveAllEmptyStaves
+    <<
+      {
+        \unfoldRepeats
+        \Score
       }
-    }
-  }
-  \paper {
-    page-count = 2
+      \context Staff = "S" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
 }
 
 \book {
-  \bookOutputSuffix "fis-unfolded"
+  \bookOutputSuffix "A"
   \score {
-    \unfoldRepeats
-    \transpose g fis {
-      \Score
-    }
-    \layout {
-      \context {
-        \Staff
-        \RemoveAllEmptyStaves
+    <<
+      {
+        \unfoldRepeats
+        \Score
       }
-    }
-    \midi {
-      \tempo 4=125
-    }
+      \context Staff = "A" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
-  \paper {
-    %page-count = 4
+}
+
+\book {
+  \bookOutputSuffix "AA"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \Score
+      }
+      \context Staff = "A" << {
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        s2.*8
+        \unset Staff.midiMaximumVolume
+        \set Staff.midiInstrument = "acoustic grand"
+        s2.*16
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        s2.*8
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        s2.*8
+        \unset Staff.midiMaximumVolume
+        \set Staff.midiInstrument = "acoustic grand"
+        s2.*16
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        s2.*8
+      } >>
+      \context Staff = "T" << {
+        \set Staff.midiMaximumVolume = 0.6
+        s2.*8
+        \set Staff.midiInstrument = "viola"
+        s2.*16
+        \unset Staff.midiMaximumVolume
+        \set Staff.midiInstrument = "acoustic grand"
+        s2.*8
+        \set Staff.midiMaximumVolume = 0.6
+        s2.*8
+        \set Staff.midiInstrument = "viola"
+        s2.*16
+        \unset Staff.midiMaximumVolume
+        \set Staff.midiInstrument = "acoustic grand"
+        s2.*8
+      } >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "T"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \Score
+      }
+      \context Staff = "T" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "B"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \Score
+      }
+      \context Staff = "B" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
 }
