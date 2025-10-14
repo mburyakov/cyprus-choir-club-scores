@@ -30,10 +30,6 @@ taglineLanguage = "croatian"
   }
 }
 
-\midi {
-  \tempo 4 = 70
-}
-
 PartSoloU = \relative c' {
   r2 c8 d8 f8 d8 |
   g2~ g8 r8 d8 f8 |
@@ -144,8 +140,11 @@ PartAV = \relative c' {
   }
   a2~ a8 g8 g8. f16 |
   f2~ f8 b8 b8. a16 |
-  a2 r8 <d, f>8 <des f>8 <des f>8 |
-  <c f>1 |
+  a2 r8
+  <<
+    { \voiceTwo d,8 des8 des8 c1 }
+    \new Voice { \voiceOne f8\omit\pppp f8 f8 f1 }
+  >>
 }
 
 PartTU = \relative c' {
@@ -314,14 +313,20 @@ LyricsB = \lyricmode {
   vi -- lo mo -- ja.
 }
 
+PartTempo = {
+  \tempo 4 = 69
+  s1*29
+  s2
+  \tempo 4 = 25
+  s2
+  \tempo 4 = 69
+}
+
 use-treble-key-for-bass-and-tenor = #'t
 
 Music = {
     <<
-      \new Staff = "Solo" \with {
-        %midiMaximumVolume = 1.0
-        %midiInstrument = "viola"
-      } <<
+      \new Staff = "Solo" <<
         \clef "treble"
         \key f \major
         \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
@@ -359,10 +364,7 @@ Music = {
 
 MusicFourLines = {
     <<
-      \new Staff = "Solo" \with {
-        %midiMaximumVolume = 1.0
-        %midiInstrument = "viola"
-      } <<
+      \new Staff = "Solo" <<
         \clef "treble"
         \key f \major
         \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
@@ -372,7 +374,7 @@ MusicFourLines = {
       }
       \new ChoirStaff <<
         \new Staff = "S" <<
-          \clef "treble	"
+          \clef "treble"
           \key f \major
           \new Voice = "PartS" { \PartSU \PartSV }
         >>
@@ -380,7 +382,7 @@ MusicFourLines = {
           \LyricsS
         }
         \new Staff = "A" <<
-          \clef "treble	"
+          \clef "treble"
           \key f \major
           \new Voice = "PartA" { \PartAU \PartAV }
         >>
@@ -408,11 +410,6 @@ MusicFourLines = {
       
     }
   }
-  \score {
-    \unfoldRepeats
-    \Music
-    \midi {}
-  }
   \paper {
     systems-per-page = 4
     system-count = 8
@@ -427,11 +424,6 @@ MusicFourLines = {
     }
     \layout {}
   }
-  \score {
-    \unfoldRepeats
-    \Music
-    \midi {}
-  }
   \paper {
     systems-per-page = 4
     system-count = 8
@@ -445,11 +437,88 @@ MusicFourLines = {
     \layout {}
   }
   \score {
-    \unfoldRepeats
-    \MusicFourLines
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \PartTempo
+    >>
     \midi {}
   }
   \paper {
     system-count = 8
+  }
+}
+
+\book {
+  \bookOutputSuffix "S"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \context Staff = "S" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        \PartTempo
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "A"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \context Staff = "A" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+        \PartTempo
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "T"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \context Staff = "T" <<
+        \set Staff.midiMaximumVolume = 0.7
+        \set Staff.midiInstrument = "viola"
+        \PartTempo
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "B"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \context Staff = "B" <<
+        \set Staff.midiMaximumVolume = 0.7
+        \set Staff.midiInstrument = "viola"
+        \PartTempo
+      >>
+    >>
+    \midi {}
   }
 }
