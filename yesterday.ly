@@ -196,28 +196,16 @@ Music = {
       }
       \new ChoirStaff <<
         \new Staff = "S" <<
-          \tag #'enphasize-S {
-            \set Staff.midiMaximumVolume = #1.0
-            \set midiPanPosition = 0.7
-          }
           \clef "treble"
           \key d \major
           \new Voice = "PartS" { \transpose f d \PartS }
         >>
         \new Staff = "A" <<
-          \tag #'enphasize-A {
-            \set Staff.midiMaximumVolume = #1.0
-            \set midiPanPosition = 0.7
-          }
           \clef "treble"
           \key d \major
           \new Voice = "PartA" { \transpose f d \PartA }
         >>
         \new Staff = "AA" <<
-          \tag #'enphasize-AA {
-            \set Staff.midiMaximumVolume = #1.0
-            \set midiPanPosition = 0.7
-          }
           \clef "treble"
           \key d \major
           \new Voice = "PartAA" { \transpose f d \PartAA }
@@ -228,10 +216,6 @@ Music = {
           \LyricsAA
         }
         \new Staff = "B" <<
-          \tag #'enphasize-B {
-            \set Staff.midiMaximumVolume = #1.0
-            \set midiPanPosition = 0.7
-          }
           \clef "bass"
           \key d \major
           \new Voice = "PartB" { \transpose f d \PartB }
@@ -264,11 +248,6 @@ MusicArticulated = {
   \articulate {
     \Music
   }
-}
-
-SetLeftBalance = \midi {
-  \set Staff.midiMaximumVolume = #0.6
-  \set Staff.midiPanPosition = -1
 }
 
 \midi {
@@ -307,67 +286,64 @@ SetLeftBalance = \midi {
 \book {
   \bookOutputSuffix "d-all"
   \score {
-    \keepWithTag #'nothing {
-      \MusicArticulated
-    }
-    \midi {
-      \set Staff.midiMaximumVolume = #0.4
-    }
+    \MusicArticulated
+    \midi {}
+    \layout {}
   }
 }
 
 \book {
   \bookOutputSuffix "d-S"
   \score {
-    \keepWithTag #'enphasize-S {
+    <<
       \MusicArticulated
-    }
-    \SetLeftBalance
+      \context Staff = "S" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
 }
 
 \book {
   \bookOutputSuffix "d-A"
   \score {
-    \keepWithTag #'enphasize-A {
+    <<
       \MusicArticulated
-    }
-    \SetLeftBalance
+      \context Staff = "A" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
 }
 
 \book {
   \bookOutputSuffix "d-AA"
   \score {
-    \keepWithTag #'enphasize-AA {
+    <<
       \MusicArticulated
-    }
-    \SetLeftBalance
+      \context Staff = "AA" <<
+        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
+    \midi {}
   }
 }
 
 \book {
   \bookOutputSuffix "d-B"
   \score {
-    \keepWithTag #'enphasize-B {
+    <<
       \MusicArticulated
-    }
-    \SetLeftBalance
-  }
-}
-
-\book {
-  \bookOutputSuffix "d-with-prefix"
-  \score {
-    {
-      \tempo 4 = 82
-      \articulate {
-        d'4-! d'4-! d'16-!d'16-!d'16-!d'16-!d'16-!r8.
-      }
-      \keepWithTag #'nothing {
-        \MusicArticulated
-      }
-    }
+      \context Staff = "B" <<
+        \set Staff.midiMaximumVolume = 0.7
+        \set Staff.midiInstrument = "viola"
+      >>
+    >>
     \midi {}
   }
 }
