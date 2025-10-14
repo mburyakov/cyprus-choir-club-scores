@@ -461,7 +461,7 @@ MusicFourLines = {
       }
       \context Staff = "S" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         \PartTempo
       >>
     >>
@@ -479,7 +479,7 @@ MusicFourLines = {
       }
       \context Staff = "A" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         \PartTempo
       >>
     >>
@@ -497,7 +497,7 @@ MusicFourLines = {
       }
       \context Staff = "T" <<
         \set Staff.midiMaximumVolume = 0.7
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         \PartTempo
       >>
     >>
@@ -515,7 +515,7 @@ MusicFourLines = {
       }
       \context Staff = "B" <<
         \set Staff.midiMaximumVolume = 0.7
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         \PartTempo
       >>
     >>

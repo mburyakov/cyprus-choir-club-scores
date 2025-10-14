@@ -712,6 +712,7 @@ Score = <<
         \RemoveAllEmptyStaves
       }
     }
+    \midi {}
   }
 }
 
@@ -725,7 +726,7 @@ Score = <<
       }
       \context Staff = "S" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
       >>
     >>
     \midi {}
@@ -742,7 +743,7 @@ Score = <<
       }
       \context Staff = "A" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
       >>
     >>
     \midi {}
@@ -759,35 +760,35 @@ Score = <<
       }
       \context Staff = "A" << {
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*8
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*16
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*8
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*8
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*16
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*8
       } >>
       \context Staff = "T" << {
         \set Staff.midiMaximumVolume = 0.6
         s2.*8
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*16
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*8
         \set Staff.midiMaximumVolume = 0.6
         s2.*8
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
         s2.*16
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
@@ -808,7 +809,7 @@ Score = <<
       }
       \context Staff = "T" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
       >>
     >>
     \midi {}
@@ -825,7 +826,7 @@ Score = <<
       }
       \context Staff = "B" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "violin"
       >>
     >>
     \midi {}
