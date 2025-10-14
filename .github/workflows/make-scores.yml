@@ -18,7 +18,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install jinja2 mido
       - name: Install VLC
-        run: sudo apt-get update && sudo apt-get install -y vlc vlc-plugin-fluidsynth
+        run: sudo apt-get update && sudo apt-get install -y vlc vlc-plugin-fluidsynth fluid-soundfont-gs
       - name: Build Lilypond scores
         run: lilypond *.ly
       - name: Generate index pages
