@@ -187,7 +187,7 @@
 
             sendNotes(song, songStart, playerSongTime, currentSongTime + advance, audioContext, input, player);
             playerSongTime = currentSongTime + advance;
-            if (playerSongTime > song.duration) {
+            if (currentSongTime > song.duration) {
                 pause()
                 playerSongTime = 0
                 return false
