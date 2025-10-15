@@ -229,9 +229,6 @@
             var o = document.getElementById('position');
             o.value = 100 * currentSongTime / song.duration;
             document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
-            document.getElementById('currentTime').innerHTML = '' + Math.round(audioContext.currentTime * 1000);
-            document.getElementById('currentSongTime').innerHTML = '' + Math.round(currentSongTime * 1000);
-            document.getElementById('songStart').innerHTML = '' + Math.round(songStart * 1000);
 
             renderPeers()
         }
@@ -331,9 +328,6 @@
             html = html + '<p id="tmr">Press Play to start or switch to Follow mode</p>';
             html = html + '<p id="room_url">room_url</p>';
             html = html + '<p id="peers_list">peers_list</p>';
-            html = html + '<p id="currentTime">currentTime</p>';
-            html = html + '<p id="songStart">songStart</p>';
-            html = html + '<p id="currentSongTime">currentSongTime</p>';
 			html = html + '<p><input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
