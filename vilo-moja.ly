@@ -142,8 +142,8 @@ PartAV = \relative c' {
   f2~ f8 b8 b8. a16 |
   a2 r8
   <<
-    { \voiceTwo d,8 des8 des8 c1 }
-    \new Voice { \voiceOne f8\omit\pppp f8 f8 f1 }
+    { d,8 des8 des8 c1 }
+    { f8 f8 f8 f1 }
   >>
 }
 
@@ -461,7 +461,7 @@ MusicFourLines = {
       }
       \context Staff = "S" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "soprano sax"
         \PartTempo
       >>
     >>
@@ -479,8 +479,50 @@ MusicFourLines = {
       }
       \context Staff = "A" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "soprano sax"
         \PartTempo
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "AA"
+  \score {
+    <<
+      {
+        \unfoldRepeats
+        \MusicFourLines
+      }
+      \context Staff = "A" <<
+        {
+          s1*15
+          \set Staff.midiMaximumVolume = 0.6
+          \set Staff.midiInstrument = "soprano sax"
+          s1*4
+          \unset Staff.midiMaximumVolume
+          \set Staff.midiInstrument = "acoustic grand"
+          s1*7 s8
+          \set Staff.midiMaximumVolume = 0.6
+          \set Staff.midiInstrument = "soprano sax"
+        }
+        \PartTempo
+      >>
+      \context Staff = "T" <<
+        {
+          \set Staff.midiMaximumVolume = 0.8
+          \set Staff.midiInstrument = "tenor sax"
+          s1*15
+          \unset Staff.midiMaximumVolume
+          \set Staff.midiInstrument = "acoustic grand"
+          s1*4
+          \set Staff.midiMaximumVolume = 0.8
+          \set Staff.midiInstrument = "tenor sax"
+          s1*7 s8
+          \unset Staff.midiMaximumVolume
+          \set Staff.midiInstrument = "acoustic grand"
+        }
       >>
     >>
     \midi {}
@@ -497,7 +539,7 @@ MusicFourLines = {
       }
       \context Staff = "T" <<
         \set Staff.midiMaximumVolume = 0.7
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "soprano sax"
         \PartTempo
       >>
     >>
@@ -515,7 +557,7 @@ MusicFourLines = {
       }
       \context Staff = "B" <<
         \set Staff.midiMaximumVolume = 0.7
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "soprano sax"
         \PartTempo
       >>
     >>

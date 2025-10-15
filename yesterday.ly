@@ -288,7 +288,6 @@ MusicArticulated = {
   \score {
     \MusicArticulated
     \midi {}
-    \layout {}
   }
 }
 
@@ -299,7 +298,7 @@ MusicArticulated = {
       \MusicArticulated
       \context Staff = "S" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
@@ -313,7 +312,7 @@ MusicArticulated = {
       \MusicArticulated
       \context Staff = "A" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
@@ -327,7 +326,7 @@ MusicArticulated = {
       \MusicArticulated
       \context Staff = "AA" <<
         \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
@@ -341,7 +340,7 @@ MusicArticulated = {
       \MusicArticulated
       \context Staff = "B" <<
         \set Staff.midiMaximumVolume = 0.7
-        \set Staff.midiInstrument = "viola"
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
