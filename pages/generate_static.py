@@ -102,8 +102,11 @@ def main():
         item_page = out_root / f"{ly_source_prefix}.html"
         item_page.write_text(item_page_content)
         files.append(item_data)
-    winter_index_page_content = index_template.render({ "items": [item_data for item_data in files if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "carol-of-the-bells"]] })
-    index_page_content = index_template.render({ "items": files })
+    files_filtered_out_section_midi = [item_data.copy() for item_data in files]
+    for item_data in files_filtered_out_section_midi:
+        item_data["files"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T." in item_file["midi_name"] or "-B" in item_file["midi_name"])]
+    winter_index_page_content = index_template.render({ "items": [item_data for item_data in files_filtered_out_section_midi if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "carol-of-the-bells"]] })
+    index_page_content = index_template.render({ "items": files_filtered_out_section_midi })
     (out_root / "index.html").write_text(index_page_content)
     (out_root / "winter-event.html").write_text(winter_index_page_content)
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
