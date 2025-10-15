@@ -725,8 +725,8 @@ Score = <<
         \Score
       }
       \context Staff = "S" <<
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
@@ -742,8 +742,8 @@ Score = <<
         \Score
       }
       \context Staff = "A" <<
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
     \midi {}
@@ -759,36 +759,36 @@ Score = <<
         \Score
       }
       \context Staff = "A" << {
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
         s2.*8
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*16
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
         s2.*8
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
         s2.*8
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*16
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
         s2.*8
       } >>
       \context Staff = "T" << {
-        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiMaximumVolume = 1.0
         s2.*8
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "tenor sax"
         s2.*16
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
         s2.*8
-        \set Staff.midiMaximumVolume = 0.6
+        \set Staff.midiMaximumVolume = 1.0
         s2.*8
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiInstrument = "tenor sax"
         s2.*16
         \unset Staff.midiMaximumVolume
         \set Staff.midiInstrument = "acoustic grand"
@@ -808,8 +808,8 @@ Score = <<
         \Score
       }
       \context Staff = "T" <<
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 1.0
+        \set Staff.midiInstrument = "tenor sax"
       >>
     >>
     \midi {}
@@ -825,8 +825,8 @@ Score = <<
         \Score
       }
       \context Staff = "B" <<
-        \set Staff.midiMaximumVolume = 0.6
-        \set Staff.midiInstrument = "violin"
+        \set Staff.midiMaximumVolume = 1.0
+        \set Staff.midiInstrument = "tenor sax"
       >>
     >>
     \midi {}

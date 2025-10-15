@@ -511,13 +511,13 @@ MusicFourLines = {
       >>
       \context Staff = "T" <<
         {
-          \set Staff.midiMaximumVolume = 0.8
+          \set Staff.midiMaximumVolume = 1.0
           \set Staff.midiInstrument = "tenor sax"
           s1*15
           \unset Staff.midiMaximumVolume
           \set Staff.midiInstrument = "acoustic grand"
           s1*4
-          \set Staff.midiMaximumVolume = 0.8
+          \set Staff.midiMaximumVolume = 1.0
           \set Staff.midiInstrument = "tenor sax"
           s1*7 s8
           \unset Staff.midiMaximumVolume
@@ -538,7 +538,7 @@ MusicFourLines = {
         \MusicFourLines
       }
       \context Staff = "T" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
         \PartTempo
       >>
@@ -556,7 +556,7 @@ MusicFourLines = {
         \MusicFourLines
       }
       \context Staff = "B" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
         \PartTempo
       >>

@@ -297,7 +297,7 @@ MusicArticulated = {
     <<
       \MusicArticulated
       \context Staff = "S" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -311,7 +311,7 @@ MusicArticulated = {
     <<
       \MusicArticulated
       \context Staff = "A" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -325,7 +325,7 @@ MusicArticulated = {
     <<
       \MusicArticulated
       \context Staff = "AA" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -339,7 +339,7 @@ MusicArticulated = {
     <<
       \MusicArticulated
       \context Staff = "B" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
