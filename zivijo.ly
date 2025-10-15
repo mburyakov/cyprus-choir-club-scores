@@ -443,7 +443,7 @@ PartTempo = {
       }
       \PartTempo
       \context Staff = "S" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -460,7 +460,7 @@ PartTempo = {
       }
       \PartTempo
       \context Staff = "A1" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -477,7 +477,7 @@ PartTempo = {
       }
       \PartTempo
       \context Staff = "A2" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "soprano sax"
       >>
     >>
@@ -494,7 +494,7 @@ PartTempo = {
       }
       \PartTempo
       \context Staff = "T" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "tenor sax"
       >>
     >>
@@ -511,7 +511,7 @@ PartTempo = {
       }
       \PartTempo
       \context Staff = "B" <<
-        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiMaximumVolume = 1.0
         \set Staff.midiInstrument = "tenor sax"
       >>
     >>
