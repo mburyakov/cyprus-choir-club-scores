@@ -1,5 +1,7 @@
 \version "2.24.0"
 
+\include "articulate.ly"
+
 \language "deutsch"
 
 \layout {  
@@ -31,8 +33,8 @@ PartS = \relative c' {
 }
 PartSC = \relative c' {
   a'8 g8 | \break
-  f4 f4 g8 f8 |
-  e4 e4 f8 e8 |
+  f4-. f4-. g8 f8 |
+  e4-. e4-. f8 e8 |
   \time 2/4
   d4 c8( d8) |
   \numericTimeSignature
@@ -67,8 +69,8 @@ PartAA = \relative c' {
 }
 PartAAC = \relative c' {
   f8 e8 |
-  d4 d4 e8 d8 |
-  c4 c4 d8 c8 |
+  d4-. d4-. e8 d8 |
+  c4-. c4-. d8 c8 |
   \time 2/4
   h4 c8( d8) |
   \time 4/4
@@ -99,8 +101,8 @@ PartA = \relative c' {
 }
 PartAC = \relative c' {
   f8 e8 |
-  d4 d4 e8 d8 |
-  c4 c4 d8 c8 |
+  d4-. d4-. e8 d8 |
+  c4-. c4-. d8 c8 |
   \time 2/4
   \partCombineApart h4 a8( h8) |
   \numericTimeSignature
@@ -131,8 +133,8 @@ PartT = \relative c' {
 }
 PartTC = \relative c' {
   r4 |
-  r8 g8 h4 r4
-  r8 a8 g4 f8 fis8
+  r8 g8-. h4-. r4
+  r8 a8-. g4-. f8 fis8
   \time 2/4
   g4 a8( g8) |
   \numericTimeSignature
@@ -249,6 +251,96 @@ wordsF = \lyricmode {
   ži -- vi -- jó!
 }
 
+MusicFull = {
+    \new ChoirStaff <<
+      \new Staff = "S" <<
+        \set Staff.instrumentName = "S."
+        \clef treble
+        \new Voice = "soprano" {
+          \oneVoice
+          << \PartS >>
+          << \PartSC >>
+          << \PartSF >>
+        }
+        \new Lyrics \lyricsto "soprano" {
+          \words \wordsSC \wordsF
+        }
+      >>
+      \new Staff = "A1" <<
+        \set Staff.instrumentName = "A1."
+        \clef treble
+        \new Voice = "alto" {
+          << \PartAA >>
+          << \PartAAC >>
+          << \PartAAF >>
+        }
+        \new Lyrics {
+          \lyricsto "alto" {
+            \words \wordsAC \wordsF
+          }
+        }
+      >>
+      \new Staff = "A2" <<
+        \set Staff.instrumentName = "A2."
+        \clef treble
+        \new Voice = "alto" {
+          << \PartA >>
+          << \PartAC >>
+          << \PartAF >>
+        }
+        \new Lyrics {
+          \lyricsto "alto" {
+            \words \wordsAC \wordsF
+          }
+        }
+      >>
+      \new Staff = "T" <<
+        \set Staff.instrumentName = "T."
+        \clef "treble_8"     
+        \new Voice = "T" {
+          << \PartT >>
+          << \PartTC >>
+          << \PartTF >>
+        }
+        \new Lyrics {
+          \lyricsto "T" {
+            \words \wordsTC \wordsF
+          }
+        }        
+      >>
+      \new Staff = "B" <<
+        \set Staff.instrumentName = "B."
+        \clef bass             
+        \new Voice = "B" {
+          << \PartB >>
+          << \PartBC >>
+          << \PartBF >>
+        }
+        \new Lyrics \lyricsto "B" {
+          \words \wordsBC \wordsF
+        }
+      >>
+    >>
+}
+
+PartTempo = {
+  \tempo 4 = 80
+  s2.*6
+  s2 s1*6
+  \tempo 4 = 70
+  s4
+  \tempo 4 = 60
+  s4
+  \tempo 4 = 50
+  s4
+  \tempo 4 = 40
+  s4
+  \tempo 4 = 80
+  s2.*3
+  \tempo 4 = 55
+  s2.
+}
+
 \book {
   \score {
     \new ChoirStaff <<
@@ -332,82 +424,97 @@ wordsF = \lyricmode {
 \book {
   \bookOutputSuffix "full"
   \score {
-    \new ChoirStaff <<
-      \new Staff = "S" <<
-        \set Staff.instrumentName = "S."
-        \clef treble
-        \new Voice = "soprano" {
-          \oneVoice
-          << \PartS >>
-          << \PartSC >>
-          << \PartSF >>
-        }
-        \new Lyrics \lyricsto "soprano" {
-          \words \wordsSC \wordsF
-        }
-      >>
-      \new Staff = "A1" <<
-        \set Staff.instrumentName = "A1."
-        \clef treble
-        \new Voice = "alto" {
-          << \PartAA >>
-          << \PartAAC >>
-          << \PartAAF >>
-        }
-        \new Lyrics {
-          \lyricsto "alto" {
-            \words \wordsAC \wordsF
-          }
-        }
-      >>
-      \new Staff = "A2" <<
-        \set Staff.instrumentName = "A2."
-        \clef treble
-        \new Voice = "alto" {
-          << \PartA >>
-          << \PartAC >>
-          << \PartAF >>
-        }
-        \new Lyrics {
-          \lyricsto "alto" {
-            \words \wordsAC \wordsF
-          }
-        }
-      >>
-      \new Staff = "tenor" <<
-        \set Staff.instrumentName = "T."
-        \clef "treble_8"     
-        \new Voice = "tenor" {
-          << \PartT >>
-          << \PartTC >>
-          << \PartTF >>
-        }
-        \new Lyrics {
-          \lyricsto "tenor" {
-            \words \wordsTC \wordsF
-          }
-        }        
-      >>
-      \new Staff = "bass" <<
-        \set Staff.instrumentName = "B."
-        \clef bass             
-        \new Voice = "bass" {
-          << \PartB >>
-          << \PartBC >>
-          << \PartBF >>
-        }
-        \new Lyrics \lyricsto "bass" {
-          \words \wordsBC \wordsF
-        }
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "S"
+  \score {
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+      \context Staff = "S" <<
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
       >>
     >>
-    \midi {
-      \tempo 4 = 80
-    }
+    \midi {}
   }
+}
 
-  \paper {
-    ragged-bottom = ##t
-    system-system-spacing.basic-distance = 17
+\book {
+  \bookOutputSuffix "A1"
+  \score {
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+      \context Staff = "A1" <<
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "A2"
+  \score {
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+      \context Staff = "A2" <<
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "soprano sax"
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "T"
+  \score {
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+      \context Staff = "T" <<
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "tenor sax"
+      >>
+    >>
+    \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "B"
+  \score {
+    <<
+      \articulate {
+        \MusicFull
+      }
+      \PartTempo
+      \context Staff = "B" <<
+        \set Staff.midiMaximumVolume = 0.8
+        \set Staff.midiInstrument = "tenor sax"
+      >>
+    >>
+    \midi {}
   }
 }
