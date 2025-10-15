@@ -229,6 +229,7 @@
             var o = document.getElementById('position');
             o.value = 100 * currentSongTime / song.duration;
             document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
+            document.getElementById('playCursor').outerHTML = buildSvgCursor(currentSongTime / song.duration);
 
             renderPeers()
         }
@@ -306,6 +307,32 @@
 			equalizer.band8k.gain.setTargetAtTime(-2,0,0.0001);
 			equalizer.band16k.gain.setTargetAtTime(2,0,0.0001);
 		}
+        function buildSvg(song, cursorPosition) {
+            var heigth = 50 * song.tracks.length;
+            var html = '<svg\n'
+            html = html + '  id="playdeck"\n'
+            html = html + '  width="1000"\n'
+            html = html + '  height="' + heigth + '"\n'
+            html = html + '  xmlns="http://www.w3.org/2000/svg">\n'
+            html = html + '  <rect width="100%" height="100%" fill="#fcffd0" />\n'
+            for (var i = 0; i < song.tracks.length; i++) {
+                var track = song.tracks[i]
+                for (var j = 0; j < track.notes.length; j++) {
+                    var note = track.notes[j]
+                    var width = note.duration / song.duration
+                    var x = note.when / song.duration
+                    html = html + '  <rect width="' + (width * 100) + '%" height="10" x="' + (x * 100) + '%" y="' + (20 + 50*i) + '" fill="blue" />\n'
+                    html = html + '  <rect width="3" height="30" x="' + (x * 100) + '%" y="' + (10 + 50*i) + '" fill="blue" />\n'
+                }
+                html = html + '  <rect width="100%" height="2" x="0" y="' + (24 + 50*i) + '" fill="green" />\n'
+            }
+            html = html + '  ' + buildSvgCursor(cursorPosition) + '\n'
+            html = html + '</svg>'
+            return html
+        }
+        function buildSvgCursor(cursorPosition) {
+            return '  <rect id="playCursor" width="1" height="100%" x="' + (cursorPosition * 100) + '%" y="0" fill="blue" />\n'
+        }
 		function buildControls(song) {
 			audioContext.resume();
 			var o = document.getElementById('cntls');
@@ -329,6 +356,7 @@
             html = html + '<p id="room_url">room_url</p>';
             html = html + '<p id="peers_list">peers_list</p>';
 			html = html + '<p><input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
+            html = html + '<p>' + buildSvg(song, 0) + '</p>';
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
 				var v = 100 * song.tracks[i].volume;
