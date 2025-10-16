@@ -218,6 +218,30 @@ PartA = \relative g' {
   \bar "|."
 }
 
+PartAA = \relative g {
+  s2.
+  \repeat volta 2 {
+    s2. s2. s2.
+    s2. s2. s2. s2.
+    \PartCrescT
+    \PartHornT
+    \PartDoricT
+    \PartCulmT
+    s2. s2. s2. s2.
+    s2. s2. s2. s2.
+    \alternative {
+      \volta 1 {
+        s2.
+      }
+      \volta 2 {
+        s2.
+      }
+    }
+  }
+  s2. s2. s2.
+  \bar "|."
+}
+
 PartT = \relative g {
   R2.
   \repeat volta 2 {
@@ -680,7 +704,78 @@ Score = <<
         }
       >>
     >>
-    
+
+ScoreWithSecondAlto = <<      
+      \new ChoirStaff <<
+        \new Dynamics {
+          \PartDynamics
+        }
+        \new Staff = "S" <<
+          \set Staff.instrumentName = "S"
+          \set Staff.shortInstrumentName = "S"
+          \clef "treble"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartS" {
+            \PartS
+          }
+        >>
+        \new Lyrics = "LyrS" \lyricsto "PartS" {
+          \LyricsInterleavedS
+        }
+        \new Staff = "A" <<
+          \set Staff.instrumentName = "A"
+          \set Staff.shortInstrumentName = "A"
+          \clef "treble"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartA" {
+            \voiceOne
+            \PartA
+          }
+          \new Voice = "PartAA" {
+            \voiceTwo
+            \PartAA
+          }
+        >>
+        \new Dynamics {
+          \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = ##f
+          \override VerticalAxisGroup.nonstaff-relatedstaff-spacing = ##f
+          \PartDynamicsA
+        }
+        \new Lyrics = "LyrA" \lyricsto "PartA" {
+          \LyricsInterleavedA
+        }
+        \new Staff = "T" <<
+          \set Staff.instrumentName = "T"
+          \set Staff.shortInstrumentName = "T"
+          \clef "treble_8"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartT" {
+            \PartT
+          }
+        >>
+        \new Lyrics = "LyrT" \lyricsto "PartT" {
+          \LyricsInterleavedT
+        }
+        \new Staff = "B" <<
+          \set Staff.instrumentName = "B"
+          \set Staff.shortInstrumentName = "B"
+          \clef "bass"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartB" {
+            \PartB
+          }
+        >>
+        \new Lyrics = "LyrB" \lyricsto "PartB" {
+          \LyricsInterleavedB
+        }
+      >>
+    >>
+
+
 \midi {
   \tempo 4=125
 }
@@ -713,6 +808,23 @@ Score = <<
       }
     }
     \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "with-second-alto"
+  \score {
+    \unfoldRepeats
+    \ScoreWithSecondAlto
+    \layout {
+      \context {
+        \Staff
+        \RemoveAllEmptyStaves
+      }
+    }
+  }
+  \paper {
+    page-count = 4
   }
 }
 
