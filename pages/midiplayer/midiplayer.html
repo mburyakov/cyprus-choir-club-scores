@@ -22,6 +22,7 @@
 		var songStart = 0;
 		var input = null;
         var playing = false;
+        var tempoCoeff = 1.0;
         var room = null;
         var mode = MODE_STANDALONE;
         var currentControl = null;
@@ -156,7 +157,7 @@
         function pause() {
             if (!playing) return;
             playing = false
-            playerSongTime = audioContext.currentTime - songStart;
+            playerSongTime = (audioContext.currentTime - songStart) * tempoCoeff;
             renderProgress(loadedsong, playerSongTime);
             document.getElementById('tmr').innerHTML = 'paused';
             document.getElementById('playbtn').innerHTML = 'Play';
@@ -164,7 +165,7 @@
             sendStatus()
         }
 		function startPlay(song) {
-            songStart = audioContext.currentTime - playerSongTime;
+            songStart = audioContext.currentTime - playerSongTime / tempoCoeff;
 			var stepDuration = 176 / 1000;
 			startTicks(song, stepDuration);
 		}
@@ -181,7 +182,7 @@
             }, stepDuration * 1000);
         }
 		function tick(song, advance) {
-            var currentSongTime = audioContext.currentTime - songStart;
+            var currentSongTime = (audioContext.currentTime - songStart) * tempoCoeff
             sendStatus();
             if (!playing) return false
 
@@ -225,11 +226,30 @@
             })
             document.getElementById('peers_list').innerHTML = `<ul>${list}</ul>`;
         }
+        function setPosition(targetSongTime) {
+            setPositionAndTempo(targetSongTime, tempoCoeff)
+        }
+        function setTempo(targetTempoCoeff) {
+            setPositionAndTempo(playerSongTime, targetTempoCoeff)
+        }
+        function setPositionAndTempo(targetSongTime, targetTempoCoeff) {
+            if (loadedsong) {
+                console.log("before setPositionAndTempo: " + (songStart + playerSongTime / tempoCoeff))
+                // player.cancelQueue(audioContext);
+                var targetSongStart = songStart - targetSongTime / targetTempoCoeff + playerSongTime / tempoCoeff;
+                songStart = targetSongStart;
+                playerSongTime = targetSongTime;
+                tempoCoeff = targetTempoCoeff;
+                tick(loadedsong, 0)
+                renderProgress(loadedsong, playerSongTime);
+                console.log("after setPositionAndTempo: " + (songStart + playerSongTime / tempoCoeff))
+            }
+        }
         function renderProgress(song, currentSongTime) {
             var o = document.getElementById('position');
             o.value = 100 * currentSongTime / song.duration;
             document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
-            document.getElementById('playCursor').outerHTML = buildSvgCursor(currentSongTime / song.duration);
+            document.getElementById('playCursor').outerHTML = buildSvgCursor(song, currentSongTime);
 
             renderPeers()
         }
@@ -238,8 +258,8 @@
 				var track = song.tracks[t];
 				for (var i = 0; i < track.notes.length; i++) {
 					if (track.notes[i].when >= start && track.notes[i].when < end) {
-						var when = songStart + track.notes[i].when;
-						var duration = track.notes[i].duration;
+						var when = songStart + track.notes[i].when / tempoCoeff;
+						var duration = track.notes[i].duration / tempoCoeff;
 						if (duration > 3) {
 							duration = 3;
 						}
@@ -253,7 +273,7 @@
 				var beat = song.beats[b];
 				for (var i = 0; i < beat.notes.length; i++) {
 					if (beat.notes[i].when >= start && beat.notes[i].when < end) {
-						var when = songStart + beat.notes[i].when;
+						var when = songStart + beat.notes[i].when / tempoCoeff;
 						var duration = 1.5;
 						var instr = beat.info.variable;
 						var v = beat.volume / 2;
@@ -308,13 +328,13 @@
 			equalizer.band16k.gain.setTargetAtTime(2,0,0.0001);
 		}
         function buildSvg(song, cursorPosition) {
-            var heigth = 50 * song.tracks.length;
+            var heigth = 50 * song.tracks.length + 40;
             var html = '<svg\n'
             html = html + '  id="playdeck"\n'
             html = html + '  width="1000"\n'
             html = html + '  height="' + heigth + '"\n'
             html = html + '  xmlns="http://www.w3.org/2000/svg">\n'
-            html = html + '  <rect width="100%" height="100%" fill="#fcffd0" />\n'
+            html = html + '  <rect width="100%" height="100%" id="background" fill="#fcffd0" />\n'
             for (var i = 0; i < song.tracks.length; i++) {
                 var track = song.tracks[i]
                 for (var j = 0; j < track.notes.length; j++) {
@@ -326,12 +346,22 @@
                 }
                 html = html + '  <rect width="100%" height="2" x="0" y="' + (24 + 50*i) + '" fill="green" />\n'
             }
-            html = html + '  ' + buildSvgCursor(cursorPosition) + '\n'
+            html = html + '<rect width="100%" height="20" id="position" x="0" y="' + (50 * song.tracks.length + 15) + '" fill="#fff69b" />\n'
+            html = html + '  ' + buildSvgCursor(song, cursorPosition) + '\n'
             html = html + '</svg>'
             return html
         }
-        function buildSvgCursor(cursorPosition) {
-            return '  <rect id="playCursor" width="1" height="100%" x="' + (cursorPosition * 100) + '%" y="0" fill="blue" />\n'
+        function secondsToTimeString(seconds) {
+            return new Date(seconds * 1000).toISOString().slice(11, 23)
+        }
+        function buildSvgCursor(song, currentSongTime) {
+            var heigth = 50 * song.tracks.length + 40;
+            var tempoPercent = Math.round(tempoCoeff * 100) + '%';
+            var html = '<svg id="playCursor">\n'
+            html = html + '  <rect width="1" height="100%" x="' + (currentSongTime / song.duration * 100) + '%" y="0" fill="red" />\n'
+            html = html + '  <text x="55" y="' + (heigth - 20) + '">' + secondsToTimeString(currentSongTime) + '  /  ' + secondsToTimeString(song.duration) + ' tempo ' + tempoPercent + '</text>\n'
+            html = html + '</svg>'
+            return html
         }
 		function buildControls(song) {
 			audioContext.resume();
@@ -356,6 +386,7 @@
             html = html + '<p id="room_url">room_url</p>';
             html = html + '<p id="peers_list">peers_list</p>';
 			html = html + '<p><input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
+            html = html + '<p><input id="tempo" type="range" min="50" max="200" value="100" step="1" /></p>';
             html = html + '<p>' + buildSvg(song, 0) + '</p>';
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
@@ -378,15 +409,18 @@
             } else {
                 chooseRandomRoom()
             }
+            var svgBackground = document.getElementById('background');
+            svgBackground.onclick = function (e) {
+                var x = e.clientX / svgBackground.width.baseVal.value;
+                setPosition(x * song.duration)
+            }
 			var pos = document.getElementById('position');
 			pos.oninput = function (e) {
-				if (loadedsong) {
-					player.cancelQueue(audioContext);
-					var next = song.duration * pos.value / 100;
-					songStart = songStart - (next - playerSongTime);
-					playerSongTime = next;
-                    console.log('positioned at ' + playerSongTime)
-				}
+                setPosition(pos.value / 100 * song.duration)
+			};
+            var tempoControl = document.getElementById('tempo');
+            tempoControl.oninput = function (e) {
+                setTempo(tempoControl.value / 100)
 			};
 			console.log('Tracks');
 			for (var i = 0; i < song.tracks.length; i++) {
