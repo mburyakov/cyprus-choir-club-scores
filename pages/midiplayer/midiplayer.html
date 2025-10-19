@@ -73,6 +73,7 @@
         }
 
         function receiveMessage(data, peerId) {
+            console.log("received message from peer " + peerId + " " + JSON.stringify(data))
             if (data.mode === MODE_CONTROL) {
                 currentControl = peerId;
             }
@@ -236,7 +237,7 @@
                 songStart: songStart,
                 tempoCoeff: tempoCoeff,
                 contextTime: audioContext.currentTime,
-                timeDiff: peerTimeDiff[peerId] - (peerDelay[peerId] ? 2 * peerDelay[peerId] / 1000 : 0),
+                timeDiff: peerTimeDiff[peerId] + (peerDelay[peerId] ? 2 * peerDelay[peerId] / 1000 : 0),
                 playing: playing,
                 mode: mode,
                 persistentId: localStorage.getItem("persistentId"),
@@ -244,6 +245,7 @@
                 outputLatency: audioContext.outputLatency,
                 interceptControl: interceptControl,
             };
+            console.log("sending status to peer " + peerId + " " + JSON.stringify(message))
             sendMessage(message, peerId)
         }
         function sendStatus(filter = true, interceptControl = true) {
