@@ -28,10 +28,11 @@
         var currentControl = null;
         var sendMessage = null;
         var peerTimeDiff = {};
+        var peerDelay = {};
 		var playerSongTime = 0;
 		var loadedsong = null;
 
-        function chooseRandomRoom() {
+        function reopenWithRandomRoom() {
             const roomid = (Math.random() + 1).toString(36).substring(7);
             let url = window.location.href;
             if (url.indexOf('?') > -1) {
@@ -43,21 +44,41 @@
         }
 
         function enterRoom(roomid) {
-            room = joinRoom({appId: 'cyprus-choir-club'}, roomid);
+            if (!room) {
+                room = joinRoom({appId: 'cyprus-choir-club'}, roomid);
+                room.onPeerJoin(peerId => {
+                    sendStatus(true, false)
+                    renderPeers()
+                })
+                room.onPeerLeave(peerId => {
+                    renderPeers()
+                })
 
-            const [sendTick1, getTick1] = room.makeAction('message')
-            sendMessage = sendTick1
-            document.getElementById("room_url").innerHTML = "joined " + roomid;
-            getTick1((data, peerId) => {
-                receiveMessage(data, peerId)
-            })
+                const [sendTick1, getTick1] = room.makeAction('message')
+                sendMessage = sendTick1
+                getTick1((data, peerId) => {
+                    receiveMessage(data, peerId)
+                })
+            }
+            renderPeers()
+        }
+        function leaveRoom() {
+            if (room) {
+                room.leave()
+                room = null
+                sendMessage = null
+            }
+            renderPeers()
         }
 
         function receiveMessage(data, peerId) {
             if (data.mode === MODE_CONTROL) {
                 currentControl = peerId;
             }
-            if (data.mode === MODE_CONTROL && mode === MODE_CONTROL) {
+            if (data.mode !== MODE_CONTROL && currentControl === peerId) {
+                currentControl = null;
+            }
+            if (data.mode === MODE_CONTROL && mode === MODE_CONTROL && data.interceptControl) {
                 setControl(MODE_FOLLOW)
             }
             if (data.mode === MODE_FOLLOW && mode === MODE_CONTROL || data.mode === MODE_CONTROL && mode === MODE_FOLLOW) {
@@ -70,7 +91,6 @@
         }
 
         function updatePeerTimeDiff(data, peerId) {
-            console.log('updating peer time diff, data.contextTime: ' + data.contextTime + ', audioContext.currentTime: ' + audioContext.currentTime + ', peerTimeDiff[' + peerId + ']: ' + peerTimeDiff[peerId]);
             if (data.contextTime > 0 && audioContext.currentTime > 0) {
                 var timeDiff = data.contextTime - audioContext.currentTime;
                 if (peerTimeDiff[peerId]) {
@@ -93,8 +113,18 @@
             if (mode === MODE_FOLLOW) {
                 document.getElementById('follow').checked = true;
             }
-            sendStatus()
-            renderPeers()
+            if (mode === MODE_CONTROL || mode === MODE_FOLLOW) {
+                var roomId = getParam("room")
+                enterRoom(roomId)
+            } else {
+                leaveRoom()
+            }
+            if (mode === MODE_FOLLOW) {
+                document.getElementById('playbtn').disabled = true;
+            } else {
+                document.getElementById('playbtn').disabled = false;
+            }
+            sendStatus(false)
         }
 
         function adjustStateFromControl(data, peerId) {
@@ -102,15 +132,16 @@
 
             var contextTimeDiff;
             if (peerTimeDiff[peerId] && data.timeDiff) {
-                contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff) / 2;
+                contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff) / 2 + (peerDelay[peerId] ? peerDelay[peerId]/1000 : 0);
             } else {
-                contextTimeDiff = data.contextTime - audioContext.currentTime;
+                contextTimeDiff = data.contextTime - audioContext.currentTime + (peerDelay[peerId] ? peerDelay[peerId]/1000 : 0);
             }
 
             songStart = data.songStart - contextTimeDiff;
+            tempoCoeff = data.tempoCoeff;
 
             if (!wasPlaying && data.playing) {
-                playerSongTime = audioContext.currentTime - songStart;
+                playerSongTime = (audioContext.currentTime - songStart) * tempoCoeff;
                 play()
             }
             if (wasPlaying && !data.playing) {
@@ -120,6 +151,7 @@
 
         function modeSelectChange() {
             if (document.getElementById('standalone').checked) {
+                pause()
                 setControl(MODE_STANDALONE)
             }
             if (document.getElementById('control').checked) {
@@ -149,7 +181,7 @@
             try {
                 startPlay(loadedsong);
                 document.getElementById('tmr').innerHTML = 'playing...';
-                document.getElementById('playbtn').innerHTML = 'Pause';
+                document.getElementById('playbtn').classList.add('playing');
             } catch (expt) {
                 document.getElementById('tmr').innerHTML = 'error ' + expt;
             }
@@ -160,7 +192,7 @@
             playerSongTime = (audioContext.currentTime - songStart) * tempoCoeff;
             renderProgress(loadedsong, playerSongTime);
             document.getElementById('tmr').innerHTML = 'paused';
-            document.getElementById('playbtn').innerHTML = 'Play';
+            document.getElementById('playbtn').classList.remove('playing');
             player.cancelQueue(audioContext)
             sendStatus()
         }
@@ -197,34 +229,54 @@
             renderProgress(song, currentSongTime);
             return true;
 		}
-        function sendStatus() {
-            for (const peerId of room.getPeers()) {
-                if (mode === MODE_CONTROL || peerId === currentControl) {
-                    sendMessage({
-                        songStart: songStart,
-                        contextTime: audioContext.currentTime,
-                        timeDiff: peerTimeDiff[peerId],
-                        playing: playing,
-                        mode: mode,
-                    }, peerId)
+        function sendStatusToPeer(peerId, interceptControl = true) {
+            let message = {
+                songStart: songStart,
+                tempoCoeff: tempoCoeff,
+                contextTime: audioContext.currentTime,
+                timeDiff: peerTimeDiff[peerId] - (peerDelay[peerId] ? 2 * peerDelay[peerId] / 1000 : 0),
+                playing: playing,
+                mode: mode,
+                interceptControl: interceptControl,
+            };
+            sendMessage(message, peerId)
+        }
+        function sendStatus(filter = true, interceptControl = true) {
+            if (room) {
+                for (const peerId of room.getPeers()) {
+                    if (mode === MODE_CONTROL || peerId === currentControl || !filter) {
+                        sendStatusToPeer(peerId, interceptControl)
+                    }
                 }
             }
         }
         function renderPeers() {
             var list = "";
-            if (mode === MODE_CONTROL) {
-                list = list + `<li>self: ${selfId} (control)</li>`
+            if (mode === MODE_CONTROL || mode === MODE_FOLLOW) {
+                let peers = room.getPeers();
+                list = list + `<tr><td>self:</td><td><samp>${selfId}</samp></td></tr>`
+                peers.forEach(function (peerId) {
+                    if (peerId === currentControl && mode === MODE_FOLLOW || mode === MODE_CONTROL) {
+                        list = list + `<tr>`;
+                        list = list + `<td>peer:</td>`;
+                        list = list + `<td><samp>${peerId}</samp></td>`;
+                        list = list + `<td>delayMs:<input id="${peerId}_delay" style="width: 5em;" type="number" value="${peerDelay[peerId] ? peerDelay[peerId] : 0}" step="10"/></td>`;
+                        list = list + `<td>diff ${peerTimeDiff[peerId]}<td>`;
+                        list = list + `</tr>`;
+                    }
+                })
+                document.getElementById('peers_list').innerHTML = `<table>${list}</table>`;
+                peers.forEach(function (peerId) {
+                    if (peerId === currentControl && mode === MODE_FOLLOW || mode === MODE_CONTROL) {
+                        let delayInput = document.getElementById(peerId + '_delay');
+                        delayInput.oninput = function (e) {
+                            peerDelay[peerId] = delayInput.value;
+                        };
+                    }
+                })
             } else {
-                list = list + `<li>self: ${selfId}</li>`
+                document.getElementById('peers_list').innerHTML = '';
             }
-            room.getPeers().forEach(function (peerId) {
-                if (peerId === currentControl) {
-                    list = list + '<br>' + `<li>peer: ${peerId} (control), diff ${peerTimeDiff[peerId]}</li>`;
-                } else {
-                    list = list + '<br>' + `<li>peer: ${peerId}, diff ${peerTimeDiff[peerId]}</li>`;
-                }
-            })
-            document.getElementById('peers_list').innerHTML = `<ul>${list}</ul>`;
         }
         function setPosition(targetSongTime) {
             setPositionAndTempo(targetSongTime, tempoCoeff)
@@ -234,24 +286,34 @@
         }
         function setPositionAndTempo(targetSongTime, targetTempoCoeff) {
             if (loadedsong) {
-                console.log("before setPositionAndTempo: " + (songStart + playerSongTime / tempoCoeff))
+                // this library doesn't provide a way to cancel notes one by one, so we have to:
+                // - either cancel all notes
+                // - or listen to then hanging notes until they are finished
                 // player.cancelQueue(audioContext);
-                var targetSongStart = songStart - targetSongTime / targetTempoCoeff + playerSongTime / tempoCoeff;
-                songStart = targetSongStart;
+                songStart = songStart - targetSongTime / targetTempoCoeff + playerSongTime / tempoCoeff;
                 playerSongTime = targetSongTime;
                 tempoCoeff = targetTempoCoeff;
                 tick(loadedsong, 0)
                 renderProgress(loadedsong, playerSongTime);
-                console.log("after setPositionAndTempo: " + (songStart + playerSongTime / tempoCoeff))
             }
         }
         function renderProgress(song, currentSongTime) {
             var o = document.getElementById('position');
             o.value = 100 * currentSongTime / song.duration;
             document.getElementById('tmr').innerHTML = '' + Math.round(100 * currentSongTime / song.duration) + '%';
-            document.getElementById('playCursor').outerHTML = buildSvgCursor(song, currentSongTime);
-
-            renderPeers()
+            document.getElementById('playCursorText').innerHTML = buildSvgCursorText(song, currentSongTime);
+            let cursorAnimateTag = document.getElementById('cursor-animate');
+            var cursorPosition = currentSongTime / song.duration * 1000;
+            let timeToEnd = (song.duration - currentSongTime) / tempoCoeff;
+            var curserPositionAfter10sec
+            if (playing) {
+                curserPositionAfter10sec = cursorPosition + (1000 - cursorPosition) / timeToEnd * 10;
+            } else {
+                curserPositionAfter10sec = cursorPosition
+            }
+            cursorAnimateTag.setAttribute("from", cursorPosition.toString() + ' 0');
+            cursorAnimateTag.setAttribute("to", curserPositionAfter10sec.toString() + ' 0');
+            cursorAnimateTag.beginElement();
         }
 		function sendNotes(song, songStart, start, end, audioContext, input, player) {
 			for (var t = 0; t < song.tracks.length; t++) {
@@ -310,7 +372,6 @@
 				player.loader.startLoad(audioContext, info.url, info.variable);
 			}
 			player.loader.waitLoad(function () {
-				console.log('buildControls');
 				buildControls(song);
 				resetEqlualizer();
 			});
@@ -331,22 +392,22 @@
             var heigth = 50 * song.tracks.length + 40;
             var html = '<svg\n'
             html = html + '  id="playdeck"\n'
-            html = html + '  width="1000"\n'
-            html = html + '  height="' + heigth + '"\n'
+            html = html + '  viewBox="0 0 1000 ' + heigth + '"\n'
+            html = html + '  width="100%"\n'
             html = html + '  xmlns="http://www.w3.org/2000/svg">\n'
-            html = html + '  <rect width="100%" height="100%" id="background" fill="#fcffd0" />\n'
+            html = html + '  <rect width="1000" height="' + heigth + '" id="background" fill="#fcffd0" />\n'
             for (var i = 0; i < song.tracks.length; i++) {
                 var track = song.tracks[i]
                 for (var j = 0; j < track.notes.length; j++) {
                     var note = track.notes[j]
                     var width = note.duration / song.duration
                     var x = note.when / song.duration
-                    html = html + '  <rect width="' + (width * 100) + '%" height="10" x="' + (x * 100) + '%" y="' + (20 + 50*i) + '" fill="blue" />\n'
-                    html = html + '  <rect width="3" height="30" x="' + (x * 100) + '%" y="' + (10 + 50*i) + '" fill="blue" />\n'
+                    html = html + '  <rect width="' + (width * 1000) + '" height="10" x="' + (x * 1000) + '" y="' + (20 + 50*i) + '" fill="blue" />\n'
+                    html = html + '  <rect width="3" height="30" x="' + (x * 1000) + '" y="' + (10 + 50*i) + '" fill="blue" />\n'
                 }
-                html = html + '  <rect width="100%" height="2" x="0" y="' + (24 + 50*i) + '" fill="green" />\n'
+                html = html + '  <rect width="1000" height="2" x="0" y="' + (24 + 50*i) + '" fill="green" />\n'
             }
-            html = html + '<rect width="100%" height="20" id="position" x="0" y="' + (50 * song.tracks.length + 15) + '" fill="#fff69b" />\n'
+            html = html + '<rect width="1000" height="10" id="positionBar" x="0" y="' + (50 * song.tracks.length + 20) + '" fill="#fff69b" pointer-events="none" />\n'
             html = html + '  ' + buildSvgCursor(song, cursorPosition) + '\n'
             html = html + '</svg>'
             return html
@@ -354,19 +415,38 @@
         function secondsToTimeString(seconds) {
             return new Date(seconds * 1000).toISOString().slice(11, 23)
         }
-        function buildSvgCursor(song, currentSongTime) {
+        function buildSvgCursor(song) {
+            var html = '<g id="playCursor">\n'
+            html = html + '  <g>\n'
+            html = html + '    <animateTransform id="cursor-animate"\n' +
+                    '      attributeName="transform"\n' +
+                    '      attributeType="XML"\n' +
+                    '      type="translate"\n' +
+                    '      from="0 0"\n' +
+                    '      to="0 0"\n' +
+                    '      dur="10s"\n' +
+                    '      repeatCount="1"/>'
+            html = html + '    <rect width="1" height="100%" x="0" y="0" fill="red" />'
+            html = html + '    <circle r="7" cy="' + (50 * song.tracks.length + 25) + '" cx="0" fill="red" />\n'
+            html = html + '  </g>'
+            html = html + '  <g id="playCursorText">\n">'
+            html = html + buildSvgCursorText(song, 0)
+            html = html + '  </g>'
+            html = html + '</g>'
+            return html
+        }
+        function buildSvgCursorText(song, currentSongTime) {
             var heigth = 50 * song.tracks.length + 40;
-            var tempoPercent = Math.round(tempoCoeff * 100) + '%';
-            var html = '<svg id="playCursor">\n'
-            html = html + '  <rect width="1" height="100%" x="' + (currentSongTime / song.duration * 100) + '%" y="0" fill="red" />\n'
-            html = html + '  <text x="55" y="' + (heigth - 20) + '">' + secondsToTimeString(currentSongTime) + '  /  ' + secondsToTimeString(song.duration) + ' tempo ' + tempoPercent + '</text>\n'
-            html = html + '</svg>'
+            var html = ''
+            html = html + '    <text x="20" y="' + (heigth - 25) + '">' + secondsToTimeString(currentSongTime) + '</text>\n'
+            html = html + '    <text x="120" y="' + (heigth - 25) + '">' + secondsToTimeString(song.duration) + '</text>\n'
+            html = html + '    <text x="220" y="' + (heigth - 25) + '">' + ' tempo ' + Math.round(tempoCoeff * 100) + '%' + '</text>\n'
             return html
         }
 		function buildControls(song) {
 			audioContext.resume();
 			var o = document.getElementById('cntls');
-			var html = '<h2 id="wrng">Midi player by <a href="https://github.com/surikov/webaudiofont/tree/master">WebAudioFont</a></h2>';
+			var html = '<h2 style="display: inline;">' + song.name + '</h2> (' + getParam("midiFile") + ')</div>';
             html = html + '<form id="modeSelect"><fieldset>\n' +
                 '  <legend>Player mode:</legend>\n' +
                 '\n' +
@@ -381,13 +461,51 @@
                 '    <label for="follow">Follow</label>\n' +
 
                 '</fieldset></form>';
-            html = html + '<p><button id="playbtn"">Play</button></p>';
-            html = html + '<p id="tmr">Press Play to start or switch to Follow mode</p>';
-            html = html + '<p id="room_url">room_url</p>';
-            html = html + '<p id="peers_list">peers_list</p>';
-			html = html + '<p><input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
-            html = html + '<p><input id="tempo" type="range" min="50" max="200" value="100" step="1" /></p>';
+            html = html + '<style>\n' +
+                '  #playbtn {\n' +
+                '    border-radius: 50%;\n' +
+                '    padding:0;\n' +
+                '    flex-shrink: 0;\n' +
+                '    border: 10px solid green;\n' +
+                '    g.play {\n' +
+                '      visibility: visible;\n' +
+                '    }\n' +
+                '    g.pause {\n' +
+                '      visibility: hidden;\n' +
+                '    }\n' +
+                '  }\n' +
+                '  #playbtn.playing {\n' +
+                '    border: 10px solid red;\n' +
+                '    g.play {\n' +
+                '      visibility: hidden;\n' +
+                '    }\n' +
+                '    g.pause {\n' +
+                '      visibility: visible;\n' +
+                '    }\n' +
+                '  }\n' +
+                '</style>'
+            html = html + '<p>' +
+                '      <div style="display: inline-block">' +
+                '        <button id="playbtn" style="display: inline-block">' +
+                '          <svg width="100" height="100" viewBox="0 0 64 64">\n' +
+                '            <g class="play">\n' +
+                '               <title>Play</title>\n' +
+                '               <polygon points="24,16 24,48 40,32" style="fill:green" />\n' +
+                '            </g>\n' +
+                '            <g class="pause">\n' +
+                '               <title>Pause</title>\n' +
+                '               <polygon points="16,16 16,48 24,48 24 16" style="fill:red" />\n' +
+                '               <polygon points="48,16 48,48 40,48 40 16" style="fill:red" />\n' +
+                '            </g>\n' +
+                '         </svg>' +
+                '       </button>' +
+                '     </div>' +
+                '     <div style="display: inline-block" id="tmr">Press Play to start or switch to Follow mode</div>' +
+                '     </p>';
             html = html + '<p>' + buildSvg(song, 0) + '</p>';
+            html = html + '<div id="peers_list"></div>';
+            html = html + '<p>position: <input id="position" type="range" min="0" max="100" value="0" step="1" /></p>';
+            html = html + '<p>tempo: <input id="tempo" type="range" min="50" max="200" value="100" step="1" /></p>';
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
 				var v = 100 * song.tracks[i].volume;
@@ -398,20 +516,23 @@
 				var v = 100 * song.beats[i].volume;
 				html = html + '<p>' + chooserDrum(song.beats[i].id, i) + '<input id="drum' + i + '" type="range" min="0" max="100" value="' + v + '" step="1" /></p>';
 			}
+            html = html + '<hr />';
+            html = html + '<p>Cyprus choir club</p>';
+            html = html + '<p>Midi player by <a href="https://github.com/surikov/webaudiofont">WebAudioFont</a></p>';
+            html = html + '<p>Frontend-only collaboration by <a href="https://github.com/dmotz/trystero">Trystero</a></p>';
 			o.innerHTML = html;
             document.getElementById('playbtn').addEventListener('click', playButtonClick)
             document.getElementById('modeSelect').addEventListener('change', modeSelectChange)
 			console.log('Loaded');
             var roomid = getParam("room");
             if (roomid) {
-                enterRoom(roomid)
                 setControl(MODE_STANDALONE)
             } else {
-                chooseRandomRoom()
+                reopenWithRandomRoom()
             }
             var svgBackground = document.getElementById('background');
             svgBackground.onclick = function (e) {
-                var x = e.clientX / svgBackground.width.baseVal.value;
+                var x = e.offsetX / svgBackground.getBoundingClientRect().width;
                 setPosition(x * song.duration)
             }
 			var pos = document.getElementById('position');
