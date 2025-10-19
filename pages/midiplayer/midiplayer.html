@@ -28,6 +28,7 @@
         var currentControl = null;
         var sendMessage = null;
         var peerTimeDiff = {};
+        var peerPersistentId = {};
         var peerDelay = {};
 		var playerSongTime = 0;
 		var loadedsong = null;
@@ -84,6 +85,7 @@
             if (data.mode === MODE_FOLLOW && mode === MODE_CONTROL || data.mode === MODE_CONTROL && mode === MODE_FOLLOW) {
                 updatePeerTimeDiff(data, peerId)
             }
+            peerPersistentId[peerId] = data.persistentId;
             if (data.mode === MODE_CONTROL && mode === MODE_FOLLOW) {
                 adjustStateFromControl(data, peerId)
             }
@@ -237,6 +239,7 @@
                 timeDiff: peerTimeDiff[peerId] - (peerDelay[peerId] ? 2 * peerDelay[peerId] / 1000 : 0),
                 playing: playing,
                 mode: mode,
+                persistentId: localStorage.getItem("persistentId"),
                 interceptControl: interceptControl,
             };
             sendMessage(message, peerId)
@@ -254,11 +257,12 @@
             var list = "";
             if (mode === MODE_CONTROL || mode === MODE_FOLLOW) {
                 let peers = room.getPeers();
-                list = list + `<tr><td>self:</td><td><samp>${selfId}</samp></td></tr>`
+                list = list + `<tr><td>self:</td><td>${localStorage.getItem("persistentId")}</td><td><samp>${selfId}</samp></td></tr>`
                 peers.forEach(function (peerId) {
                     if (peerId === currentControl && mode === MODE_FOLLOW || mode === MODE_CONTROL) {
                         list = list + `<tr>`;
                         list = list + `<td>peer:</td>`;
+                        list = list + `<td>${peerPersistentId[peerId]}</td>`;
                         list = list + `<td><samp>${peerId}</samp></td>`;
                         list = list + `<td>delayMs:<input id="${peerId}_delay" style="width: 5em;" type="number" value="${peerDelay[peerId] ? peerDelay[peerId] : 0}" step="10"/></td>`;
                         list = list + `<td>diff ${peerTimeDiff[peerId]}<td>`;
@@ -529,6 +533,10 @@
                 setControl(MODE_STANDALONE)
             } else {
                 reopenWithRandomRoom()
+            }
+            if (!localStorage.getItem("persistentId")) {
+                let persistentId = (Math.random() + 1).toString(36).substring(7)
+                localStorage.setItem("persistentId", persistentId)
             }
             var svgBackground = document.getElementById('background');
             svgBackground.onclick = function (e) {
