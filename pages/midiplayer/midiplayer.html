@@ -94,7 +94,7 @@
 
         function updatePeerTimeDiff(data, peerId) {
             if (data.contextTime > 0 && audioContext.currentTime > 0) {
-                var timeDiff = data.contextTime - audioContext.currentTime;
+                var timeDiff = data.contextTime - audioContext.currentTime + audioContext.baseLatency + audioContext.outputLatency - data.baseLatency - data.outputLatency;
                 if (peerTimeDiff[peerId]) {
                     peerTimeDiff[peerId] = (peerTimeDiff[peerId] * 9 + timeDiff) / (9 + 1);
                 } else {
@@ -240,6 +240,8 @@
                 playing: playing,
                 mode: mode,
                 persistentId: localStorage.getItem("persistentId"),
+                baseLatency: audioContext.baseLatency,
+                outputLatency: audioContext.outputLatency,
                 interceptControl: interceptControl,
             };
             sendMessage(message, peerId)
