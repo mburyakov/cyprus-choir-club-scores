@@ -12,7 +12,11 @@
     {% for item in items %}
         <li>
             <a href="{{ item.name }}.html">{{ item.display_name }}</a>
-            {% include('item_body.html') %}
+            <ul>
+                {% for file in item.files_short %}
+                    {% include('item_body.html') %}
+                {% endfor %}
+            </ul>
         </li>
     {% endfor %}
 </ul>

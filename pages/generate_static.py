@@ -5,6 +5,7 @@ import pathlib
 import re
 import shutil
 import sys
+import json
 
 import jinja2
 import mido
@@ -50,7 +51,7 @@ def main():
     path_to_script = pathlib.Path(sys.argv[0])
     project_root = path_to_script.parent.parent
 
-    out_root = project_root / "out" / "pages"
+    out_root = project_root / "out" / "pages" / "static"
 
     if out_root.exists():
         shutil.rmtree(out_root)
@@ -102,13 +103,17 @@ def main():
         item_page = out_root / f"{ly_source_prefix}.html"
         item_page.write_text(item_page_content)
         files.append(item_data)
-    files_filtered_out_section_midi = [item_data.copy() for item_data in files]
-    for item_data in files_filtered_out_section_midi:
-        item_data["files"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T." in item_file["midi_name"] or "-B" in item_file["midi_name"])]
-    winter_index_page_content = index_template.render({ "items": [item_data for item_data in files_filtered_out_section_midi if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "carol-of-the-bells"]] })
-    index_page_content = index_template.render({ "items": files_filtered_out_section_midi })
+    for item_data in files:
+        item_data["files_short"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T" in item_file["midi_name"] or "-B" in item_file["midi_name"])]
+    winter_event_files = [item_data for item_data in files if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "carol-of-the-bells"]]
+    winter_index_page_content = index_template.render({ "items": winter_event_files})
+    index_page_content = index_template.render({ "items": files })
     (out_root / "index.html").write_text(index_page_content)
     (out_root / "winter-event.html").write_text(winter_index_page_content)
+
+    (out_root / "winter-event.json").write_text(json.dumps(winter_event_files, ensure_ascii=False, indent=2))
+    (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
+
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
     shutil.copy(project_root / "include" / "cyprus-accolada.svg", out_root / "cyprus-accolada.svg")
 
