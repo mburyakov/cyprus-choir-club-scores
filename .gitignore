@@ -1,4 +1,6 @@
 *.pdf
 *.midi
-.idea
-out
+/.idea
+/out
+/web/dist
+/web/node_modules

@@ -23,17 +23,21 @@ jobs:
         run: lilypond *.ly
       - name: Generate index pages
         run: python3 pages/generate_static.py
-#      - uses: actions/upload-artifact@v4
-#        with:
-#          name: pdf-scores
-#          path: |
-#            *.pdf
-#            *.midi
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm install
+        working-directory: web
+      - name: Compile vite app
+        run: npm run build
+        working-directory: web
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: out/pages/static
+          path: web/dist/static
 
   deploy:
     needs: build
