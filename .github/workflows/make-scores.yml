@@ -22,8 +22,6 @@ jobs:
           packages: vlc vlc-plugin-fluidsynth fluid-soundfont-gs
           version: 1.0
           execute_install_scripts: true
-      - name: Install VLC
-        run: sudo apt-get update && sudo apt-get install -y vlc vlc-plugin-fluidsynth fluid-soundfont-gs
       - name: Build Lilypond scores
         run: lilypond *.ly
       - name: Generate index pages
