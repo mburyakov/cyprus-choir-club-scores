@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Route, Routes, useParams } from 'react-router-dom'
+import MidiPlayer from './MidiPlayer'
+import NativeMidiPlayer from './player/NativeMidiPlayer'
 
 export type ItemFile = {
   has_pdf?: boolean
@@ -79,8 +81,7 @@ function ItemBody(idx: number, f: ItemFile) {
             {" "}(<a href={`/static/${f.mp3_name}`}>Download mp3</a>)
           </>
         )}
-        {" "}(<a href={`/static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play
-        online</a>)
+        {" "}(<a href={`/static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play online</a>)
       </>
     )}
   </li>
@@ -123,6 +124,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/item/:name" element={<ItemView />} />
+      <Route path="/midiplayer" element={<MidiPlayer />} />
+      <Route path="/midiplayer2" element={<NativeMidiPlayer />} />
     </Routes>
   )
 }
