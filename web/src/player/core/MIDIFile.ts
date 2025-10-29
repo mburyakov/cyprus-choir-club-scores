@@ -856,7 +856,13 @@ export type Track = {
   id?: any;
 };
 type BeatNote = { when: number };
-type Beat = { n: number; notes: BeatNote[]; volume: number; info?: any; id?: any };
+type Beat = {
+  n: number;
+  notes: BeatNote[];
+  volume: number;
+  info?: any;
+  id?: any
+};
 export type Song = {
   duration: number;
   tracks: Track[];

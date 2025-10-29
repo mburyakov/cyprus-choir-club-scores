@@ -1,7 +1,8 @@
 import AudioEngine from './AudioEngine'
-import {StatusListener} from './models'
 import InstrumentManager from "./InstrumentManager";
 import {Song} from "./MIDIFile";
+
+export type StatusListener = (status: string) => void
 
 export default class PlayerEngine {
   readonly audio: AudioEngine
@@ -153,17 +154,16 @@ export default class PlayerEngine {
 
   private scheduleNotes(fromTime: number, toTime: number) {
     const ac = this.audio.context!
-    const s = this.song!
+    const s = this.song
     const start = fromTime
     const end = toTime
 
     // Tracks
     for (let t = 0; t < (s.tracks?.length || 0); t++) {
       const track = s.tracks[t]
-      const info = track.info
-      const variable = info?.variable
+      const wavePreset = this.audio.getWavePreset({isDrum: false, n: track.program})
       const volume = (track.volume ?? 7) / 7
-      if (!track.notes || !variable) continue
+      if (!track.notes || !wavePreset) continue
       for (let i = 0; i < track.notes.length; i++) {
         const n = track.notes[i]
         if (n.when >= start && n.when < end) {
@@ -171,7 +171,7 @@ export default class PlayerEngine {
           let dur = (n.duration ?? 0) / this.tempo
           if (dur > 3) dur = 3
           try {
-            this.audio.player.queueWaveTable(ac, ac.destination, (window as any)[variable], whenAbs, n.pitch, dur, volume, n.slides)
+            this.audio.player.queueWaveTable(ac, ac.destination, wavePreset, whenAbs, n.pitch, dur, volume, n.slides)
           } catch {}
         }
       }
@@ -180,17 +180,16 @@ export default class PlayerEngine {
     // Beats
     for (let b = 0; b < (s.beats?.length || 0); b++) {
       const beat = s.beats[b]
-      const info = beat.info
-      const variable = info?.variable
+      const wavePreset = this.audio.getWavePreset({isDrum: true, n: beat.n})
       const volume = ((beat.volume ?? 2) / 2) * this.drumBusGain
-      if (!beat.notes || !variable) continue
+      if (!beat.notes || !wavePreset) continue
       for (let i = 0; i < beat.notes.length; i++) {
         const bn = beat.notes[i]
         if (bn.when >= start && bn.when < end) {
           const whenAbs = this.songStart + bn.when / this.tempo
           const dur = 1.5
           try {
-            this.audio.player.queueWaveTable(ac, ac.destination, (window as any)[variable], whenAbs, beat.n, dur, volume)
+            this.audio.player.queueWaveTable(ac, ac.destination, wavePreset, whenAbs, beat.n, dur, volume)
           } catch {}
         }
       }

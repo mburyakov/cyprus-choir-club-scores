@@ -1,5 +1,10 @@
 import MIDISounds from "midi-sounds-react";
-import WebAudioFontPlayer from "webaudiofont";
+import WebAudioFontPlayer, {PresetInfo, WavePreset} from "webaudiofont";
+
+export type PresetKey = {
+  isDrum: boolean
+  n: number
+}
 
 // Thin wrapper around MIDISounds / WebAudioFont player
 export class AudioEngine {
@@ -8,6 +13,9 @@ export class AudioEngine {
   private _eq: BiquadFilterNode | null = null
   private _convolver: ConvolverNode | null = null
 
+  private drumInfoCache: { [n: number]: {id: number, info: PresetInfo} } = {}
+  private instrumentInfoCache: { [n: number]: {id: number, info: PresetInfo} } = {}
+
   constructor(midi: MIDISounds) {
     this._ac = midi.audioContext
     this._player = midi.player
@@ -15,6 +23,27 @@ export class AudioEngine {
 
   get context(): AudioContext { return this._ac }
   get player(): WebAudioFontPlayer { return this._player }
+
+  async loadPresets(keys: Set<PresetKey>) {
+    keys.forEach(key => {
+      if (key.isDrum) {
+        const nn = this.player.loader.findDrum(key.n)
+        const info = this.player.loader.drumInfo(nn)
+        this.drumInfoCache[key.n] = {id: nn, info: info}
+        this.player.loader.startLoad(this.context, info.url, info.variable)
+      } else {
+        const info = this.player.loader.instrumentInfo(key.n)
+        this.instrumentInfoCache[key.n] = {id: key.n, info: info}
+        this.player.loader.startLoad(this.context, info.url, info.variable)
+      }
+    })
+    await new Promise<void>(resolve => this.player.loader.waitLoad(() => resolve()))
+  }
+
+  getWavePreset(key: PresetKey): WavePreset | null {
+    const info: PresetInfo = key.isDrum ? this.drumInfoCache[key.n].info : this.instrumentInfoCache[key.n].info
+    return info ? window[info.variable as any] as WavePreset : null
+  }
 
   initFromMidiSounds() {
     if (!this._eq) {

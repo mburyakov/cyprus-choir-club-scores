@@ -50,10 +50,11 @@ declare module 'webaudiofont' {
     drumInfo(n: number): PresetInfo;
     findDrum(nn: number): number;
   }
-  type PresetInfo = {
+  export type PresetInfo = {
     variable: string,
     url: string,
     title: string,
     pitch: number
   };
+  export type WavePreset = {}
 }

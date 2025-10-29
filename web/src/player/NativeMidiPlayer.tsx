@@ -46,7 +46,7 @@ function PlayerComponent({ playerEngine } : { playerEngine: PlayerEngine }) {
   }
 
   const onTrackInstrChange = useCallback(async (idx: number, instrIndex: number) => {
-    await playerEngine.instrumentManager?.switchInstrument(playerEngine.song, idx, instrIndex)
+    await playerEngine.instrumentManager.switchInstrument(idx, instrIndex)
   }, [playerEngine])
 
   const seekTo = useCallback((t: number) => {
@@ -165,7 +165,7 @@ export default function NativeMidiPlayer() {
     const audioEngine = new AudioEngine(midiSoundsRef.current!!);
     audioEngine.initFromMidiSounds()
     await audioEngine.ensureRunning()
-    playerEngineRef.current = new PlayerEngine(audioEngine, parsed as Song, {
+    playerEngineRef.current = new PlayerEngine(audioEngine, parsed, {
       onStatus: (s) => setStatus(s),
     })
     setInfo(`${parsed.beats?.length || 0} beats, ${parsed.tracks?.length || 0} tracks`)

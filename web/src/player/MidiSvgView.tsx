@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react'
+import {Song} from "./core/MIDIFile";
 
 /**
  * Minimal SVG visualization for the Native MIDI player.
@@ -7,7 +8,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
  * - Supports click-to-seek on the timeline.
  */
 export default function MidiSvgView(props: {
-  song: any,
+  song: Song,
   currentTime: number,
   duration: number,
   isPlaying: boolean,

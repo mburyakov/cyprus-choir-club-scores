@@ -88,7 +88,7 @@ def main():
         midi_outputs = [f for f in ly_root_list if f.name.endswith(".midi") and f.name.startswith(ly_source_prefix)]
         for midi_output in midi_outputs:
             mp3_name = midi_output.name.removesuffix('.midi') + ".mp3"
-            subprocess.run(["vlc", "-I" "dummy", midi_output.name, "--sout", "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=" + mp3_name + "}", "--sout-keep", "vlc://quit"])
+            # subprocess.run(["vlc", "-I" "dummy", midi_output.name, "--sout", "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=" + mp3_name + "}", "--sout-keep", "vlc://quit"])
             index_to_insert_list = [item_file for item_file in item_files if item_file.get("pdf_name", "").removesuffix('.pdf') == midi_output.name.removesuffix('.midi')]
             if len(index_to_insert_list) > 0:
                 index_to_insert_list[0]["has_midi"] = True
@@ -97,7 +97,7 @@ def main():
             else:
                 item_files.append({"has_midi": True, "midi_name": midi_output.name, "display_name": midi_output.name, "mp3_name": mp3_name})
             shutil.copy(ly_root / midi_output.name, out_root / midi_output.name)
-            shutil.copy(ly_root / mp3_name, out_root / mp3_name)
+            # shutil.copy(ly_root / mp3_name, out_root / mp3_name)
         item_data = {"name": ly_source_prefix, "display_name": display_name, "files": item_files}
         item_page_content = item_template.render({ "item": item_data })
         item_page = out_root / f"{ly_source_prefix}.html"
