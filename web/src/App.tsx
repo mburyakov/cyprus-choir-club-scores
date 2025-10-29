@@ -21,7 +21,7 @@ export type Item = {
 function useItems() {
   const [items, setItems] = useState<Item[] | null>(null)
   useEffect(() => {
-    fetch('/static/items.json')
+    fetch('static/items.json')
       .then(res => {
         if (!res.ok) throw new Error(`Failed to load items.json: ${res.status}`)
         return res.json()
@@ -38,7 +38,7 @@ function Index() {
     <div>
       <h1>
         Scores of Cyprus Choir Club:
-        <img src="/static/cyprus-accolada.svg" alt="Cyprus Accolada" width={100} />
+        <img src="static/cyprus-accolada.svg" alt="Cyprus Accolada" width={100} />
       </h1>
       <ul>
         {items.map(it => (
@@ -69,19 +69,19 @@ function itemPageTitle(items: Item[] | null, name: string | undefined): string {
 function ItemBody(idx: number, f: ItemFile) {
   return <li key={idx}>
     {f.has_pdf ? (
-      <a href={`/static/${f.pdf_name}`}>{f.display_name}</a>
+      <a href={`static/${f.pdf_name}`}>{f.display_name}</a>
     ) : (
       <>{f.display_name}</>
     )}
     {f.has_midi && (
       <>
-        {" "}(<a href={`/static/${f.midi_name}`}>Download midi</a>)
+        {" "}(<a href={`static/${f.midi_name}`}>Download midi</a>)
         {f.mp3_name && (
           <>
-            {" "}(<a href={`/static/${f.mp3_name}`}>Download mp3</a>)
+            {" "}(<a href={`static/${f.mp3_name}`}>Download mp3</a>)
           </>
         )}
-        {" "}(<a href={`/static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play online</a>)
+        {" "}(<a href={`static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play online</a>)
       </>
     )}
   </li>
