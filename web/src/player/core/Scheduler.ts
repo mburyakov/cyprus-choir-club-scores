@@ -4,6 +4,8 @@ import {Song} from "./MIDIFile";
 
 export type StatusListener = (status: string) => void
 
+type Envelope = any
+
 export default class PlayerEngine {
   readonly audio: AudioEngine
   readonly song: Song
@@ -18,6 +20,8 @@ export default class PlayerEngine {
   private isPlaying = false
   private tickTimer: number | null = null
 
+  private readonly currentEnvelops: Map<number, Envelope>[]
+
   private readonly onStatus?: StatusListener
 
   constructor(audio: AudioEngine, song: Song, opts?: {
@@ -26,6 +30,7 @@ export default class PlayerEngine {
     this.audio = audio
     this.instrumentManager = new InstrumentManager(audio)
     this.song = song
+    this.currentEnvelops = song.tracks.map(() => new Map<number, Envelope>())
     this.onStatus = opts?.onStatus
   }
 
@@ -73,6 +78,7 @@ export default class PlayerEngine {
     this.isPlaying = false
     this.virtualTime = (ac.currentTime - this.songStart) * this.tempo
     this.clearScheduler()
+    this.startScheduler(3000)
     this.audio.cancelQueue()
     this.onStatus?.('Paused')
   }
@@ -85,7 +91,6 @@ export default class PlayerEngine {
     this.audio.cancelQueue()
     this.virtualTime = 0
     this.lastScheduled = 0
-    this.songStart = ac.currentTime
     this.onStatus?.('Stopped')
   }
 
@@ -108,9 +113,10 @@ export default class PlayerEngine {
     if (wasPlaying) this.start()
   }
 
-  private startScheduler() {
+  private startScheduler(timeout: number = 176) {
+    this.tick()
     this.clearScheduler()
-    this.tickTimer = window.setInterval(() => this.tick(), 176)
+    this.tickTimer = window.setInterval(() => this.tick(), timeout)
   }
 
   private clearScheduler() {
@@ -124,16 +130,19 @@ export default class PlayerEngine {
     const ac = this.audio.context
     const player = this.audio.player
     const s = this.song
-    if (!ac || !player || !s || !this.isPlaying) return
+    if (!ac || !player || !s ) return
 
     const now = ac.currentTime
-    const elapsed = Math.max(0, (now - this.songStart) * this.tempo)
-    this.virtualTime = elapsed
+    if (this.isPlaying) {
+      this.virtualTime = Math.max(0, now - this.songStart) * this.tempo
+    }
+    if (!this.isPlaying) {
+      this.songStart = now - this.virtualTime / this.tempo
+    }
 
-    const total = s.duration ?? Number.POSITIVE_INFINITY
-    if (elapsed >= total) {
+    const total = s.duration
+    if (this.virtualTime >= total) {
       this.isPlaying = false
-      this.audio.cancelQueue()
       this.clearScheduler()
       this.onStatus?.('Completed — ready')
       this.virtualTime = 0
@@ -141,58 +150,75 @@ export default class PlayerEngine {
       return
     }
 
-    const LOOKAHEAD = 0.25
-    const windowStart = this.lastScheduled
-    const windowEnd = Math.min(total, elapsed + LOOKAHEAD)
-    if (windowEnd > windowStart) {
-      this.scheduleNotes(windowStart, windowEnd)
-      this.lastScheduled = windowEnd
+    if (this.isPlaying) {
+      const LOOKAHEAD = 0.25
+      const windowStart = this.lastScheduled
+      const windowEnd = Math.min(total, this.virtualTime + LOOKAHEAD)
+      if (windowEnd > windowStart) {
+        this.scheduleNotes(windowStart, windowEnd, this.songStart, this.tempo)
+        this.lastScheduled = windowEnd
+      }
+    } else {
+      const LOOKAHEAD = 0.0025
+      const windowStart = Math.max(0, this.virtualTime - LOOKAHEAD)
+      const windowEnd = Math.min(total, this.virtualTime + LOOKAHEAD)
+      if (windowEnd > windowStart) {
+        this.scheduleNotes(windowStart, windowEnd, now - this.virtualTime * 100 / this.tempo, this.tempo / 100)
+        this.lastScheduled = windowEnd
+      }
     }
 
-    this.onStatus?.(`Playing… ${elapsed.toFixed(2)} s`)
+    this.onStatus?.(`Playing… ${this.virtualTime.toFixed(2)} s`)
   }
 
-  private scheduleNotes(fromTime: number, toTime: number) {
+  private scheduleNotes(fromTime: number, toTime: number, songStart: number, tempo: number): void {
     const ac = this.audio.context!
     const s = this.song
     const start = fromTime
     const end = toTime
-
     // Tracks
-    for (let t = 0; t < (s.tracks?.length || 0); t++) {
+    for (let t = 0; t < s.tracks.length; t++) {
       const track = s.tracks[t]
       const wavePreset = this.audio.getWavePreset({isDrum: false, n: track.program})
-      const volume = (track.volume ?? 7) / 7
+      const volume = track.volume / 7
       if (!track.notes || !wavePreset) continue
-      for (let i = 0; i < track.notes.length; i++) {
-        const n = track.notes[i]
-        if (n.when >= start && n.when < end) {
-          const whenAbs = this.songStart + n.when / this.tempo
-          let dur = (n.duration ?? 0) / this.tempo
-          if (dur > 3) dur = 3
-          try {
-            this.audio.player.queueWaveTable(ac, ac.destination, wavePreset, whenAbs, n.pitch, dur, volume, n.slides)
-          } catch {}
+      const now = ac.currentTime
+      track.notes.forEach((n, i) => {
+        if (n.when < end && n.when + n.duration >= start) {
+          const whenAbs = songStart + n.when / tempo
+          let dur = n.duration / tempo;
+          const whenAbsAdjusted = Math.max(whenAbs, now)
+          let durAdjusted = dur + Math.min(0, whenAbs - now)
+          if (durAdjusted > 0) {
+            let existingEnvelope = this.currentEnvelops[t].get(i);
+            const envelope = this.queueWithVariativeDuration(ac, ac.destination, wavePreset, whenAbsAdjusted, n.pitch, durAdjusted, volume)
+            this.currentEnvelops[t].set(i, envelope)
+          }
         }
-      }
+      })
     }
 
     // Beats
     for (let b = 0; b < (s.beats?.length || 0); b++) {
       const beat = s.beats[b]
       const wavePreset = this.audio.getWavePreset({isDrum: true, n: beat.n})
-      const volume = ((beat.volume ?? 2) / 2) * this.drumBusGain
+      const volume = ((beat.volume) / 2) * this.drumBusGain
       if (!beat.notes || !wavePreset) continue
       for (let i = 0; i < beat.notes.length; i++) {
         const bn = beat.notes[i]
         if (bn.when >= start && bn.when < end) {
-          const whenAbs = this.songStart + bn.when / this.tempo
+          const whenAbs = songStart + bn.when / tempo
           const dur = 1.5
-          try {
-            this.audio.player.queueWaveTable(ac, ac.destination, wavePreset, whenAbs, beat.n, dur, volume)
-          } catch {}
+          this.audio.player.queueWaveTable(ac, ac.destination, wavePreset, whenAbs, beat.n, dur, volume)
         }
       }
     }
+  }
+
+  private queueWithVariativeDuration(ac: AudioContext, dest: AudioNode, wavePreset: any, when: number, pitch: number, duration: number, volume: number) {
+    const envelope = this.audio.player.queueWaveTable(ac, dest, wavePreset, when, pitch, 60, volume, [])
+    envelope.audioBufferSourceNode.stop(when + 0.1);
+    envelope.audioBufferSourceNode.stop(when + duration);
+    return envelope
   }
 }

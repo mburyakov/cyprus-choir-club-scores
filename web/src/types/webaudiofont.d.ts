@@ -17,7 +17,7 @@ declare module 'webaudiofont' {
     noZeroVolume(n: number): number;
     setupEnvelope(audioContext: AudioContext, envelope: WaveEnvelope, zone: WaveZone, volume: number, when: number, sampleDuration: number, noteDuration: number): void;
     numValue(aValue: any, defValue: number): number;
-    findEnvelope(audioContext: AudioContext, target: AudioNode): WaveEnvelope;
+    findEnvelope(audioContext: AudioContext, target: AudioNode, when: number, duration: number): WaveEnvelope;
     adjustPreset(audioContext: AudioContext, preset: WavePreset): void;
     adjustZone(audioContext: AudioContext, zone: WaveZone): void;
     findZone(audioContext: AudioContext, preset: WavePreset, pitch: number): WaveZone | null;

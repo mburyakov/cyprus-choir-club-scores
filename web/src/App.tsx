@@ -81,7 +81,7 @@ function ItemBody(idx: number, f: ItemFile) {
             {" "}(<a href={`static/${f.mp3_name}`}>Download mp3</a>)
           </>
         )}
-        {" "}(<a href={`static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play online</a>)
+        {" "}(<a href={`#/midiplayer2?midiFile=${encodeURIComponent(f.midi_name!)}&room=default`}>Play online</a>)
       </>
     )}
   </li>
