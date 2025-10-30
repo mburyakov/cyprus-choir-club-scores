@@ -105,11 +105,11 @@ def main():
         files.append(item_data)
     for item_data in files:
         item_data["files_short"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T" in item_file["midi_name"] or "-B" in item_file["midi_name"])]
-    winter_event_files = [item_data for item_data in files if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "carol-of-the-bells"]]
+    winter_event_files = [item_data for item_data in files if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "we-wish-you"]]
     winter_index_page_content = index_template.render({ "items": winter_event_files})
     index_page_content = index_template.render({ "items": files })
     (out_root / "index.html").write_text(index_page_content)
-    (out_root / "winter-event.html").write_text(winter_index_page_content)
+    (out_root/ ".." / "winter-event.html").write_text(winter_index_page_content)
 
     (out_root / "winter-event.json").write_text(json.dumps(winter_event_files, ensure_ascii=False, indent=2))
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
