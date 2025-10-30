@@ -157,7 +157,7 @@ export default function NativeMidiPlayer() {
       setStatus('No MIDI file specified')
       return null
     }
-    const res = await fetch(`/static/${(query.midiFile)}`)
+    const res = await fetch(`static/${(query.midiFile)}`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const buf = await res.arrayBuffer()
     const mf = new MIDIFile(buf)

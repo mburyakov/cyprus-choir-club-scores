@@ -517,6 +517,11 @@
 			html = html + '<h3>Channels</h3>';
 			for (var i = 0; i < song.tracks.length; i++) {
 				var v = 100 * song.tracks[i].volume;
+                var soloParam = getParam("solo")
+                if (soloParam && soloParam !== song.tracks[i].name) {
+                    v = 20 * song.tracks[i].volume
+                }
+                setVolume(i, v / 100, song)
 				html = html + '<p>' + song.tracks[i].name + chooserIns(song.tracks[i].id, i) + '<input id="channel' + i + '" type="range" min="0" max="100" value="' + v + '" step="1" /></p>';
 			}
 			html = html + '<h3>Drums</h3>';
@@ -533,10 +538,14 @@
             document.getElementById('modeSelect').addEventListener('change', modeSelectChange)
 			console.log('Loaded');
             var roomid = getParam("room");
-            if (roomid) {
-                setControl(MODE_STANDALONE)
-            } else {
+            if (!roomid) {
                 reopenWithRandomRoom()
+            }
+            var mode = getParam("mode");
+            if (mode === "follow") {
+                setControl(MODE_FOLLOW)
+            } else {
+                setControl(MODE_STANDALONE)
             }
             if (!localStorage.getItem("persistentId")) {
                 let persistentId = (Math.random() + 1).toString(36).substring(7)
@@ -565,15 +574,19 @@
 			}
 			loadedsong = song;
 		}
+        function setVolume(i, v, song) {
+            console.log('setVolume', i, v);
+            player.cancelQueue(audioContext);
+            if (v < 0.000001) {
+                v = 0.000001;
+            }
+            song.tracks[i].volume = v;
+        }
 		function setVolumeAction(i, song) {
 			var vlm = document.getElementById('channel' + i);
 			vlm.oninput = function (e) {
-				player.cancelQueue(audioContext);
-				var v = vlm.value / 100;
-				if (v < 0.000001) {
-					v = 0.000001;
-				}
-				song.tracks[i].volume = v;
+                var v = vlm.value / 100;
+				setVolume(i, v, song)
 			};
 			var sl = document.getElementById('selins' + i);
 			sl.onchange = function (e) {
