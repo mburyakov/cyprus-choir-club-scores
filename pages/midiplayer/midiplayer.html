@@ -7,6 +7,7 @@
 </head>
 
 <body>
+    <button id="initLoad">Load</button>
 	<div id='cntls'></div>
 	<script type="module">
         import { joinRoom, selfId } from 'https://cdn.skypack.dev/pin/trystero@v0.11.8-pxKZpWfVVzXootkGlZMp/mode=imports,min/optimized/trystero.js';
@@ -646,21 +647,6 @@
 			html = html + '</select>';
 			return html;
 		}
-		function handleFileSelect(event) {
-			console.log(event);
-			var file = event.target.files[0];
-			console.log(file);
-			var fileReader = new FileReader();
-			fileReader.onload = function (progressEvent) {
-				console.log(progressEvent);
-				var arrayBuffer = progressEvent.target.result;
-				console.log(arrayBuffer);
-				var midiFile = new MIDIFile(arrayBuffer);
-				var song = midiFile.parseSong();
-				startLoad(song);
-			};
-			fileReader.readAsArrayBuffer(file);
-		}
 		function handleExample(path) {
 			console.log(path);
 			var xmlHttpRequest = new XMLHttpRequest();
@@ -683,7 +669,10 @@
         function getParam(param) {
             return new URL(document.URL).searchParams.get(param)
         }
-        handleExample("../" + getParam("midiFile"))
+        var loadButton = document.getElementById('initLoad');
+        loadButton.addEventListener('click', function (e) {
+          handleExample("../" + getParam("midiFile"))
+        })
 	</script>
 </body>
 
