@@ -236,7 +236,7 @@ export default function NativeMidiPlayer() {
       </div>
 
       <div>
-        <a href={`#/midiplayer?midiFile=${encodeURIComponent(query.midiFile)}&room=${encodeURIComponent(query.room)}`}>Open legacy player</a>
+        <a href={`static/midiplayer/midiplayer.html?midiFile=${encodeURIComponent(query.midiFile)}&room=${encodeURIComponent(query.room)}`}>Open legacy player</a>
       </div>
       {playerEngineRef.current && (
         <PlayerComponent playerEngine={playerEngineRef.current} />

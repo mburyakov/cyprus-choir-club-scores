@@ -29,6 +29,7 @@
         var currentControl = null;
         var sendMessage = null;
         var peerTimeDiff = {};
+        var peerLatency = {};
         var peerPersistentId = {};
         var peerDelay = {};
 		var playerSongTime = 0;
@@ -95,12 +96,15 @@
         }
 
         function updatePeerTimeDiff(data, peerId) {
+            peerLatency[peerId] = peerTimeDiff[peerId] + data.timeDiff;
             if (data.contextTime > 0 && audioContext.currentTime > 0) {
                 var timeDiff = data.contextTime - audioContext.currentTime + audioContext.baseLatency + audioContext.outputLatency - data.baseLatency - data.outputLatency;
-                if (peerTimeDiff[peerId]) {
-                    peerTimeDiff[peerId] = (peerTimeDiff[peerId] * 9 + timeDiff) / (9 + 1);
-                } else {
-                    peerTimeDiff[peerId] = timeDiff;
+                if (isFinite(timeDiff)) {
+                    if (isFinite(peerTimeDiff[peerId])) {
+                        peerTimeDiff[peerId] = (peerTimeDiff[peerId] * 9 + timeDiff) / (9 + 1);
+                    } else {
+                        peerTimeDiff[peerId] = timeDiff;
+                    }
                 }
             }
         }
@@ -136,7 +140,11 @@
 
             var contextTimeDiff;
             if (peerTimeDiff[peerId] && data.timeDiff) {
-                contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff) / 2 + (peerDelay[peerId] ? peerDelay[peerId]/1000 : 0);
+                if (isFinite(data.peerDelay)) {
+                    contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff - data.peerDelay) / 2 + (peerDelay[peerId] ? peerDelay[peerId] / 1000 : 0);
+                } else {
+                    contextTimeDiff = (peerTimeDiff[peerId] - data.timeDiff) / 2 + (peerDelay[peerId] ? peerDelay[peerId] / 1000 : 0);
+                }
             } else {
                 contextTimeDiff = data.contextTime - audioContext.currentTime + (peerDelay[peerId] ? peerDelay[peerId]/1000 : 0);
             }
@@ -238,7 +246,8 @@
                 songStart: songStart,
                 tempoCoeff: tempoCoeff,
                 contextTime: audioContext.currentTime,
-                timeDiff: peerTimeDiff[peerId] + (peerDelay[peerId] ? 2 * peerDelay[peerId] / 1000 : 0),
+                timeDiff: peerTimeDiff[peerId],
+                peerDelay: peerDelay[peerId] ? peerDelay[peerId] / 1000 : 0,
                 playing: playing,
                 mode: mode,
                 persistentId: localStorage.getItem("persistentId"),
@@ -271,6 +280,7 @@
                         list = list + `<td><samp>${peerId}</samp></td>`;
                         list = list + `<td>delayMs:<input id="${peerId}_delay" style="width: 5em;" type="number" value="${peerDelay[peerId] ? peerDelay[peerId] : 0}" step="10"/></td>`;
                         list = list + `<td>diff ${peerTimeDiff[peerId]}<td>`;
+                        list = list + `<td>latency ${peerLatency[peerId]}<td>`;
                         list = list + `</tr>`;
                     }
                 })
@@ -671,7 +681,8 @@
         }
         var loadButton = document.getElementById('initLoad');
         loadButton.addEventListener('click', function (e) {
-          handleExample("../" + getParam("midiFile"))
+            loadButton.remove()
+            handleExample("../" + getParam("midiFile"))
         })
 	</script>
 </body>

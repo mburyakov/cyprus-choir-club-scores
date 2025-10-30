@@ -7,5 +7,8 @@ export default defineConfig({
     publicDir: '../out/pages/',
     build: {
         outDir: 'dist',
+    },
+    server: {
+        host: '0.0.0.0'
     }
 })
