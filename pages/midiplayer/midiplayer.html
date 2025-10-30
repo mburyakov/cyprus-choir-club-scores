@@ -529,7 +529,7 @@
 			for (var i = 0; i < song.tracks.length; i++) {
 				var v = 100 * song.tracks[i].volume;
                 var soloParam = getParam("solo")
-                if (soloParam && soloParam !== song.tracks[i].name) {
+                if (soloParam && soloParam !== song.tracks[i].name.replace(/:/g, '')) {
                     v = 20 * song.tracks[i].volume
                 }
                 setVolume(i, v / 100, song)
