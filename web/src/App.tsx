@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Route, Routes, useParams } from 'react-router-dom'
-import MidiPlayer from './MidiPlayer'
 import NativeMidiPlayer from './player/NativeMidiPlayer'
 
 export type ItemFile = {
@@ -124,8 +123,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/item/:name" element={<ItemView />} />
-      <Route path="/midiplayer" element={<MidiPlayer />} />
-      <Route path="/midiplayer2" element={<NativeMidiPlayer />} />
+      <Route path="/midiplayer" element={<NativeMidiPlayer />} />
     </Routes>
   )
 }
