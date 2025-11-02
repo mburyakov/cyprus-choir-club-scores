@@ -110,14 +110,21 @@ export default function MidiSvgView(props: {
     el.scrollTo({ left: targetScroll, behavior: isPlaying ? 'smooth' : 'auto' })
   }, [currentTime, follow, pxPerSec, isPlaying])
 
+  const computeSeekTimeFromClientX = (clientX: number) => {
+    const el = containerRef.current
+    if (!el) return null
+    const rect = el.getBoundingClientRect()
+    // clientX is viewport-relative; subtract container's left and add horizontal scroll
+    const x = clientX - rect.left + el.scrollLeft
+    const timelineWidth = Math.max(1, totalWidth)
+    const clampedX = Math.max(0, Math.min(x, timelineWidth))
+    return clampedX / pxPerSec
+  }
+
   const onBackgroundClick = (e: React.MouseEvent) => {
     if (!onSeek) return
-    const el = containerRef.current
-    const svg = svgRef.current
-    if (!el || !svg) return
-    const bbox = svg.getBoundingClientRect()
-    const x = e.clientX - bbox.left + el.scrollLeft
-    const t = x / pxPerSec
+    const t = computeSeekTimeFromClientX(e.clientX)
+    if (t == null) return
     onSeek(Math.min(Math.max(0, t), duration || 0))
   }
 
