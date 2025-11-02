@@ -4,7 +4,11 @@ import {Song} from "./MIDIFile";
 
 export type StatusListener = (status: string) => void
 
-type Envelope = any
+type EnvelopeWrapper = {
+  readonly envelope: any,
+  readonly startTimeAbs: number,
+  readonly stopTimeAbs: number,
+}
 
 export default class PlayerEngine {
   readonly audio: AudioEngine
@@ -20,7 +24,7 @@ export default class PlayerEngine {
   private isPlaying = false
   private tickTimer: number | null = null
 
-  private readonly currentEnvelops: Map<number, Envelope>[]
+  private readonly currentEnvelops: Map<number, EnvelopeWrapper>[]
 
   private readonly onStatus?: StatusListener
 
@@ -30,7 +34,7 @@ export default class PlayerEngine {
     this.audio = audio
     this.instrumentManager = new InstrumentManager(audio)
     this.song = song
-    this.currentEnvelops = song.tracks.map(() => new Map<number, Envelope>())
+    this.currentEnvelops = song.tracks.map(() => new Map<number, EnvelopeWrapper>())
     this.onStatus = opts?.onStatus
   }
 
@@ -184,17 +188,52 @@ export default class PlayerEngine {
       if (!track.notes || !wavePreset) continue
       const now = ac.currentTime
       track.notes.forEach((n, i) => {
-        if (n.when < end && n.when + n.duration >= start) {
-          const whenAbs = songStart + n.when / tempo
-          let dur = n.duration / tempo;
+        // We should process separately:
+        //  1) notes which start in the future, we need just to schedule them,
+        //  2) notes which start in the future but already scheduled, we need to cancel and reschedule them,
+        //  3) notes which are already playing, we need:
+        //  3a) adjust their duration
+        //  3b) or stop immediately if they should be already finished,
+        //  3c) or stop and reschedule if they should start later,
+        //  4) notes which should be playing now but are not, we need to start them immediately.
+        let existingEnvelope = this.currentEnvelops[t].get(i);
+        const whenAbs = songStart + n.when / tempo
+        let durAbs = n.duration / tempo;
+        if (existingEnvelope) {
+          if (existingEnvelope.startTimeAbs > now + 0.01) {
+            // case 2
+            // console.log('reschedule', t, i, ` from ${existingEnvelope.startTimeAbs} to ${whenAbs}, now ${now}`)
+            this.cancelEnvelope(existingEnvelope)
+            const envelope = this.queueWithVariativeDuration(ac, ac.destination, wavePreset, whenAbs, n.pitch, durAbs, volume)
+            this.currentEnvelops[t].set(i, envelope)
+            return
+          } else if (existingEnvelope.stopTimeAbs > now) {
+            // case 3
+            if (whenAbs > now + 0.01) {
+              // case 3c
+              this.adjustStopAt(existingEnvelope, now)
+              const envelope = this.queueWithVariativeDuration(ac, ac.destination, wavePreset, whenAbs, n.pitch, durAbs, volume)
+              this.currentEnvelops[t].set(i, envelope)
+            } else if (existingEnvelope.stopTimeAbs != whenAbs + durAbs) {
+              //case 3a and 3b
+              const envelope = this.adjustStopAt(existingEnvelope, Math.max(whenAbs + durAbs, now))
+              this.currentEnvelops[t].set(i, envelope)
+            }
+            return
+          } else {
+            this.currentEnvelops[t].delete(i)
+          }
+        }
+        // if (n.when < end && n.when + n.duration >= start) {
+          // case 1 or 4
           const whenAbsAdjusted = Math.max(whenAbs, now)
-          let durAdjusted = dur + Math.min(0, whenAbs - now)
+          let durAdjusted = durAbs + Math.min(0, whenAbs - now)
           if (durAdjusted > 0) {
-            let existingEnvelope = this.currentEnvelops[t].get(i);
+            // console.log('schedule', t, i)
             const envelope = this.queueWithVariativeDuration(ac, ac.destination, wavePreset, whenAbsAdjusted, n.pitch, durAdjusted, volume)
             this.currentEnvelops[t].set(i, envelope)
           }
-        }
+        // }
       })
     }
 
@@ -215,10 +254,22 @@ export default class PlayerEngine {
     }
   }
 
-  private queueWithVariativeDuration(ac: AudioContext, dest: AudioNode, wavePreset: any, when: number, pitch: number, duration: number, volume: number) {
+  private queueWithVariativeDuration(ac: AudioContext, dest: AudioNode, wavePreset: any, when: number, pitch: number, duration: number, volume: number): EnvelopeWrapper {
     const envelope = this.audio.player.queueWaveTable(ac, dest, wavePreset, when, pitch, 60, volume, [])
-    envelope.audioBufferSourceNode.stop(when + 0.1);
     envelope.audioBufferSourceNode.stop(when + duration);
-    return envelope
+    return {
+      envelope: envelope, startTimeAbs: when, stopTimeAbs: when + duration
+    }
+  }
+
+  private adjustStopAt(envelope: EnvelopeWrapper, stopTime: number): EnvelopeWrapper {
+    envelope.envelope.audioBufferSourceNode.stop(stopTime)
+    return {
+      envelope: envelope.envelope, startTimeAbs: envelope.startTimeAbs, stopTimeAbs: stopTime
+    }
+  }
+
+  private cancelEnvelope(envelope: EnvelopeWrapper) {
+    envelope.envelope.cancel()
   }
 }
