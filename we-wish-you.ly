@@ -10,7 +10,7 @@ taglineLanguage = "english"
 \include "articulate.ly"
 
 \header {
-  title = "We wish you a merry Cristmas"
+  title = "We wish you a merry Christmas +"
 }
 
 PartIS = \relative c' {
@@ -360,7 +360,8 @@ PartJB = \relative c {
 
 PartNS = \relative c'' {
   \autoBeamOff
-  g4 g8 g4 g8 |
+  \dynamicUp
+  g4\pp g8 g4 g8 |
   g4. g4 g8 |
   g4.~ g4 r8 |
   c4.~( c8.[ d16)] c8 h2. |
@@ -449,7 +450,7 @@ PartDT = \relative c {
   \autoBeamOff
   e8 e8 d8 d8 g8([ fis16 e16)] d4 |
   d'4 d4 d8 c8 h8 h8 |
-  h4 d4 h2 |
+  h4 d4 d2 |
   d4 d4 d8 c8 h8 h8 |
   h4 d4 d2 |
   c8 c8 h4 e,2
@@ -564,8 +565,8 @@ LyricsNS = \lyricmode {
   Al -- les schläft.
   Nur das trau -- te hoch -- hei -- li -- ge, hei -- li -- ge.
   Hol -- der Kna -- be im lok -- ki -- gen...
-  schlaf im himm -- li -- scher Ruh,
-  schlaf im himm -- li -- scher Ruh!
+  schlaf in himm -- li -- scher Ruh,
+  schlaf in himm -- li -- scher Ruh!
 }
 
 LyricsNA = \lyricmode {
@@ -574,10 +575,10 @@ LyricsNA = \lyricmode {
   Hei -- li -- ge Nacht!
   Al -- les schläft,
   ein -- sam wacht
-  nur das trau -- te hoch hei -- li -- ge Paar.
+  nur das trau -- te hoch -- hei -- li -- ge Paar.
   Hol -- der Kna -- be im lok -- ki -- gen Haar,
-  schlaf im himm -- li -- scher Ruh,
-  schlaf im himm -- li -- scher Ruh!
+  schlaf in himm -- li -- scher Ruh,
+  schlaf in himm -- li -- scher Ruh!
 }
 
 LyricsNB = \lyricmode {
@@ -586,11 +587,11 @@ LyricsNB = \lyricmode {
   heil -- ge, heil -- ge,
   al -- les schläft,
   ein -- sam wacht
-  nur das trau -- te hoch hei -- li -- ge Paar.
+  nur das trau -- te hoch -- hei -- li -- ge Paar.
   Hol -- der Kna -- be im lok -- ki -- gen Haar,
-  schlaf im himm -- li -- scher Ruh,
-  schlaf im himm -- li -- scher,
-  schlaf im himm -- li -- scher Ruh!
+  schlaf in himm -- li -- scher Ruh,
+  schlaf in himm -- li -- scher,
+  schlaf in himm -- li -- scher Ruh!
 }
 
 LyricsDVA = \lyricmode {
@@ -853,29 +854,40 @@ ChoirAll = {
 
 DrumAll = {
     \drummode {
+      \set Score.rehearsalMarkFormatter = #format-mark-box-alphabet
+      \mark \default
+      \once\override Score.MetronomeMark.X-offset = 10
       \time 2/2 \tempo 2=75
       \partial 4 r4 |
       \repeat unfold 15 { mar4 mar4 mar4 mar4 | }
       mar2
       \tempo 4=120
       r4 r4
+      \mark \default
       \time 3/4
       \repeat unfold 7 R2.
       \time 6/8
       \break
       \tempo 8=120
-      \repeat unfold 12 R2.
+      R2.
+      \mark \default
+      \repeat unfold 11 R2.
       \time 2/2 \tempo 2=75
-      \repeat unfold 8 { mar4 mar4 mar4 mar4 | }
+      mar4 mar4 mar4 mar4 |
+      \mark \default
+      \repeat unfold 7 { mar4 mar4 mar4 mar4 | }
       \tempo 2=85
       mar2.
       r4
+      \mark \default
       \time 2/4 \tempo 4=85
       \repeat unfold 19 R2
+      \mark \default
       \time 2/2
       \tempo 2=75
       \repeat unfold 8 { mar4 mar4 mar4 mar4 | }
       mar2. r4
+      \mark \default
       \tempo 4=75
       \repeat unfold 5 R1
       \repeat unfold 6 R1
@@ -884,10 +896,15 @@ DrumAll = {
       \tempo 4=120
       \time 4/4
       R1
+      \mark \default
       \time 3/4
       \repeat unfold 7 R2.
-      \time 2/2 \tempo 2=75
-      \repeat unfold 12 { mar4 mar4 mar4 mar4 | }
+      \time 2/2
+      \once\override Score.MetronomeMark.X-offset = #4
+      \tempo 2=75
+      \mark \default
+      mar4 mar4 mar4 mar4 |
+      \repeat unfold 11 { mar4 mar4 mar4 mar4 | }
       mar4 mar4 mar2
     }
   
@@ -907,6 +924,7 @@ Music = <<
   \score {
     \Music
     \layout {
+      #(layout-set-staff-size 18)
       \context {
         \Staff
         \RemoveAllEmptyStaves
@@ -923,5 +941,8 @@ Music = <<
   }
   \paper {
     systems-per-page = 3
+    system-count = 24
+    two-sided = #'true
+    right-margin = 20\mm
   }
 }

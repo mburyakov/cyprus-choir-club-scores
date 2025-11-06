@@ -82,7 +82,7 @@ PartSU = \relative c' {
   r8 c4 c8 c4 c8 c8 |
   d4 d4 d4 d4 |
   e4. r8 r2 |
-  r2 f8 e4 d8 |
+  r2 f8 e4 d16( e16) |
   e2~ e8 r8 r4 |
 }
 
@@ -314,12 +314,12 @@ LyricsB = \lyricmode {
 }
 
 PartTempo = {
-  \tempo 4 = 69
+  \tempo 4 = 86
   s1*29
   s2
-  \tempo 4 = 25
+  \tempo 4 = 43
   s2
-  \tempo 4 = 69
+  \tempo 4 = 86
 }
 
 use-treble-key-for-bass-and-tenor = #'t
