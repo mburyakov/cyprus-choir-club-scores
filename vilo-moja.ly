@@ -7,6 +7,8 @@ taglineLanguage = "croatian"
 \include "include/tagline-lilypond.ly"
 \include "include/choir-setup.ly"
 
+\include "articulate.ly"
+
 \header {
   title = "Vilo moja"
   poet = \markup { \italic { "Stihovi: V. Juretić" } }
@@ -224,6 +226,107 @@ PartBV = \relative c {
   f1 |
 }
 
+PartGuitarV = {
+  \autoBeamOn
+  << { r16 g \pppp b g d' g b g } \\ { g,2 } >>
+  << { r16 g b g d' g b g } \\ g,2 >>
+  |
+  << { r16 g c' g e' g c' g } \\ c2 >>
+  << { r16 g c' g e' g c' g } \\ c2 >>
+  |
+  << { r8 \repeat unfold 2 <f b d'>8\ppppp r8 r8 \repeat unfold 3 <a c' e'>8 } \\ { b,4. f,8 a,2 } >>
+  |
+  << { r8 <a d' f'>8 <a d' f'>8 <a_~ d'~ f'~>8_- \repeat unfold 4 <a d' f'>8 } \\ d1 >>
+  |
+  << { r8 \voiceFour \repeat unfold 3 <b d'>8 } \\ g,2 >>
+  << { \voiceFour s8 <b d'>8 s8 <b d'>8 } \\ { g,4 b,4 } \\ { g'4 \ppp f'4 } >>
+  |
+  << { \voiceFour s8 \repeat unfold 3 <g c'>8 } \\ c2 \\ { f'2 } >>
+  << { \voiceFour s8 \repeat unfold 3 <g c'>8 } \\ c2 \\ { e'2 } >>
+  |
+  << { r8 \repeat unfold 2 <f b d'>8 r8 r8 \repeat unfold 3 <e a e'>8 } \\ { b,4. f,8 f,2 } >>
+  |
+  << { r8 \repeat unfold 3 <a d' e'>8 <a cis' e'>8 e8 <a cis' e'>4 } \\ { a,1 } >>
+  |
+  << { r8 <a d' f'>4-> <a d' f'>8 } \\ d2 >>
+  << { r8 <a d' f'>4-> <a d' f'>8 } \\ d2 >>
+  |
+  << { r8 <a c' e'>4-> <a c' e'>8 } \\ a,2 >>
+  << { r8 <a c' e'>4-> <a c' e'>8 } \\ a,2 >>
+  |
+  << { r8 <f b d'>4 \cresc <f b d'>8 } \\ b,2 >>
+  << { r8 <f b d'>4 <f b d'>8 } \\ b,2 >>
+  |
+  \set Staff.connectArpeggios = ##t
+  \once\override Staff.Arpeggio.stencil =
+    #ly:arpeggio::brew-chord-bracket
+  << { <a cis' e'>4.\arpeggio \! } \\ { a,4.\arpeggio } >>
+  << { \oneVoice r8 r2 } \\ { s8 s2 } >>
+  |
+  << { r8 \repeat unfold 3 <g c' e'>8 \ppppp } \\ c2 >>
+  << { r8 \repeat unfold 3 <g c' e'>8 } \\ c2 >>
+  |
+  << { r8 \repeat unfold 7 <g c' e'>8 } \\ c1 >>
+}
+
+PartGuitarF = {
+  << { r8 <a c' f'>8\ppppp <a c' f'>8 <a c' f'>8 <a c' f'>4 r4 } \\ { f,2. r4 } >>
+}
+
+PartGuitarPre = {
+  << { r8 \repeat unfold 3 <a d' f'>8 } \\ d2 >>
+  << { r8 \repeat unfold 3 <a d' f'>8 } \\ d2 >>
+  |
+  << { r8 \repeat unfold 3 <a c' e'>8 } \\ a,2 >>
+  << { r8 \repeat unfold 3 <f b d'>8 } \\ b,2 >>
+  |
+  << { r8 <a c' f'>16 f16 <a c' f'>8 <f a c' f'>8 } \\ f,2 >>
+  << { r8 \repeat unfold 3 <g c' e'>8 } \\ c2 >>
+}
+
+PartGuitarU = {
+  \autoBeamOn
+  << { r8 \repeat unfold 3 <a c' f'>8 } \\ f,2 >>
+  << { r8 \repeat unfold 3 <g c' e'>8 } \\ c2 >>
+  |
+  << { r8 <a c' f'>16 f16 <a c' f'>8 <f a c' f'>8 } \\ f,2 >>
+  << { r8 <b d' f'>4 <b d' f'>8 } \\ b,2 >>
+  |
+  << { r8 <a c' f'>16 f16 <a c' f'>8 <f a  c' f'>8 } \\ f,2 >>
+  << { r8 \repeat unfold 3 <g c' e'>8 } \\ c2 >>
+  |
+  << { r8 <a c' f'>16 f16 <a c' f'>8 <f a c' f'>8 } \\ f,2 >>
+  << { r8 <a c' f'>8 r8 <a c' f'>8 } \\ { f4 e4 } >>
+  |
+  
+  \repeat volta 2 {
+    \PartGuitarPre
+    |
+    \alternative {
+      \volta 1 {
+        << { r8 <a c' f'>16 f16 <a c' f'>8 <f a c' f'>8 } \\ f,2 >>
+        << { r8 <a c' f'>8 r8 <a c' f'>8 } \\ { f4 e4 } >>
+      }
+      \volta 2 {
+        << { r8 \repeat unfold 3 <a c' f'>8 } \\ f,2 >>
+        << { r8 \repeat unfold 3 <b d' f'>8 } \\ b,2 >>
+      }
+    }
+  }
+  |
+  << { r8 \repeat unfold 3 <a c' f'>8 } \\ f,2 >>
+  << { r8 \repeat unfold 3 <g c' e'>8 } \\ c2 >>
+  |
+  << { r8 \repeat unfold 3 <a c' f'>8 } \\ f,2 >>
+  << { r8 \repeat unfold 3 <b d' f'>8 } \\ b,2 >>
+  |
+  << s2 \\ s2 \\ { \oneVoice <f, c f a c' f'>4\arpeggio r4 } >>
+  << s4 \\ s4 \\ { \oneVoice <b, f b d' f' b'>8\arpeggio r8 } >>
+  << s4 \\ s4 \\ { \oneVoice <b, f b des' f' b'>8\arpeggio r8 } >>
+  |
+  << \repeat tremolo 32 <a c' f'>32 \\ <f, c f>1 >>
+}
+
 LyricsSolo = \lyricmode {
   Sko -- ro sva -- ki put
   kad se mi
@@ -313,13 +416,18 @@ LyricsB = \lyricmode {
   vi -- lo mo -- ja.
 }
 
+PartTempoPre = {
+  \tempo 4 = 70
+  s1*4
+}
+
 PartTempo = {
-  \tempo 4 = 86
+  \tempo 4 = 70
   s1*29
   s2
-  \tempo 4 = 43
+  \tempo 4 = 35
   s2
-  \tempo 4 = 86
+  \tempo 4 = 70
 }
 
 use-treble-key-for-bass-and-tenor = #'t
@@ -403,16 +511,93 @@ MusicFourLines = {
     >>
 }
 
+MusicGuitar = {
+    <<
+      \new Staff = "Solo" <<
+        \clef "treble"
+        \key f \major
+        \new Voice = "PartSolo" { R1*4 \PartSoloU \PartSoloV }
+      >>
+      \new Lyrics \lyricsto "PartSolo" {
+        \LyricsSolo
+      }
+      \new ChoirStaff <<
+        \new Staff = "A" <<
+          \clef "treble"
+          \key f \major
+          \new Voice = "PartS" { R1*4 \voiceOne \PartSU \PartSV }
+          \new Voice = "PartA" { s1*4 \voiceTwo \PartAU \PartAV }
+        >>
+        \new Lyrics \lyricsto "PartS" {
+          \LyricsS
+        }
+        \new Staff = "B" <<
+          \tag #'use-treble-key-for-bass-and-tenor {
+            \clef "treble_8"
+          }
+          \tag #'use-bass-key-for-bass-and-tenor {
+            \clef "bass"
+          }
+          \key f \major
+          \new Voice = "PartT" { R1*4 \voiceOne \PartTU \PartTV }
+          \new Voice = "PartB" { s1*4 \voiceTwo \PartBU \PartBV }
+        >>
+        \new Lyrics \lyricsto "PartT" {
+          \LyricsB
+        }
+      >>
+      \new Staff = "Guitar" \with {
+        \consists "Span_arpeggio_engraver"
+        autoBeaming=##t
+      } <<
+        \clef "treble_8"
+        \key f \major
+        { \PartGuitarF \PartGuitarPre \PartGuitarF \PartGuitarV \PartGuitarU }
+      >>
+    >>
+}
+
 \book {
   \score {
     \Music
-    \layout {
-      
-    }
+    \layout {}
   }
   \paper {
     systems-per-page = 4
     system-count = 8
+  }
+}
+
+\book {
+  \bookOutputSuffix "guitar"
+  \score {
+    \MusicGuitar
+    \layout {}
+  }
+  \score {
+    <<
+      #(define ac:normalFactor '(1 . 1))
+      \articulate {
+        \unfoldRepeats \MusicGuitar
+      }
+      \context Staff = "Guitar" <<
+        \set Staff.midiInstrument = "acoustic guitar (nylon)"
+      >>
+      \context Staff = "A" <<
+        \set Staff.midiMaximumVolume = 0.0
+      >>
+      \context Staff = "B" <<
+        \set Staff.midiMaximumVolume = 0.0
+      >>
+      \context Staff = "Solo" <<
+        \set Staff.midiMaximumVolume = 0.0
+      >>
+      { \PartTempoPre \PartTempo }
+    >>
+    \midi {}
+  }
+  \paper {
+    
   }
 }
 
