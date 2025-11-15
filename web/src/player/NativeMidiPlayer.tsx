@@ -207,10 +207,6 @@ export default function NativeMidiPlayer() {
 
   return (
     <div style={{ padding: 16 }}>
-      {/* Hidden MIDI-Sounds component used to drive audio context and underlying player */}
-      <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-        <MIDISounds ref={midiSoundsRef} appElementName="root" />
-      </div>
       <h1>MIDI Player (Native React)</h1>
       <p>
         This is an experimental native React version of the MIDI player. The legacy player remains available as a fallback.
@@ -241,6 +237,8 @@ export default function NativeMidiPlayer() {
       {playerEngineRef.current && (
         <PlayerComponent playerEngine={playerEngineRef.current} />
       )}
+      {/*TODO: MIDISounds component should be a part of PlayerComponent*/}
+      <MIDISounds ref={midiSoundsRef} appElementName="root" />
     </div>
   )
 }
