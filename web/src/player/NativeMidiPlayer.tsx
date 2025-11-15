@@ -5,6 +5,7 @@ import AudioEngine from './core/AudioEngine'
 import PlayerEngine from './core/Scheduler'
 import WebAudioFontPlayer from "webaudiofont";
 import {MIDIFile, Song, Track} from "./core/MIDIFile";
+import TapTempo from "./core/TapTempo";
 
 class PlayerPageOptions {
   constructor(
@@ -239,6 +240,7 @@ export default function NativeMidiPlayer() {
       )}
       {/*TODO: MIDISounds component should be a part of PlayerComponent*/}
       <MIDISounds ref={midiSoundsRef} appElementName="root" />
+      <TapTempo/>
     </div>
   )
 }
