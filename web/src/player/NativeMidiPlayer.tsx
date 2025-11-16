@@ -5,7 +5,7 @@ import AudioEngine from './core/AudioEngine'
 import PlayerEngine from './core/Scheduler'
 import WebAudioFontPlayer from "webaudiofont";
 import {MIDIFile, Song, Track} from "./core/MIDIFile";
-import TapTempo from "./core/TapTempo";
+import TapTempo, {TapInfo} from "./core/TapTempo";
 
 class PlayerPageOptions {
   constructor(
@@ -79,10 +79,8 @@ function PlayerComponent({ playerEngine } : { playerEngine: PlayerEngine }) {
       {showViz && (
         <div style={{ width: '100%' }}>
           <MidiSvgView
-            song={playerEngine?.song}
-            currentTime={playerEngine.getProgress()}
-            duration={playerEngine.song.duration}
-            isPlaying={playerEngine?.playing() || false}
+            song={playerEngine.song}
+            songState={{currentTime: playerEngine.getProgress(), isPlaying: playerEngine.playing()}}
             pxPerSec={pxPerSec}
             follow={true}
             onSeek={seekTo}
@@ -121,8 +119,27 @@ function PlayerComponent({ playerEngine } : { playerEngine: PlayerEngine }) {
           </div>
         ))}
       </div>
+      <TapTempo callback={(previousTaps) => { return roundPosition(previousTaps, playerEngine) }}/>
     </div>
   )
+}
+
+function roundPosition(previousTaps: TapInfo[], playerEngine: PlayerEngine) {
+  const tempo = 82 / 60
+  const currentSongTime = playerEngine.getProgress()
+  const currentSongTimeBeats = currentSongTime * tempo
+  const roundedSongTimeBeats = Math.round(currentSongTimeBeats)
+  const roundedSongTime = roundedSongTimeBeats / tempo
+  // console.log(`rounded ${currentSongTime} to ${roundedSongTime} (${currentSongTimeBeats} to ${roundedSongTimeBeats} beats)`)
+  // playerEngine.seekTo(roundedSongTime)
+
+  if (previousTaps.length > 0 && previousTaps[previousTaps.length - 1].beatTime === roundedSongTimeBeats - 1) {
+    const newTempo = playerEngine.getTempo() * (1 + (roundedSongTime - currentSongTime) / tempo)
+    console.log(`new tempo: ${newTempo}`)
+    playerEngine.setTempo(newTempo)
+  }
+
+  return roundedSongTimeBeats
 }
 
 export default function NativeMidiPlayer() {
@@ -240,7 +257,6 @@ export default function NativeMidiPlayer() {
       )}
       {/*TODO: MIDISounds component should be a part of PlayerComponent*/}
       <MIDISounds ref={midiSoundsRef} appElementName="root" />
-      <TapTempo/>
     </div>
   )
 }

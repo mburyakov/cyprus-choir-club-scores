@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, MouseEventHandler, KeyboardEventHandler} from "react";
 import styled from "styled-components";
 
 // -----------------------------------------------------------------------------
@@ -32,16 +32,39 @@ const TapMeContainer = styled.div`
 // -----------------------------------------------------------------------------
 
 const MAX_TAPS = 50;
-const initialTaps: number[] = [];
+const initialTaps: TapInfo[] = [];
 const initialTempo = 0;
 
-const TapTempo: React.FC = () => {
-  const [taps, setTaps] = useState<number[]>(initialTaps);
+export type TapInfo = {
+  time: number;
+  beatTime: number;
+}
+
+type TapTempoProps = { callback: (previousTaps: TapInfo[]) => number }
+
+const TapTempo: React.FC<TapTempoProps> = (props) => {
+  const [taps, setTaps] = useState<TapInfo[]>(initialTaps);
   const [tempo, setTempo] = useState<number>(initialTempo);
 
-  const handleTap = (): void => {
+  const handleMouseEvent: MouseEventHandler<HTMLButtonElement> = (e) => {
+    handleTap(e.type === "mousedown", false)
+  }
+
+  const handleKeyEvent: KeyboardEventHandler<HTMLButtonElement> = (e) => {
+    if (e.repeat) return
+    e.key === "Enter" && e.preventDefault();
+    handleTap(e.type === "keydown", true)
+  }
+
+  const handleTap = (down: boolean, key: boolean): void => {
+    console.log(`tap ${down ? "down" : "up"} ${key ? "key" : "mouse"}`)
+    const beatTime = props.callback(taps)
     setTaps(prevTaps => {
-      const next = [...prevTaps, Date.now()];
+      let tapInfo = {
+        time: Date.now(),
+        beatTime: beatTime
+      };
+      const next = [...prevTaps, tapInfo];
       // keep array from growing unbounded
       if (next.length > MAX_TAPS) next.shift();
       return next;
@@ -58,7 +81,7 @@ const TapTempo: React.FC = () => {
     if (taps.length > 1) {
       const firstTime = taps[0];
       const lastTime = taps[taps.length - 1];
-      const avgIntervalMs = (lastTime - firstTime) / (taps.length - 1);
+      const avgIntervalMs = (lastTime.time - firstTime.time) / (taps.length - 1);
       if (avgIntervalMs > 0 && isFinite(avgIntervalMs)) {
         nextTempo = Math.floor((1000 * 60) / avgIntervalMs);
       }
@@ -68,7 +91,7 @@ const TapTempo: React.FC = () => {
 
   return (
     <TapMeContainer>
-      <TapMe type="button" onClick={handleTap}>
+      <TapMe type="button" onMouseDown={handleMouseEvent} onMouseUp={handleMouseEvent} onKeyDown={handleKeyEvent} onKeyUp={handleKeyEvent}>
         {tempo}
       </TapMe>
       <button type="button" onClick={handleReset}>

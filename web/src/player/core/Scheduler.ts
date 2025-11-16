@@ -42,6 +42,10 @@ export default class PlayerEngine {
     return this.virtualTime
   }
 
+  getTempo(): number {
+    return this.tempo
+  }
+
   setTempo(v: number) {
     if (!isFinite(v) || v <= 0) return
     const ac = this.audio.context
@@ -108,13 +112,13 @@ export default class PlayerEngine {
     const total = this.song?.duration ?? 0
     const clamped = Math.max(0, Math.min(t, total))
     const wasPlaying = this.isPlaying
-    if (wasPlaying) this.pause()
-    else this.audio.cancelQueue()
+    // if (wasPlaying) this.pause()
+    // else this.audio.cancelQueue()
     this.virtualTime = clamped
     this.lastScheduled = clamped
     this.songStart = ac.currentTime - clamped / this.tempo
     this.onStatus?.(`Position: ${clamped.toFixed(2)} s`)
-    if (wasPlaying) this.start()
+    // if (wasPlaying) this.start()
   }
 
   private startScheduler(timeout: number = 176) {
