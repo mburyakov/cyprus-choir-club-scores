@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import MIDISounds from 'midi-sounds-react'
 import MidiSvgView from './MidiSvgView'
 import AudioEngine from './core/AudioEngine'
@@ -6,6 +6,7 @@ import PlayerEngine from './core/Scheduler'
 import WebAudioFontPlayer from "webaudiofont";
 import {MIDIFile, Song, Track} from "./core/MIDIFile";
 import TapTempo, {TapInfo} from "./core/TapTempo";
+import MidiTimePlot from "./MidiTimePlot";
 
 class PlayerPageOptions {
   constructor(
@@ -78,13 +79,16 @@ function PlayerComponent({ playerEngine } : { playerEngine: PlayerEngine }) {
       </div>
       {showViz && (
         <div style={{ width: '100%' }}>
-          <MidiSvgView
-            song={playerEngine.song}
-            songState={{currentTime: playerEngine.getProgress(), isPlaying: playerEngine.playing()}}
-            pxPerSec={pxPerSec}
-            follow={true}
-            onSeek={seekTo}
-          />
+          <Col>
+            <MidiSvgView
+              song={playerEngine.song}
+              songState={{currentTime: playerEngine.getProgress(), isPlaying: playerEngine.playing()}}
+              pxPerSec={pxPerSec}
+              follow={true}
+              onSeek={seekTo}
+            />
+            <MidiTimePlot noteEventLog={playerEngine.noteEventLog}/>
+          </Col>
         </div>
       )}
 
@@ -121,6 +125,34 @@ function PlayerComponent({ playerEngine } : { playerEngine: PlayerEngine }) {
       </div>
       <TapTempo callback={(previousTaps) => { return roundPosition(previousTaps, playerEngine) }}/>
     </div>
+  )
+}
+
+function Row(props: { children: ReactNode[] }) {
+  return (
+    <table>
+      <tbody>
+        <tr>
+          {props.children.map((c, idx) => (
+            <td style={{verticalAlign: "top"}} key={idx}>{c}</td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  )
+}
+
+function Col(props: { children: ReactNode[] }) {
+  return (
+    <table>
+      <tbody>
+        {props.children.map((c, idx) => (
+          <tr>
+            <td style={{verticalAlign: "top"}} key={idx}>{c}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
@@ -162,6 +194,16 @@ export default function NativeMidiPlayer() {
   const prepareInstruments = useCallback(async (parsedSong: any) => {
     if (!parsedSong) return
     try {
+      if (playerEngineRef.current) return
+      if (!midiSoundsRef.current) return
+      const audioEngine = new AudioEngine(midiSoundsRef.current);
+      audioEngine.initFromMidiSounds()
+      await audioEngine.ensureRunning()
+      playerEngineRef.current = new PlayerEngine(audioEngine, parsedSong, {
+        onStatus: (s) => setStatus(s),
+      })
+
+
       await playerEngineRef.current?.instrumentManager?.prepareForSong(parsedSong as Song)
       setStatus('Instruments loaded')
     } catch (e: any) {
@@ -170,7 +212,7 @@ export default function NativeMidiPlayer() {
     }
   }, [])
 
-  const loadMidi = useCallback(async (): Promise<any | null> => {
+  const loadMidi = useCallback(async (): Promise<Song | null> => {
     if (!query.midiFile) {
       setStatus('No MIDI file specified')
       return null
@@ -180,12 +222,6 @@ export default function NativeMidiPlayer() {
     const buf = await res.arrayBuffer()
     const mf = new MIDIFile(buf)
     const parsed = mf.parseSong()
-    const audioEngine = new AudioEngine(midiSoundsRef.current!!);
-    audioEngine.initFromMidiSounds()
-    await audioEngine.ensureRunning()
-    playerEngineRef.current = new PlayerEngine(audioEngine, parsed, {
-      onStatus: (s) => setStatus(s),
-    })
     setInfo(`${parsed.beats?.length || 0} beats, ${parsed.tracks?.length || 0} tracks`)
     await prepareInstruments(parsed)
     return parsed
