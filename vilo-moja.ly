@@ -19,6 +19,7 @@ taglineLanguage = "croatian"
 \layout {
     \context {
     \Staff {
+      \override Staff.DynamicText.stencil = ##f
       \set autoBeaming=##f
     }
   }
@@ -33,7 +34,7 @@ taglineLanguage = "croatian"
 }
 
 PartSoloU = \relative c' {
-  r2 c8 d8 f8 d8 |
+  c8 d8 f8 d8 |
   g2~ g8 r8 d8 f8 |
   g2~ g8 r8 r8 g8 |
   b4. a8 a2~ |
@@ -68,6 +69,14 @@ PartSoloV = \relative c' {
   a2 r2 |
   R1 |
   \bar "|."
+}
+
+PartMandolin = \relative c' {
+  r4. f8 f8 g8 a8 c8 |
+  f2 f8 e8 c8. a16 |
+  c2 d8 c8 f,8 g8 |
+  a2~ a8 g8 g8. f16 |
+  f4. r8
 }
 
 PartSU = \relative c' {
@@ -274,7 +283,7 @@ PartGuitarF = {
 }
 
 PartGuitarPre = {
-  << { r8 \repeat unfold 3 <a d' f'>8 } \\ d2 >>
+  << { r8 \repeat unfold 3 <a\ppppp d' f'>8 } \\ d2 >>
   << { r8 \repeat unfold 3 <a d' f'>8 } \\ d2 >>
   |
   << { r8 \repeat unfold 3 <a c' e'>8 } \\ a,2 >>
@@ -437,7 +446,7 @@ Music = {
       \new Staff = "Solo" <<
         \clef "treble"
         \key f \major
-        \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
+        \new Voice = "PartSolo" { r2 \PartSoloU \PartSoloV }
       >>
       \new Lyrics \lyricsto "PartSolo" {
         \LyricsSolo
@@ -475,7 +484,7 @@ MusicFourLines = {
       \new Staff = "Solo" <<
         \clef "treble"
         \key f \major
-        \new Voice = "PartSolo" { \PartSoloU \PartSoloV }
+        \new Voice = "PartSolo" { r2 \PartSoloU \PartSoloV }
       >>
       \new Lyrics \lyricsto "PartSolo" {
         \LyricsSolo
@@ -516,7 +525,8 @@ MusicGuitar = {
       \new Staff = "Solo" <<
         \clef "treble"
         \key f \major
-        \new Voice = "PartSolo" { R1*4 \PartSoloU \PartSoloV }
+        \new Voice = "PartMandolin" { \PartMandolin }
+        \new Voice = "PartSolo" { s1*4 s2 \PartSoloU \PartSoloV }
       >>
       \new Lyrics \lyricsto "PartSolo" {
         \LyricsSolo
@@ -552,7 +562,7 @@ MusicGuitar = {
       } <<
         \clef "treble_8"
         \key f \major
-        { \PartGuitarF \PartGuitarPre \PartGuitarF \PartGuitarV \PartGuitarU }
+        { R1 \PartGuitarPre \PartGuitarF \PartGuitarV \PartGuitarU }
       >>
     >>
 }
@@ -589,8 +599,11 @@ MusicGuitar = {
       \context Staff = "B" <<
         \set Staff.midiMaximumVolume = 0.0
       >>
-      \context Staff = "Solo" <<
-        \set Staff.midiMaximumVolume = 0.0
+      \context Voice = "PartSolo" <<
+        \set Voice.midiMaximumVolume = 0.0
+      >>
+      \context Voice = "PartMandolin" <<
+        \set Staff.midiInstrument = "acoustic guitar (steel)"
       >>
       { \PartTempoPre \PartTempo }
     >>

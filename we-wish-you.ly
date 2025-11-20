@@ -10,7 +10,7 @@ taglineLanguage = "english"
 \include "articulate.ly"
 
 \header {
-  title = "We wish you a merry Christmas +"
+  title = "We wish you a merry Christmas + +"
 }
 
 PartIS = \relative c' {
@@ -108,9 +108,9 @@ PartFS = \relative c' {
   h4 c8 d8 r8 d4.~ |
   d4 r8 d,8 d8 e8 fis4 |
   g1~ |
-  g2. r8 a8 |
-  h4 c8 d8~ d8 e4 <d fis>8~ |
-  <d fis>8 <d g>4.~ <d g>2
+  g2. r4 r4 r8 a8 
+  h4 c8 d8~ d8 e4 <d fis>8~ 
+  <d fis>8 <d g>4.~ <d g>2 r2
 }
 
 PartFA = \relative c' {
@@ -119,9 +119,9 @@ PartFA = \relative c' {
   g4 g8 g8 r8 g4.~ |
   g4 r8 d8 d8 d8 d4 |
   d4 d8 h8 r8 d4. |
-  e4 e8 c8 r8 e8 r8 e8 |
-  g4 a8 h8~ h8 c4 c8~ |
-  c8 h4.~ h2
+  e4 e8 c8 r8 e8 r4 r4 r8 e8 
+  g4 a8 h8~ h8 c4 c8~ 
+  c8 h4.~ h2 r2
 }
 
 PartFT = \relative c' {
@@ -130,9 +130,9 @@ PartFT = \relative c' {
   g4 g8 g8 r8 g4.~ |
   g4 r8 d8 d8 e8 fis4 |
   g1~ |
-  g2. r8 g8 |
-  g4 g8 g8~ g8 g4 g8~ |
-  g8 g4.~ g2
+  g2. r4 r4 r8 g8 
+  g4 g8 g8~ g8 g4 g8~ 
+  g8 g4.~ g2 r2
 }
 
 PartFB = \relative c {
@@ -141,9 +141,9 @@ PartFB = \relative c {
   g4 a8 h8 r8 h4.~ |
   h4 r4 r2 |
   h,4 h8 g8 r8 h4. |
-  c4 c8 e8 r8 c8 r8 c8 |
-  d4 es8 d8~ d8 d4 d8~ |
-  d8 g,4.~ g2
+  c4 c8 e8 r8 c8 r4 r4 r8 c8 
+  d4 es8 d8~ d8 d4 d8~ 
+  d8 g,4.~ g2 r2
 }
 
 PartXS = \relative c' {
@@ -848,6 +848,8 @@ ChoirAll = {
   \ChoirWWV
   \ChoirPause { r4 }
   \ChoirI
+  \ChoirIVA
+  \ChoirI
   \ChoirF
   \bar "|."
 }
@@ -924,7 +926,7 @@ Music = <<
   \score {
     \Music
     \layout {
-      #(layout-set-staff-size 18)
+      %#(layout-set-staff-size 18)
       \context {
         \Staff
         \RemoveAllEmptyStaves
@@ -942,7 +944,7 @@ Music = <<
   \paper {
     systems-per-page = 3
     system-count = 24
-    two-sided = #'true
-    right-margin = 20\mm
+    %two-sided = #'true
+    %right-margin = 20\mm
   }
 }
