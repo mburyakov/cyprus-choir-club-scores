@@ -65,9 +65,9 @@ PartVerseA = {
 }
 
 PartMiddleA = \relative c' {
-  cis4.( fis4. eis2.) |
-  cis4.( fis4. eis2.) |
-  cis4.( fis4. eis2.) |
+  fis4.( cis4. eis2.) |
+  fis4.( cis4. eis2.) |
+  fis4.( cis4. eis2.) |
   cis2.( cis2. |
   h2. cis2.) |
 }
@@ -200,7 +200,7 @@ Lyrics = \lyricmode {
           \clef "treble"
           \key d \major
           \new Voice = "PartS" {
-            \voiceOne 
+            \voiceOne
             \repeat volta 2 {
               \PartVerseTrimS
               \alternative {
