@@ -812,6 +812,21 @@ ScoreWithSecondAlto = <<
 }
 
 \book {
+  \bookOutputSuffix "f"
+  \score {
+    \unfoldRepeats
+    \transpose g f \Score
+    \layout {
+      \context {
+        \Staff
+        \RemoveAllEmptyStaves
+      }
+    }
+    \midi {}
+  }
+}
+
+\book {
   \bookOutputSuffix "with-second-alto"
   \score {
     \unfoldRepeats
