@@ -11,8 +11,8 @@
   bookTitleMarkup = \markup {
     \override #'(baseline-skip . 3.5)
     \overlay {
-      %\general-align #Y #0 { \epsfile #X #4 #"include/cyprus-accolada.eps" }
-      \abs-translate #(cons (ly:cm -0.7) (ly:cm -0.4)) { \epsfile #X #5 #"include/cyprus-accolada.eps" }
+      %\general-align #Y #0 { \epsfile #X #4 #"include/cyprus-choral-club.eps" }
+      \abs-translate #(cons (ly:cm -0.7) (ly:cm -0.4)) { \epsfile #X #5 #"include/cyprus-choral-club.eps" }
       \center-column {
         \fill-line { \fromproperty #'header:dedication }
         \override #'(baseline-skip . 3.5)

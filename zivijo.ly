@@ -1,8 +1,12 @@
-\version "2.24.0"
+\version "2.24"
 
 \include "articulate.ly"
 
 \language "deutsch"
+
+taglineLanguage = "czech"
+\include "include/cyprus-logo.ly"
+\include "include/tagline-lilypond.ly"
 
 \layout {  
   \context {
@@ -18,10 +22,7 @@
 \header {
   title = \markup \center-column { \vspace #3 "Živijó" }
   subsubtitle = \markup \center-column { "Československý popěvek" \vspace #1.5 }
-  %date = "2019"
-  %composer = "М. Буряков"
-  %tagline = \markup {\fontsize #-2 {"Набрано с помощью LilyPond" $(lilypond-version)}}
-  tagline = \markup {\fontsize #-3 {"aranžování M. Buřakov"}}
+  copyright = \markup {\fontsize #-3 {"aranžování M. Buřakov"}}
 }
 
 PartS = \relative c' {
