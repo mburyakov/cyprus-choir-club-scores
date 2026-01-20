@@ -118,7 +118,7 @@ def main():
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
 
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
-    shutil.copy(project_root / "include" / "cyprus-accolada.svg", out_root / "cyprus-accolada.svg")
+    shutil.copy(project_root / "include" / "cyprus-choral-club.svg", out_root / "cyprus-choral-club.svg")
 
 if __name__ == "__main__":
     main()

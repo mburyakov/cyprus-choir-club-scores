@@ -36,8 +36,8 @@ function Index() {
   return (
     <div>
       <h1>
-        Scores of Cyprus Choir Club:
-        <img src="static/cyprus-accolada.svg" alt="Cyprus Accolada" width={100} />
+        Scores of Cyprus Choral Club:
+        <img src="static/cyprus-choral-club.svg" alt="Cyprus Choral Club" width={100} />
       </h1>
       <ul>
         {items.map(it => (
