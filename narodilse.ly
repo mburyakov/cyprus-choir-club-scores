@@ -535,6 +535,9 @@ wordsComplete = \markup {
 
     >>
     \layout {}
+    \midi {
+      \tempo 4 = 120
+    }
   }
   
   \pageBreak
@@ -652,129 +655,5 @@ wordsComplete = \markup {
   \paper {
     system-system-spacing.basic-distance = 17
     systems-per-page = #3
-  }
-}
-
-\book {
-  \bookOutputSuffix "s"
-  \score {
-      \new Staff = "upper" <<
-        \new Voice = "soprano" {
-          \voiceOne
-          r1\fff
-          \keepWithTag #'f \PartS
-        }
-        \new Voice = "alto" {
-          \voiceTwo
-          r1\ppppp
-          \keepWithTag #'f \PartA
-        }
-        \new Voice = "tenor" {
-          \voiceThree
-          r1\pppp
-          \keepWithTag #'f \PartT
-        }
-        \new Voice = "bass" {
-          \voiceFour
-          r1\pppp
-          \keepWithTag #'f \PartB
-        }
-      >>
-    \midi {
-      \tempo 4 = 120
-    }
-  }
-}
-
-\book {
-  \bookOutputSuffix "a"
-  \score {
-      \new Staff = "upper" <<
-        \new Voice = "soprano" {
-          \voiceOne
-          r1\pppp
-          \keepWithTag #'f \PartS
-        }
-        \new Voice = "alto" {
-          \voiceTwo
-          r1\ff
-          \keepWithTag #'f \PartA
-        }
-        \new Voice = "tenor" {
-          \voiceThree
-          r1\pppp
-          \keepWithTag #'f \PartT
-        }
-        \new Voice = "bass" {
-          \voiceFour
-          r1\pppp
-          \keepWithTag #'f \PartB
-        }
-      >>
-    \midi {
-      \tempo 4 = 120
-    }
-  }
-}
-
-\book {
-  \bookOutputSuffix "t"
-  \score {
-      \new Staff = "upper" <<
-        \new Voice = "soprano" {
-          \voiceOne
-          r1\pppp
-          \keepWithTag #'f \PartS
-        }
-        \new Voice = "alto" {
-          \voiceTwo
-          r1\pppp
-          \keepWithTag #'f \PartA
-        }
-        \new Voice = "tenor" {
-          \voiceThree
-          r1\ff
-          \keepWithTag #'f \PartT
-        }
-        \new Voice = "bass" {
-          \voiceFour
-          r1\pppp
-          \keepWithTag #'f \PartB
-        }
-      >>
-    \midi {
-      \tempo 4 = 120
-    }
-  }
-}
-
-\book {
-  \bookOutputSuffix "b"
-  \score {
-      \new Staff = "upper" <<
-        \new Voice = "soprano" {
-          \voiceOne
-          r1\pppp
-          \keepWithTag #'f \PartS
-        }
-        \new Voice = "alto" {
-          \voiceTwo
-          r1\pppp
-          \keepWithTag #'f \PartA
-        }
-        \new Voice = "tenor" {
-          \voiceThree
-          r1\pppp
-          \keepWithTag #'f \PartT
-        }
-        \new Voice = "bass" {
-          \voiceFour
-          r1\ff
-          \keepWithTag #'f \PartB
-        }
-      >>
-    \midi {
-      \tempo 4 = 120
-    }
   }
 }

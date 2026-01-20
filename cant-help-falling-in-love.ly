@@ -188,6 +188,115 @@ Lyrics = \lyricmode {
   for I can't help fall -- ing in love with you.
 }
 
+PartS = {
+  \repeat volta 2 {
+    \PartVerseTrimS
+    \alternative {
+      \volta 1 {
+        \PartVerseEndS r4.
+      }
+      \volta 2 {
+        \PartVerseEndS r4.
+      }
+    }
+  }
+  \repeat volta 2 {
+    \PartMiddleS
+    \PartVerseTrimS
+    \alternative {
+      \volta 1 {
+        \PartVerseEndS r4.
+        \break
+      }
+      \volta 2 {
+        \PartVerseEndS a4.
+      }
+    }
+  }
+  \PartFinalS r4.
+}
+
+PartA = {
+  \repeat volta 2 {
+    \PartVerseTrimA
+    \alternative {
+      \volta 1 {
+        \PartVerseEndA r4.
+      }
+      \volta 2 {
+        \PartVerseEndA r4.
+      }
+    }
+  }
+  \repeat volta 2 {
+    \PartMiddleA
+    \PartVerseTrimA
+    \alternative {
+      \volta 1 {
+        \PartVerseEndA r4.
+      }
+      \volta 2 {
+        \PartVerseEndA e4.
+      }
+    }
+  }
+  \PartFinalA r4.
+}
+
+PartT = {
+  \repeat volta 2 {
+    \PartVerseTrimT
+    \alternative {
+      \volta 1 {
+        \PartVerseEndOneT r4.
+      }
+      \volta 2 {
+        \PartVerseEndTwoT r4.
+      }
+    }
+  }
+  \repeat volta 2 {
+    \PartMiddleT
+    \PartVerseTrimT
+    \alternative {
+      \volta 1 {
+        \PartVerseEndTwoT r4.
+      }
+      \volta 2 {
+        \PartVerseEndThreeT cis4.
+      }
+    }
+  }
+  \PartFinalT r4.
+}
+
+PartB = {
+  \repeat volta 2 {
+    \PartVerseTrimB
+    \alternative {
+      \volta 1 {
+        \PartVerseEndB r4.
+      }
+      \volta 2 {
+        \PartVerseEndB r4.
+      }
+    }
+  }
+  \repeat volta 2 {
+    \PartMiddleB
+    \PartVerseTrimB
+    \alternative {
+      \volta 1 {
+        \PartVerseEndB r4.
+      }
+      \volta 2 {
+        \PartVerseEndB a,4.
+      }
+    }
+  }
+  \PartFinalB r4.
+}
+
 \book {
   \score {
     <<
@@ -201,59 +310,12 @@ Lyrics = \lyricmode {
           \key d \major
           \new Voice = "PartS" {
             \voiceOne
-            \repeat volta 2 {
-              \PartVerseTrimS
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndS r4.
-                }
-                \volta 2 {
-                  \PartVerseEndS r4.
-                }
-              }
-            }
-            \repeat volta 2 {
-              \PartMiddleS
-              \PartVerseTrimS
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndS r4.
-                  \break
-                }
-                \volta 2 {
-                  \PartVerseEndS a4.
-                }
-              }
-            }
-            \PartFinalS r4.
+            \PartS
             \bar "|."
           }
           \new Voice = "PartA" {
             \voiceTwo
-            \repeat volta 2 {
-              \PartVerseTrimA
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndA r4.
-                }
-                \volta 2 {
-                  \PartVerseEndA r4.
-                }
-              }
-            }
-            \repeat volta 2 {
-              \PartMiddleA
-              \PartVerseTrimA
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndA r4.
-                }
-                \volta 2 {
-                  \PartVerseEndA e4.
-                }
-              }
-            }
-            \PartFinalA r4.
+            \PartA
           }
         >>
         \new Lyrics {
@@ -283,68 +345,67 @@ Lyrics = \lyricmode {
           \key d \major
           \new Voice = "PartT" {
             \voiceOne
-            \repeat volta 2 {
-              \PartVerseTrimT
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndOneT r4.
-                }
-                \volta 2 {
-                  \PartVerseEndTwoT r4.
-                }
-              }
-            }
-            \repeat volta 2 {
-              \PartMiddleT
-              \PartVerseTrimT
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndTwoT r4.
-                }
-                \volta 2 {
-                  \PartVerseEndThreeT cis4.
-                }
-              }
-            }
-            \PartFinalT r4.
+            \PartT
           }
           \new Voice = "PartB" {
             \voiceTwo
-            \repeat volta 2 {
-              \PartVerseTrimB
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndB r4.
-                }
-                \volta 2 {
-                  \PartVerseEndB r4.
-                }
-              }
-            }
-            \repeat volta 2 {
-              \PartMiddleB
-              \PartVerseTrimB
-              \alternative {
-                \volta 1 {
-                  \PartVerseEndB r4.
-                }
-                \volta 2 {
-                  \PartVerseEndB a,4.
-                }
-              }
-            }
-            \PartFinalB r4.
+            \PartB
           }
         >>
       >>
     >>
-    \layout {
-    }
-    \midi {
-    }
+    \layout {}
   }
   \paper {
     system-count = #5
+    ragged-last-bottom = #'t
+  }
+}
+
+\book {
+  \bookOutputSuffix "full"
+  \score {
+    <<
+      \new ChoirStaff <<
+        \numericTimeSignature
+        \time 12/8
+        \new Staff = "S" <<
+          \clef "treble"
+          \key d \major
+          \new Voice = "PartS" {
+            \unfoldRepeats \PartS
+            \bar "|."
+          }
+        >>
+        \new Staff = "A" <<
+          \clef "treble"
+          \key d \major
+          \new Voice = "PartA" {
+            \unfoldRepeats \PartA
+          }
+        >>
+        \new Staff = "T" <<
+          \clef "treble_8"
+          \key d \major
+          \new Voice = "PartT" {
+            \unfoldRepeats \PartT
+          }
+        >>
+        \new Staff = "B" <<
+          \clef "bass"
+          \key d \major
+          \new Voice = "PartB" {
+            \unfoldRepeats \PartB
+          }
+        >>
+      >>
+    >>
+    \midi {
+      \tempo 4. = 87
+    }
+  }
+  \paper {
+    system-count = #7
     ragged-last-bottom = #'t
   }
 }
