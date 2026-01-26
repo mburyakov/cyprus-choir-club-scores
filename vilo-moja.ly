@@ -682,7 +682,7 @@ MusicGuitar = {
         \set Staff.midiMaximumVolume = 0.2
       >>
       \context Voice = "PartSolo" <<
-        \set Voice.midiMaximumVolume = 0.2
+        \set Voice.midiMaximumVolume = 0.5
       >>
       \context Voice = "PartMandolin" <<
         \set Staff.midiInstrument = "tenor sax"
