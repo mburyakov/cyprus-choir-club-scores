@@ -333,7 +333,7 @@ PartGuitarU = {
   << s4 \\ s4 \\ { \oneVoice <b, f b d' f' b'>8\arpeggio r8 } >>
   << s4 \\ s4 \\ { \oneVoice <b, f b des' f' b'>8\arpeggio r8 } >>
   |
-  << \repeat tremolo 32 <a c' f'>32 \\ <f, c f>1 >>
+  << <a c' f'>1:32 \\ <f, c f>1 >>
 }
 
 LyricsSolo = \lyricmode {
@@ -520,7 +520,54 @@ MusicFourLines = {
     >>
 }
 
-MusicGuitar = {
+ChordsGuitar = \chordmode {
+          \set chordNameSeparator = \markup { "/" }
+          \set noChordSymbol = "—"
+          s1
+          d2:m d2:m
+          a2:m b2
+          f2 c2
+          f1
+          g2:m g2:m
+          c2 c2
+          b4. f8
+          a2:m
+          d1:m
+          g2:m g4:m g4:m/b
+          c2 c2
+          b4. f8 f2:maj7
+          a2:sus a2 |
+          d2:m d2:m
+          a2:m a2:m
+          b2 b2
+          a2 r2
+          c2 c2
+          c1
+          f2 c2
+          f2 b2
+          f2 c2
+          f2 f4 f4/e
+          \repeat volta 2 {
+            d2:m d2:m
+            a2:m b2
+            f2 c2
+            \alternative {
+              \volta 1 {
+                f2 f4 f4/e
+              }
+              \volta 2 {
+                f2 b2
+              }
+            }
+          }
+          f2 c2
+          f2 b2
+          f2
+          b4 b4:m
+          f1
+}
+
+MusicWithGuitar = {
     <<
       \new Staff = "Solo" <<
         \clef "treble"
@@ -564,6 +611,34 @@ MusicGuitar = {
         \key f \major
         { R1 \PartGuitarPre \PartGuitarF \PartGuitarV \PartGuitarU }
       >>
+      \new ChordNames = "Chords" {
+        \ChordsGuitar
+      }
+    >>
+}
+
+MusicGuitar = {
+    <<
+      \new Staff = "Solo" <<
+        \clef "treble"
+        \key f \major
+        \new Voice = "PartMandolin" { \PartMandolin }
+        \new Voice = "PartSolo" { s1*4 s2 \PartSoloU \PartSoloV }
+      >>
+      \new Lyrics \lyricsto "PartSolo" {
+        \LyricsSolo
+      }
+      \new Staff = "Guitar" \with {
+        \consists "Span_arpeggio_engraver"
+        autoBeaming=##t
+      } <<
+        \clef "treble_8"
+        \key f \major
+        { R1 \PartGuitarPre \PartGuitarF \PartGuitarV \PartGuitarU }
+      >>
+      \new ChordNames = "Chords" {
+        \ChordsGuitar
+      }
     >>
 }
 
@@ -581,7 +656,14 @@ MusicGuitar = {
 \book {
   \bookOutputSuffix "guitar"
   \score {
-    \MusicGuitar
+    <<
+      \unfoldRepeats {
+        \MusicGuitar
+      }
+      \context Staff = "Guitar" <<
+        { s1*9 \break s1*4 \break s1*6 \break s1*4 \break s1*4 \break s1*4 \break s1*4 }
+      >>
+    >>
     \layout {}
   }
   \score {
@@ -594,23 +676,27 @@ MusicGuitar = {
         \set Staff.midiInstrument = "acoustic guitar (nylon)"
       >>
       \context Staff = "A" <<
-        \set Staff.midiMaximumVolume = 0.0
+        \set Staff.midiMaximumVolume = 0.2
       >>
       \context Staff = "B" <<
-        \set Staff.midiMaximumVolume = 0.0
+        \set Staff.midiMaximumVolume = 0.2
       >>
       \context Voice = "PartSolo" <<
-        \set Voice.midiMaximumVolume = 0.0
+        \set Voice.midiMaximumVolume = 0.2
       >>
       \context Voice = "PartMandolin" <<
-        \set Staff.midiInstrument = "acoustic guitar (steel)"
+        \set Staff.midiInstrument = "tenor sax"
+        \set Voice.midiMaximumVolume = 0.8
+      >>
+      \context ChordNames = "Chords" <<
+        \set ChordNames.midiMaximumVolume = 0.0
       >>
       { \PartTempoPre \PartTempo }
     >>
     \midi {}
   }
   \paper {
-    
+    page-count = 2
   }
 }
 
