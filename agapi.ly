@@ -15,12 +15,12 @@ taglineLanguage = "greek"
 \include "include/choir-setup.ly"
 
 PartS = \relative c' {
-  f4 f8 g8 a4 a4 |
+  f4 g8 a8 a4 a4 |
   g4 c8( b8) a4( g4) |
-  f4 f8 g8 a4 a4 |
+  f4 g8 a8 a4 a4 |
   g8( f8 e8 d8) c2 |
   
-  f4 f8 g8 a4 a4 |
+  f4 g8 a8 a4 a4 |
   g4 c8( b8) a4( g4) |
   f4 g8 a8 a4 a4 |
   g8( a16 g16 f8 e8) f2 |
