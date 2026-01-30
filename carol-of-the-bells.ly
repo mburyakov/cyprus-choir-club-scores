@@ -705,6 +705,154 @@ Score = <<
       >>
     >>
 
+ScoreUkr = <<
+      \new ChoirStaff <<
+        \new Dynamics {
+          \PartDynamics
+        }
+        \new Staff = "S" <<
+          \set Staff.instrumentName = "S"
+          \set Staff.shortInstrumentName = "S"
+          \clef "treble"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartS" {
+            \PartS
+          }
+        >>
+        \new Lyrics = "LyrS" \lyricsto "PartS" {
+            \LyricsUkrInit
+  \voltaLyric "LyrS" {
+    \LyricsUkrInitt
+    \LyricsUkrCresc
+    \LyricsUkrCrescc
+    \LyricsUkrHorn
+    \LyricsUkrUpper
+    \LyricsUkrCulm
+    \LyricsEngScales
+    \LyricsUkrScalesT
+    \LyricsUkrInit
+  } {
+    %\repeat unfold 30 { \skip 1	 }
+  }
+  \skip 1
+  \LyricsUkrCodaS
+        }
+        \new Staff = "A" <<
+          \set Staff.instrumentName = "A"
+          \set Staff.shortInstrumentName = "A"
+          \clef "treble"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartA" {
+            \PartA
+          }
+        >>
+        \new Dynamics {
+          \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = ##f
+          \override VerticalAxisGroup.nonstaff-relatedstaff-spacing = ##f
+          \PartDynamicsA
+        }
+        \new Lyrics = "LyrA" \lyricsto "PartA" {
+            \voltaLyric "LyrA" {
+    \LyricsUkrCrescA
+    \LyricsUkrCrescT
+    %\volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    %}
+    %\unfolded {
+    %  \LyricsUkrHorn
+    %  \LyricsUkrUpper
+    %  \LyricsUkrCulm
+    %}
+    
+    \LyricsUkrScalesA
+    _
+  } {
+
+  }
+  _
+  \volta #'() {
+    \repeat unfold 4 _
+  }
+  \unfolded {
+    \LyricsUkrCodaS
+  }
+        }
+        \new Staff = "T" <<
+          \set Staff.instrumentName = "T"
+          \set Staff.shortInstrumentName = "T"
+          \clef "treble_8"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartT" {
+            \PartT
+          }
+        >>
+        \new Lyrics = "LyrT" \lyricsto "PartT" {
+          \voltaLyric "LyrT" {
+    %\volta #'() {
+      \repeat unfold 4 _
+    %}
+    %\unfolded {
+    %  \LyricsUkrCrescT
+    %}
+    \LyricsUkrHorn
+    \LyricsUkrUpperT
+    \LyricsUkrCulm
+    \LyricsUkrScalesT
+    _
+  } {
+    
+  }
+  \LyricsUkrInit
+  \LyricsUkrCodaT
+        }
+        \new Staff = "B" <<
+          \set Staff.instrumentName = "B"
+          \set Staff.shortInstrumentName = "B"
+          \clef "bass"
+          \key g \minor
+          \time 3/4
+          \new Voice = "PartB" {
+            \PartB
+          }
+        >>
+        \new Lyrics = "LyrB" \lyricsto "PartB" {
+            \voltaLyric "LyrB" {
+    \volta #'() {
+      \LyricsUkrHorn
+      \LyricsUkrUpper
+      \LyricsUkrCulm
+    }
+    \unfolded {
+      \LyricsUkrHorn
+      \LyricsUkrUpper
+      \LyricsUkrCulm
+    }
+    _ _
+    _
+  } {
+    \volta #'() {
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+      \repeat unfold 16 _
+    }
+    \unfolded {
+      \LyricsEngHorn
+      \LyricsEngUpper
+        \LyricsEngCulm
+    }
+    _ _
+    _
+  }
+
+        }
+      >>
+    >>
+
 ScoreWithSecondAlto = <<      
       \new ChoirStaff <<
         \new Dynamics {
@@ -823,6 +971,25 @@ ScoreWithSecondAlto = <<
       }
     }
     \midi {}
+  }
+}
+
+\book {
+  \bookOutputSuffix "f-ukr"
+  \score {
+    %\unfoldRepeats
+    \transpose g f \ScoreUkr
+    \layout {
+      %#(layout-set-staff-size 20)
+      \context {
+        \Staff
+        \RemoveAllEmptyStaves
+      }
+    }
+    \midi {}
+  }
+  \paper {
+    page-count = 2
   }
 }
 

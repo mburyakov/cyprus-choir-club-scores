@@ -15,15 +15,6 @@ taglineLanguage = "latin"
   }
 }
 
-\paper {
-  system-count = #2
-  system-system-spacing =
-  #'((basic-distance . 8)
-     (minimum-distance . 4)
-     (padding . 8)
-     (stretchability . 60)) % defaults: 12, 8, 1, 60
-}
-
 \header {
   title = \markup { "Jubilate Deo" \vspace #2 }
   composer = "Michael Praetorius (1571–1621)"
@@ -73,19 +64,20 @@ onelinescore = \score {
 \book {
   \markup \vspace #0.7
   \onelinescore
+  \paper {
+  system-count = #2
+  system-system-spacing =
+  #'((basic-distance . 8)
+     (minimum-distance . 4)
+     (padding . 8)
+     (stretchability . 60)) % defaults: 12, 8, 1, 60
+  }
 }
 
 \book {
   \bookOutputSuffix "full"
   
   \bookpart {
-    \markup \vspace #0.7
-    \onelinescore
-  }
-  
-  \bookpart {
-    \markup \vspace #0.7
-    
     \score {
       <<      
         \new StaffGroup <<
@@ -95,51 +87,84 @@ onelinescore = \score {
             \clef "treble"
             \key a \major
             \new Voice = "PartA" {
-              \PartS
-              R1 R1 R1
+              \PartS \PartS \PartS \PartS
+              R1
               \bar "|."
             }
             \new Lyrics \lyricsto "PartA" {
-              \Lyr
-            }
-          >>
-          \new Staff = "D" <<
-            \clef "treble"
-            \key a \major
-            \new Voice = "PartD" {
-              R1 R1 R1
-              \PartS
-            }
-            \new Lyrics \lyricsto "PartD" {
-              \Lyr
+              \Lyr \Lyr \Lyr \Lyr
             }
           >>
           \new Staff = "B" <<
             \clef "treble"
             \key a \major
             \new Voice = "PartB" {
-              R1
-              \PartS
-              R1 R1
+              R1 R1 R1 R1
+              \PartS \PartS \PartS
+              R1 R1 R1
             }
             \new Lyrics \lyricsto "PartB" {
-              \Lyr
+              \Lyr \Lyr \Lyr
             }
           >>
           \new Staff = "C" <<
             \clef "treble"
             \key a \major
             \new Voice = "PartC" {
-              R1 R1
-              \PartS
-              R1
+              R1 R1 R1 R1 R1 R1 R1 R1
+              \PartS \PartS
+              R1 R1 R1 R1 R1
             }
             \new Lyrics \lyricsto "PartC" {
-              \Lyr
+              \Lyr \Lyr
+            }
+          >>
+          \new Staff = "D" <<
+            \clef "treble"
+            \key a \major
+            \new Voice = "PartD" {
+              R1 R1 R1 R1 R1 R1 R1 R1 R1
+              \PartS \PartS
+              R1 R1 R1 R1
+            }
+            \new Lyrics \lyricsto "PartD" {
+              \Lyr \Lyr
+            }
+          >>
+          \new Staff = "E" <<
+            \clef "treble"
+            \key a \major
+            \new Voice = "PartE" {
+              R1 R1 R1 R1 R1 R1 R1 R1 R1 R1 R1
+              \PartS \PartS
+              R1 R1
+            }
+            \new Lyrics \lyricsto "PartE" {
+              \Lyr \Lyr
+            }
+          >>
+          \new Staff = "F" <<
+            \clef "treble"
+            \key a \major
+            \new Voice = "PartF" {
+              R1 R1 R1 R1 R1 R1 R1 R1 R1 R1 R1 R1 R1
+              \PartS \PartS
+            }
+            \new Lyrics \lyricsto "PartF" {
+              \Lyr \Lyr
             }
           >>
         >>
       >>
+      \layout {
+        #(layout-set-staff-size 15)
+      }
+      \midi {
+        \tempo 4 = 110
+      }
     }
+  }
+  \paper {
+    #(set-paper-size "tabloid")
   }
 }
