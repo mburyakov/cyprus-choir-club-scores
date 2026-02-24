@@ -4,7 +4,7 @@
 
 \header {
   title = "Und jetzt gang i ans Peters Brünnele"
-  arranger = "обработка: И. Соловьёв"
+  arranger = "arr: Igor Solovyev"
 }
 
 taglineLanguage = "deutch"
