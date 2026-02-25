@@ -1,0 +1,25 @@
+{
+  "name": "LilyPond Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "settings": {
+        "python-envs": false,
+      }
+    },
+    "./local-features/lilypond": {
+      "version": "stable"
+    }
+  },
+  "postCreateCommand": [
+    "python -m venv .venv && . .venv/bin/activate && pip install -r pages/requirements.txt",
+    "lilypond --version"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "mando.lilypond-pdf-preview"
+      ]
+    }
+  }
+}

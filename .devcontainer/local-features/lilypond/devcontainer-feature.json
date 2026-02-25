@@ -1,0 +1,17 @@
+{
+    "id": "lilypond",
+    "version": "1.0.0",
+    "name": "LilyPond",
+    "description": "Installs LilyPond for music engraving.",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["stable", "latest"],
+            "default": "stable",
+            "description": "Select the LilyPond version to install."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}
