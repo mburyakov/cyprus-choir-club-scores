@@ -70,10 +70,21 @@ PartS = \relative c' {
   g,8[( b8]) a8 b8 c2 |
   f,8[( g8]) a8 b8 a8[( g8]) f4 |
   f8[( g8]) a8 b8 \tuplet 6/4 { a16[( b16 a16 g16 a16 g16]) } f4 |
-  f8[( g8]) a8[( b8]) c8[( f8 b,8 a8]) |
-  g4~ g8. f16 f2 |
-  
-  f8[( g8 a8 b8]) c8 f4.~ |
+  f8[( g8]) a8[( b8])
+  <<
+    {
+      \voiceTwo
+      c8[( f,8 b8 a8]) |
+      g4~ g8. f16 f2 |
+    }
+    \new Voice {
+      \voiceOne
+      c'8( f4. ) |
+      f4( e8.) f16 f2 |
+    }
+  >>
+  \oneVoice
+  f,8[( g8 a8 b8]) c8 f4.~ |
   f8 r8\fermata b,8[( a8]) g4~ g8. f16
   
   f8[( g8 a8 b8] a8[ g8] f4~ |
@@ -162,8 +173,8 @@ PartT = \relative c' {
   es,4( f4) g4 g4 |
   es4( f4) as4 g4 |
   es4( f8) f8 as2( |
-  as8) r8\fermata r4 g2 |
-  c4.( b8)
+  as8) r8\fermata r4 as2 |
+  as8[( b8] g8[ as8])
   
   \key f \major
   
@@ -309,65 +320,6 @@ LyricsLaudamus = \lyricmode {
           \numericTimeSignature
           \time 4/4
           \new Voice = "PartB" { \transpose es es \PartB }
-        >>
-        \new Lyrics \lyricsto "PartB" {
-          \LyricsLaudamus
-        }
-      >>
-    >>
-    \layout {}
-    \midi {
-      \tempo 4 = 50
-      \context {
-        \Staff {
-          %\set midiInstrument = "viola"
-        }
-      }
-    }
-  }
-}
-
-\book {
-  \bookOutputSuffix "g"
-  \score {
-    <<
-      \new ChoirStaff <<
-        \new Staff = "S" <<
-          \clef "treble"
-          \key g \major
-          \numericTimeSignature
-          \time 4/4
-          \new Voice = "PartS" { \transpose es g \PartS }
-        >>
-        \new Lyrics \lyricsto "PartS" {
-          \LyricsLaudamus
-        }
-        \new Staff = "A" <<
-          \clef "treble"
-          \key g \major
-          \numericTimeSignature
-          \time 4/4
-          \new Voice = "PartA" { \transpose es g \PartA }
-        >>
-        \new Lyrics \lyricsto "PartA" {
-          \LyricsLaudamus
-        }
-        \new Staff = "T" <<
-          \clef "treble"
-          \key g \major
-          \numericTimeSignature
-          \time 4/4
-          \new Voice = "PartT" { \transpose es g \PartT }
-        >>
-        \new Lyrics \lyricsto "PartT" {
-          \LyricsLaudamus
-        }
-        \new Staff = "B" <<
-          \clef "bass"
-          \key g \major
-          \numericTimeSignature
-          \time 4/4
-          \new Voice = "PartB" { \transpose es g \PartB }
         >>
         \new Lyrics \lyricsto "PartB" {
           \LyricsLaudamus
