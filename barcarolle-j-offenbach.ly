@@ -260,29 +260,29 @@ PartBmJ = \relative d' {
      fis4) r8 r4. \bar "|."
 }
 
-\book {
-  \score {
-    <<
-    \new Staff <<            
-      \context Staff <<
-        \clef "treble" \time 6/8 \key d \major
-        \context Voice = "PartPOneVoiceOne" {
-          \PartSmA \PartSmB \PartSmC \PartSmD \PartSmE \PartAmF \PartSmFG \PartSmG \PartSmH \PartSmI \PartSmJ
-        }
-      >>
-    >>
-    \new Staff <<            
-      \context Staff << 
-        \clef "treble" \time 6/8 \key d \major
-        \context Voice = "PartPTwoVoiceOne" {
-          \PartAmA \PartAmB \PartAmC \PartAmD \PartAmE \PartAmF \PartAmG \PartAmH \PartAmI \PartAmJ
-        }
-      >>
-    >>      
-    >>
-    \layout {}
-  }
-}
+%\book {
+%  \score {
+%    <<
+%    \new Staff <<            
+%      \context Staff <<
+%        \clef "treble" \time 6/8 \key d \major
+%        \context Voice = "PartPOneVoiceOne" {
+%          \PartSmA \PartSmB \PartSmC \PartSmD \PartSmE \PartAmF \PartSmFG \PartSmG \PartSmH \PartSmI \PartSmJ
+%        }
+%      >>
+%    >>
+%    \new Staff <<            
+%      \context Staff << 
+%        \clef "treble" \time 6/8 \key d \major
+%        \context Voice = "PartPTwoVoiceOne" {
+%          \PartAmA \PartAmB \PartAmC \PartAmD \PartAmE \PartAmF \PartAmG \PartAmH \PartAmI \PartAmJ
+%        }
+%      >>
+%    >>      
+%    >>
+%    \layout {}
+%  }
+%}
 
 LyricsS = \lyricmode {
   Bel -- le nuit, ô, nuit d'a -- mour, sou -- ris à nos i -- vres -- ses!
@@ -407,16 +407,16 @@ WholeScore =
     >>
   }
 
-\book {
-  \bookOutputSuffix "choir"
-  \score {
-    \WholeScore
-    \layout {}
-    \midi {
-      \tempo 4=72
-    }
-  }
-}
+%\book {
+%  \bookOutputSuffix "choir"
+%  \score {
+%    \WholeScore
+%    \layout {}
+%    \midi {
+%      \tempo 4=72
+%    }
+%  }
+%}
 
 \book {
   \bookOutputSuffix "choir-c"
