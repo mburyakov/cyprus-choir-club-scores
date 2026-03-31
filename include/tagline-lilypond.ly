@@ -10,6 +10,7 @@ taglineText =
         ((string= language "croatian") (format #f "Ovu partituru je gravirao LilyPond ~a." (lilypond-version)))
         ((string= language "czech") (format #f "Tato partitura byla vyryta pomocí LilyPond ~a." (lilypond-version)))
         ((string= language "english") (format #f "This score was engraved with LilyPond ~a." (lilypond-version)))
+        ((string= language "français") (format #f "Cette partition était gravée avec LilyPond ~a." (lilypond-version)))
         ((string= language "deutch") (format #f "Diese Partitur wurde mit LilyPond ~a graviert." (lilypond-version)))
         ((string= language "greek") (format #f "Αυτή η παρτιτούρα ήταν χαραγμένη με LilyPond ~a." (lilypond-version)))
         (else (format #f "This score was engraved with LilyPond ~a" (lilypond-version)))))
