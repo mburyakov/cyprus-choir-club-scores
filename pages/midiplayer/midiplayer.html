@@ -7,7 +7,6 @@
 </head>
 
 <body>
-    <button id="initLoad">Load</button>
 	<div id='cntls'></div>
 	<script type="module">
         import { joinRoom, selfId } from 'https://cdn.skypack.dev/pin/trystero@v0.11.8-pxKZpWfVVzXootkGlZMp/mode=imports,min/optimized/trystero.js';
@@ -679,11 +678,7 @@
         function getParam(param) {
             return new URL(document.URL).searchParams.get(param)
         }
-        var loadButton = document.getElementById('initLoad');
-        loadButton.addEventListener('click', function (e) {
-            loadButton.remove()
-            handleExample("../" + getParam("midiFile"))
-        })
+        handleExample("../" + getParam("midiFile"))
 	</script>
 </body>
 
