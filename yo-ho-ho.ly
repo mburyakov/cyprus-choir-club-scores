@@ -36,7 +36,7 @@ Part = \relative c {
   \break
   e8-- | a,8 h8 c8 d16 d16 e8 e8 f8( e8) |
   \break
-  a,8 a8 a8 a16 h16 c16 c16 h8 a4 |
+  a,8 a8 a8 a16 h16 << { c16 c16 } \new Voice { \tiny \voiceFour \parenthesize c16-\markup {\italic{ \tiny \hspace #1 "(verse 3)"}} a16 } >> h8 a4 |
   
 }
 
