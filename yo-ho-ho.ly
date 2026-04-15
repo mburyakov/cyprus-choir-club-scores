@@ -18,7 +18,7 @@ Part = \relative c \repeat volta 3 {
   a8 g8 f8 e16 e16 d16 d16 c8 h8
   \break
   \slurDashed
-  << { \once\tiny \parenthesize e8 } \new Voice { \voiceOne r8 } >> | a,8 h16( h16) c16( c16) d8 e16( e16) e16( e16)
+  << { \once\tiny \parenthesize e8 } \new Voice { \voiceOne r8 } >> | a,8 h16^( h16) c16^( c16) d8 e16( e16) e16( e16)
   \slurSolid
   f8( e8) |
   \break
@@ -37,7 +37,7 @@ Part = \relative c \repeat volta 3 {
     \override NoteColumn.force-hshift = #1.1
     \voiceFour a8 a8 a8 a8 g8 g8 g8
     \break
-    g8 | f8 f8 f8 \once\slurDashed g16( f16)
+    g8 | f8 f8 f8 \once\slurDashed g16^( f16)
     \override NoteColumn.force-hshift = #1.9
     e8 e8 e8
     \oneVoice
