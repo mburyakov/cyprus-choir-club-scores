@@ -101,7 +101,6 @@ LyricsThree = \lyricmode {
 }
 
 \book {
-  \bookOutputSuffix "bass"
   \score {
     <<
       \new ChoirStaff <<
