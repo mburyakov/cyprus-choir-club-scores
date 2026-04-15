@@ -12,27 +12,30 @@ taglineLanguage = "english"
 \include "include/choir-setup.ly"
 
 Part = \relative c \repeat volta 3 {
-  \set Staff.instrumentName = "tutti"
+  \set Staff.instrumentName = "bass"
   a8 h8 c8 d16 d16 e8 e8 e8 r8 |
   \break
+  \set Staff.shortInstrumentName = "all"
   a8 g8 f8 e16 e16 d16 d16 c8 h8
   \break
+  \set Staff.shortInstrumentName = "bass"
   \slurDashed
   << { \once\tiny \parenthesize e8 } \new Voice { \voiceOne r8 } >> | a,8 h16^( h16) c16^( c16) d8 e16( e16) e16( e16)
   \slurSolid
   f8( e8) |
   \break
+  \set Staff.shortInstrumentName = "all"
   <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>8
   \break
   
-  \set Staff.shortInstrumentName = "solo"
+  \set Staff.shortInstrumentName = "solo1"
   e'8 | a,8 h8 c8 d16 d16 e8 e8 e8
   \break
-  \set Staff.shortInstrumentName = ""
   e8 | a8 a8 g8 g16 g16 f8 f8 e8
   \break
   e8 | a,8 h8 c8 d8 e8 e8 e8
   \break
+  \set Staff.shortInstrumentName = "solo2"
   e8 | << {
     \override NoteColumn.force-hshift = #1.1
     \voiceFour a8 a8 a8 a8 g8 g8 g8
@@ -42,10 +45,9 @@ Part = \relative c \repeat volta 3 {
     e8 e8 e8
     \oneVoice
   } \new Voice { \voiceTwo <e a>2 <d g>2 <c f>2 <h e>4. } \new Voice { \voiceOne a'2 h2 c2 d4. } >>
-  \set Staff.shortInstrumentName = "tutti"
+  \set Staff.shortInstrumentName = "all"
   \break
   e,8-- | a,8 h8 c8 d16 d16 e8 e8 f8( e8) |
-  \set Staff.shortInstrumentName = ""
   \break
   <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>4
 }
@@ -122,17 +124,19 @@ LyricsThree = \lyricmode {
     >>
     \layout {
       indent = 0
-      #(layout-set-staff-size 17)
+      #(layout-set-staff-size 17.6)
       \context {
         \Score
         \autoBeamOff
         proportionalNotationDuration = #(ly:make-moment 1/16)
         \override Score.SpacingSpanner.strict-note-spacing = ##t
+        \override BarNumber.break-visibility = ##(#f #f #f)
+        barNumberVisibility = #(modulo-bar-number-visible 3 2)
       }
       \context {
         \Lyrics
         \override LyricText.font-size = #1
-        \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = #'2.3
+        \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = #'2.2
       }
     }
     \midi {
