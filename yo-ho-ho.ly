@@ -11,39 +11,49 @@ taglineLanguage = "english"
 \include "include/tagline-lilypond.ly"
 \include "include/choir-setup.ly"
 
-Part = \relative c {
+Part = \relative c \repeat volta 3 {
+  \set Staff.instrumentName = "tutti"
   a8 h8 c8 d16 d16 e8 e8 e8 r8 |
   \break
-  a8 g8 f8 e16 e16 d16 d16 c8 h8 r8 |
+  a8 g8 f8 e16 e16 d16 d16 c8 h8
   \break
   \slurDashed
-  a16( a16) h16( h16) c16( c16) d16( d16) e16( e16) e16( e16)
+  << { \once\tiny \parenthesize e8 } \new Voice { \voiceOne r8 } >> | a,8 h16( h16) c16( c16) d8 e16( e16) e16( e16)
   \slurSolid
   f8( e8) |
   \break
-  a,8 a8 a8 a16 h16 c16 c16 h8 a8
+  <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>8
   \break
   
+  \set Staff.shortInstrumentName = "solo"
   e'8 | a,8 h8 c8 d16 d16 e8 e8 e8
   \break
+  \set Staff.shortInstrumentName = ""
   e8 | a8 a8 g8 g16 g16 f8 f8 e8
   \break
   e8 | a,8 h8 c8 d8 e8 e8 e8
   \break
-  e8 | a8 a8 a8 a8 g8 g8 g8
+  e8 | << {
+    \override NoteColumn.force-hshift = #1.1
+    \voiceFour a8 a8 a8 a8 g8 g8 g8
+    \break
+    g8 | f8 f8 f8 \once\slurDashed g16( f16)
+    \override NoteColumn.force-hshift = #1.9
+    e8 e8 e8
+    \oneVoice
+  } \new Voice { \voiceTwo <e a>2 <d g>2 <c f>2 <h e>4. } \new Voice { \voiceOne a'2 h2 c2 d4. } >>
+  \set Staff.shortInstrumentName = "tutti"
   \break
-  g8 | f8 f8 f8 \once\slurDashed g16( f16) e8 e8 e8
+  e,8-- | a,8 h8 c8 d16 d16 e8 e8 f8( e8) |
+  \set Staff.shortInstrumentName = ""
   \break
-  e8-- | a,8 h8 c8 d16 d16 e8 e8 f8( e8) |
-  \break
-  a,8 a8 a8 a16 h16 << { c16 c16 } \new Voice { \tiny \voiceFour \parenthesize c16-\markup {\italic{ \tiny \hspace #1 "(verse 3)"}} a16 } >> h8 a4 |
-  
+  <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>4
 }
 
 LyricsOne = \lyricmode {
   Fif -- teen men on a dead man's chest,
   Yo ho ho and a bot -- tle of rum!
-  Drink and_the devil had done for_the rest,
+  \skip 1 Drink and_the "de - vil" had done for_the rest,
   Yo ho ho and a bot -- tle of rum!
 
   The mate was fixed by the bo -- sun's pike,
@@ -58,7 +68,7 @@ LyricsOne = \lyricmode {
 LyricsTwo = \lyricmode {
   Fif -- teen men of them good and true,
   \repeat unfold 9 { \skip 1 }
-  Every man jack could_have sailed_with Old Pew,
+  Every man jack could have sailed_with Old Pew,
   \repeat unfold 9 { \skip 1 }
   
   There_was chest on chest full of Spa -- nish gold
@@ -71,9 +81,9 @@ LyricsTwo = \lyricmode {
 }
 
 LyricsThree = \lyricmode {
-  Fif -- teen men on a dead man's chest,!
+  Fif -- teen men on a dead man's chest,
   \repeat unfold 9 { \skip 1 }
-  Drink and_the devil had done for_the rest,
+  \skip 1 Drink and_the "de - vil" had done for_the rest,
   \repeat unfold 9 { \skip 1 }
 
   We wrapped them all in a main -- sail tight
@@ -81,7 +91,7 @@ LyricsThree = \lyricmode {
   And_we heaved them over and out of sight,
   With_a
   \once \override LyricHyphen.minimum-distance = #0
-  \markup{\bold Yo} -- \markup{\bold Heave} -- \markup{\bold Ho!}
+  \markup{\italic\bold Yo} -- \markup{\italic\bold Heave} -- \markup{\italic\bold Ho!}
   and_a fare -- you -- well
   And_a sud -- den plunge in_the sul -- len swell...
   Ten fa -- thoms deep on the road to hell,
@@ -112,10 +122,17 @@ LyricsThree = \lyricmode {
     >>
     \layout {
       indent = 0
+      #(layout-set-staff-size 17)
       \context {
         \Score
         \autoBeamOff
-        \override SpacingSpanner.uniform-stretching = ##t
+        proportionalNotationDuration = #(ly:make-moment 1/16)
+        \override Score.SpacingSpanner.strict-note-spacing = ##t
+      }
+      \context {
+        \Lyrics
+        \override LyricText.font-size = #1
+        \override VerticalAxisGroup.nonstaff-nonstaff-spacing.minimum-distance = #'2.3
       }
     }
     \midi {
@@ -123,5 +140,6 @@ LyricsThree = \lyricmode {
     }
   }
   \paper {
+    system-system-spacing = #'((basic-distance . 10) (padding . 2.17))
   }
 }
