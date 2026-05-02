@@ -4,6 +4,7 @@
 
 \header {
   title = "Und jetzt gang i ans Peters Brünnele"
+  subsubtitle = "Österreichisches Volkslied"
   arranger = "arr: Igor Solovyev"
 }
 
@@ -306,9 +307,9 @@ LyricsVersePickup = \lyricmode {
 }
 
 LyricsVerse = \lyricmode {
-  gang i ans Pe -- ters Brün -- ne -- le,
-  und da trink i an Wein,
-  und da hör i an Gug -- gu aus der Moos -- bu -- den schrein.
+  gang i ans Pe -- ters Brün -- ne -- le
+  und da trink i an Wein
+  und da hör i an Gug -- gu aus der Moos -- bu -- den schrei'n.
 }
 
 LyricsThree = \lyricmode {
@@ -328,6 +329,58 @@ LyricsChorusVoltaOne = \lyricmode {
 LyricsChorusVoltaTwo = \lyricmode {
   hol -- dri -- a.
 }
+
+LyrFull = \markup {
+  \column {
+    \line {
+      \hspace #8
+      \column {
+        \line {
+          2.
+          \column {
+            \line { Und der Adam hat d’Liab erdacht }
+            \line { und der Noah den Wein, }
+            \line { und der David den Zitherschlag, }
+            \line { 's müssen Steira g'wesn sein. }
+          }
+        }
+        \vspace #1
+        \line {
+          3.
+          \column {
+            \line { Kauft’s mer ab mei schön’s Büchserl, }
+            \line { kauft’s mer ab mein grean Hut, }
+            \line { kauft’s mer ab mei schön’s Diandl, }
+            \line { weil i einrück’n muass. }
+          }
+        }
+      }
+      \hspace #6
+      \column {
+        \line {
+          4.
+          \column {
+            \line { Hab an Schatz gedacht, hab ihn gern gehabt, }
+            \line { hab geglaubt er liebt mi; }
+            \line { hab i nachgefragt, hat er zwölf gehabt, }
+            \line { und die dreizehnt‘ war i. }            
+          }
+        }
+        \vspace #1
+        \line {
+          5.
+          \column {
+            \line { Zwischen Ostern und Pfingsten, }
+            \line { ja da geht der Schnee weg, }
+            \line { und da heirat‘ mei Diandl, }
+            \line { und da hab i an Dreck. }
+          }
+        }
+      }
+    }
+  }
+}
+
 
 MusicOne = <<
   \context Voice = "PartS" {
@@ -366,6 +419,32 @@ MusicTwoPickup = <<
   }
   \context Lyrics = "LyrS" {
     \lyricsto "PartS" \LyricsVersePickup
+  }
+  \context Voice = "PartA" {
+    r4 r4
+  }
+  \context Voice = "PartAA" {
+    r4 r4
+  }
+  \context Voice = "PartT" {
+    r4 r4
+  }
+  \context Voice = "PartB" {
+    r4 r4
+  }
+>>
+
+MusicTwoPickupC = <<
+  \context Voice = "PartS" {
+    \autoBeamOff
+    \PartSopranoVersePickup
+  }
+  \context Voice = "PartSS" {
+    \autoBeamOff
+    \PartAltoVersePickup
+  }
+  \context Lyrics = "LyrS" {
+    \lyricsto "PartS" { \skip 4 \skip 4 }
   }
   \context Voice = "PartA" {
     r4 r4
@@ -578,15 +657,12 @@ MusicAll = {
     \MusicRest
     \MusicRest
     \MusicFive
-    \alternative {
-      \volta 1 {
-        \MusicFiveVoltaOne
-        \MusicTwoPickup
-      }
-      \volta 2 {
-        \MusicFiveVoltaTwo
-      }
-    }
+    \set Score.repeatCommands = #`((volta ,#{ \markup \normal-text \italic "Bei der Wiederholung" #}))
+    \MusicFiveVoltaOne
+    \MusicTwoPickupC
+    \set Score.repeatCommands = #`((volta #f) (volta ,#{ \markup \normal-text \italic "Schluss" #}) end-repeat)
+    \MusicFiveVoltaTwo
+    \set Score.repeatCommands = #'((volta #f))    
   }
 }
 
@@ -660,6 +736,10 @@ StavesCompact = <<
 >>
 
 \book {
+  \markup { \vspace #1 }
+  \LyrFull
+  \markup { \vspace #1 }
+  
   \score {
     \new ChoirStaff <<
       \StavesFull

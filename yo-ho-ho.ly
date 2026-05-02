@@ -3,7 +3,7 @@
 \language "deutsch"
 
 \header {
-  title = "Yo Ho Ho!"
+  title = "Yo-Ho-Ho and a Bottle of Rum"
 }
 
 taglineLanguage = "english"
@@ -20,12 +20,22 @@ Part = \relative c \repeat volta 3 {
   \break
   \set Staff.shortInstrumentName = "bass"
   \slurDashed
-  << { \once\tiny \parenthesize e8 } \new Voice { \voiceOne r8 } >> | a,8 h16^( h16) c16^( c16) d8 e16( e16) e16( e16)
+  <<
+    {
+      \magnifyMusic 0.4 {
+        \once \override NoteColumn.ignore-collision = ##t
+        \once \override NoteColumn.X-offset = #2
+        \parenthesize e8
+      }
+    } \new Voice {
+      \once \override Rest.staff-position = #0
+      \oneVoice r8
+  } >> | a,8 h16^( h16) c16^( c16) d8 e16( e16) e16( e16)
   \slurSolid
   f8( e8) |
   \break
   \set Staff.shortInstrumentName = "all"
-  <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>8
+  <a, e' a>8 <a e' a>8 <a e' a>8 <h e h'>16 <h e h'>16 <c e c'>16 <c e c'>16 <h e h'>8 <a e' a>8
   \break
   
   \set Staff.shortInstrumentName = "solo1"
@@ -45,11 +55,17 @@ Part = \relative c \repeat volta 3 {
     e8 e8 e8
     \oneVoice
   } \new Voice { \voiceTwo <e a>2 <d g>2 <c f>2 <h e>4. } \new Voice { \voiceOne a'2 h2 c2 d4. } >>
-  \set Staff.shortInstrumentName = "all"
+  \set Staff.shortInstrumentName = "bass"
   \break
   e,8-- | a,8 h8 c8 d16 d16 e8 e8 f8( e8) |
+  \set Staff.shortInstrumentName = "all"
   \break
-  <a, e' a>8 <a e' a>8 <a e' a>8 <a e' a>16 <h e h'>16 <c e c'>16 <a e' a>16 <h e h'>8 <a e' a>4
+  \set Score.repeatCommands = #`((volta ,#{ \markup \normal-text \italic "on repeats" #}))
+  <a, e' a>8 <a e' a>8 <a e' a>8 <h e h'>16 <h e h'>16 <c e c'>16 <c e c'>16 <h e h'>8 <a e' a>4
+  \break
+  \set Score.repeatCommands = #`((volta #f) (volta ,#{ \markup \normal-text \italic "last time" #}) end-repeat)
+  <a e' a>4 <a e' a>4 <a e' a>4 <a e' a>8 <h e h'>8 <c e c'>8 <a e' a>8 <h e h'>4 <a e' a>2
+  \set Score.repeatCommands = #'((volta #f))    
 }
 
 LyricsOne = \lyricmode {
@@ -98,6 +114,77 @@ LyricsThree = \lyricmode {
   And_a sud -- den plunge in_the sul -- len swell...
   Ten fa -- thoms deep on the road to hell,
   \repeat unfold 9 { \skip 1 }
+  Yo ho ho and a bot -- tle of rum!
+}
+
+LyrFull = \markup {
+  \sans
+  \override #'(baseline-skip . 3.7)
+  \abs-fontsize #12
+  \column {
+    \line {
+      \hspace #8
+      \column {
+        \vspace #1
+        \line {
+          1.
+          \column {
+            \line { Fifteen men on a dead man's chest, }
+            \line { Yo ho ho and a bottle of rum! }
+            \line { Drink and the devil had done for the rest, }
+            \line { Yo ho ho and a bottle of rum! }
+            \vspace #0.5
+            \line { The mate was fixed by the bosun's pike, }
+            \line { The bosun brained with a marlinspike, }
+            \line { And cookey's throat was marked belike }
+            \vspace #0.5
+            \line { It had been gripped by fingers ten; }
+            \line { And there they lay, all good dead men }
+            \line { Like break o'day in a boozing ken }
+            \line { Yo ho ho and a bottle of rum! }
+          }
+        }
+        \vspace #2.5
+        \line {
+          2.
+          \column {
+            \line { Fifteen men of them good and true, }
+            \line { Yo ho ho and a bottle of rum! }
+            \line { Every man jack could have sailed with Old Pew, }
+            \line { Yo ho ho and a bottle of rum! }
+            \vspace #0.5
+            \line { There was chest on chest full of Spanish gold }
+            \line { With a ton of plate in the middle hold }
+            \line { And the cabins riot of loot untold, }
+            \vspace #0.5
+            \line { And there they lay that took the plum }
+            \line { With sightless glare and their lips struck dumb }
+            \line { While we shared all by the rule of thumb, }
+            \line { Yo ho ho and a bottle of rum! }
+          }
+        }
+        \vspace #2.5
+        \line {
+          3.
+          \column {
+            \line { Fifteen men on a dead man's chest, }
+            \line { Yo ho ho and a bottle of rum! }
+            \line { Drink and the devil had done for the rest, }
+            \line { Yo ho ho and a bottle of rum! }
+            \vspace #0.5
+            \line { We wrapped them all in a mainsail tight }
+            \line { With twice ten turns of a hawser's bight }
+            \line { And we heaved them over and out of sight, }
+            \vspace #0.5
+            \line { "With a" \bold \italic "Yo - Heave - Ho!" \hspace #0.5 "and a fare-you-well" }
+            \line { And a sudden plunge in the sullen swell... }
+            \line { Ten fathoms deep on the road to hell, }
+            \line { Yo ho ho and a bottle of rum! }
+          }
+        }
+      }
+    }
+  }
 }
 
 \book {
@@ -142,7 +229,13 @@ LyricsThree = \lyricmode {
       \tempo 4 = 80
     }
   }
+  
+  \LyrFull
+  
   \paper {
-    system-system-spacing = #'((basic-distance . 10) (padding . 2.17))
+    system-count = #12
+    systems-per-page = #12
+    system-system-spacing = #'((basic-distance . 10) (padding . 2))
+    print-page-number = ##f
   }
 }
