@@ -3,15 +3,16 @@
 
 import argparse
 import html
+import shutil
 import subprocess
 from pathlib import Path
 
 
 PAGE = """<!doctype html>
 <style>
-@page { size: 50mm 50mm; margin: 0; }
-html, body { margin: 0; width: 50mm; height: 50mm; overflow: hidden; }
-img { display: block; width: 50mm; height: 50mm; }
+@page {{ size: 50mm 50mm; margin: 0; }}
+html, body {{ margin: 0; width: 50mm; height: 50mm; overflow: hidden; }}
+img {{ display: block; width: 50mm; height: 50mm; }}
 </style>
 <img src="{}">
 """
@@ -21,10 +22,25 @@ def run(*command: str) -> None:
     subprocess.run(command, check=True)
 
 
+def find_browser() -> str:
+    for command in ("google-chrome", "chromium", "chromium-browser"):
+        if path := shutil.which(command):
+            return path
+    macos_chrome = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+    if macos_chrome.exists():
+        return str(macos_chrome)
+    raise SystemExit("Google Chrome or Chromium is required")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=Path)
     args = parser.parse_args()
+    browser = find_browser()
+
+    for command in ("pdftops", "pdftocairo"):
+        if not shutil.which(command):
+            raise SystemExit(f"{command} is required (install the Poppler package)")
 
     for svg in sorted(args.directory.glob("*.svg")):
         source_svg = svg.with_suffix(".source.svg")
@@ -36,7 +52,7 @@ def main() -> None:
         svg.rename(source_svg)
         page.write_text(PAGE.format(html.escape(source_svg.name, quote=True)))
         run(
-            "google-chrome", "--headless", "--no-sandbox", "--disable-gpu",
+            browser, "--headless", "--no-sandbox", "--disable-gpu",
             "--allow-file-access-from-files", "--no-pdf-header-footer",
             f"--print-to-pdf={pdf.resolve()}", page.resolve().as_uri(),
         )
