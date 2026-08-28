@@ -11,6 +11,11 @@ HIDDEN_LAYERS = {
     "ring": ("text-compact", "text-concentric"),
     "compact": ("external-ring", "text-ring"),
 }
+POSITION_TRANSFORMS = {
+    "staff-position": "translate(-261 -323) scale(1.61)",
+    "cyprus-position": "translate(-881 -486) scale(1.56)",
+    "olive-position": "translate(-936 -610) scale(1.56)",
+}
 
 
 def resolve_css_colors(svg: str) -> str:
@@ -25,13 +30,22 @@ def resolve_css_colors(svg: str) -> str:
     return re.sub(r"var\(--([\w-]+)\)", replace, svg)
 
 
+def inline_position_transforms(svg: str) -> str:
+    for class_name, transform in POSITION_TRANSFORMS.items():
+        svg = svg.replace(
+            f'class="{class_name}"',
+            f'transform="{transform}"',
+        )
+    return svg
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
-    source = resolve_css_colors(args.source.read_text())
+    source = inline_position_transforms(resolve_css_colors(args.source.read_text()))
     source = re.sub(r"\s*<script\b.*?</script>", "", source, count=1, flags=re.DOTALL)
     args.output.mkdir(parents=True, exist_ok=True)
 
