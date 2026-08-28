@@ -7,6 +7,22 @@ from pathlib import Path
 
 
 VARIANTS = ("ring", "compact")
+HIDDEN_LAYERS = {
+    "ring": ("text-compact", "text-concentric"),
+    "compact": ("external-ring", "text-ring"),
+}
+
+
+def resolve_css_colors(svg: str) -> str:
+    colors = dict(re.findall(r"--([\w-]+):\s*([^;]+);", svg))
+
+    def replace(match: re.Match[str]) -> str:
+        name = match.group(1)
+        if name not in colors:
+            raise SystemExit(f"Undefined CSS variable: --{name}")
+        return colors[name]
+
+    return re.sub(r"var\(--([\w-]+)\)", replace, svg)
 
 
 def main() -> None:
@@ -15,7 +31,7 @@ def main() -> None:
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
-    source = args.source.read_text()
+    source = resolve_css_colors(args.source.read_text())
     source = re.sub(r"\s*<script\b.*?</script>", "", source, count=1, flags=re.DOTALL)
     args.output.mkdir(parents=True, exist_ok=True)
 
@@ -28,6 +44,12 @@ def main() -> None:
         )
         if replacements != 1:
             raise SystemExit("The root <svg> must have exactly one class attribute")
+        hidden = "|".join(HIDDEN_LAYERS[variant])
+        rendered = re.sub(
+            rf'\s*<use class="(?:{hidden})"[^>]*/>',
+            "",
+            rendered,
+        )
         (args.output / f"cyprus-choral-club-{variant}.svg").write_text(rendered)
 
 
