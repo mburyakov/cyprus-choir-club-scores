@@ -11,7 +11,12 @@ jobs:
       - name: Install Inkscape and Jost
         run: |
           sudo apt-get update
-          sudo apt-get install --yes inkscape fonts-jost
+          sudo apt-get install --yes inkscape
+          mkdir -p "$HOME/.local/share/fonts"
+          curl --fail --location \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/jost/Jost%5Bwght%5D.ttf' \
+            --output "$HOME/.local/share/fonts/Jost.ttf"
+          fc-cache --force
           inkscape --version
           fc-match Jost | grep --ignore-case jost
       - name: Generate standalone SVG variants
