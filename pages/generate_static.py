@@ -123,8 +123,8 @@ def main():
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
 
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
-    shutil.copy(project_root / "build" / "logo" / "cyprus-choral-club-compact.svg", out_root)
-    shutil.copy(project_root / "build" / "logo" / "cyprus-choral-club-ring.svg", out_root)
+    for logo in (project_root / "build" / "logo").iterdir():
+        shutil.copy(logo, out_root)
 
 if __name__ == "__main__":
     main()

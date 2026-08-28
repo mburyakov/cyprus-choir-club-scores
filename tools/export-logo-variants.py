@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 
-VARIANTS = ("ring", "compact", "concentric")
+VARIANTS = ("ring", "compact")
 
 
 def main() -> None:

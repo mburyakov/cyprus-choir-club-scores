@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
 jobs:
-  logo:
+  build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -21,32 +21,27 @@ jobs:
           fc-match Jost | grep --ignore-case jost
       - name: Generate standalone SVG variants
         run: python3 tools/export-logo-variants.py include/cyprus-choral-club.svg build/logo
-      - name: Export EPS with text converted to paths
+      - name: Export print and raster formats
         run: |
           for source in build/logo/*.svg; do
+            outlined="${source%.svg}.outlined.svg"
+            inkscape "$source" \
+              --export-text-to-path \
+              --export-plain-svg \
+              --export-filename="$outlined"
+            mv "$outlined" "$source"
             inkscape "$source" \
               --export-area-page \
-              --export-text-to-path \
               --export-filename="${source%.svg}.eps"
+            inkscape "$source" \
+              --export-area-page \
+              --export-filename="${source%.svg}.pdf"
+            inkscape "$source" \
+              --export-area-page \
+              --export-width=3000 \
+              --export-height=3000 \
+              --export-filename="${source%.svg}.png"
           done
-      - name: Upload logo variants
-        uses: actions/upload-artifact@v4
-        with:
-          name: cyprus-choral-club-logo
-          path: build/logo/
-          if-no-files-found: error
-
-  build:
-    needs: logo
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Download logo variants
-        uses: actions/download-artifact@v5
-        with:
-          name: cyprus-choral-club-logo
-          path: build/logo
 
       - name: Use compact logo in scores
         run: cp build/logo/cyprus-choral-club-compact.eps include/cyprus-choral-club.eps
