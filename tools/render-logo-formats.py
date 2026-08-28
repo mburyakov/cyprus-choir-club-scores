@@ -11,8 +11,10 @@ from pathlib import Path
 PAGE = """<!doctype html>
 <style>
 @page {{ size: 50mm 50mm; margin: 0; }}
-html, body {{ margin: 0; width: 50mm; height: 50mm; overflow: hidden; }}
-img {{ display: block; width: 50mm; height: 50mm; }}
+html, body {{ margin: 0; overflow: hidden; }}
+img {{ display: block; }}
+@media print {{ html, body, img {{ width: 50mm; height: 50mm; }} }}
+@media screen {{ html, body, img {{ width: 3000px; height: 3000px; }} }}
 </style>
 <img src="{}">
 """
@@ -56,9 +58,14 @@ def main() -> None:
             "--allow-file-access-from-files", "--no-pdf-header-footer",
             f"--print-to-pdf={pdf.resolve()}", page.resolve().as_uri(),
         )
+        run(
+            browser, "--headless", "--no-sandbox", "--disable-gpu",
+            "--allow-file-access-from-files", "--hide-scrollbars",
+            "--run-all-compositor-stages-before-draw", "--window-size=3000,3000",
+            f"--screenshot={png_stem.with_suffix('.png').resolve()}", page.resolve().as_uri(),
+        )
         run("pdftops", "-eps", str(pdf), str(eps))
         run("pdftocairo", "-svg", str(pdf), str(svg))
-        run("pdftocairo", "-png", "-singlefile", "-scale-to", "3000", str(pdf), str(png_stem))
         source_svg.unlink()
         page.unlink()
 
