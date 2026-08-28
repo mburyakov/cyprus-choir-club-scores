@@ -8,40 +8,22 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - name: Install Inkscape and Jost
+      - name: Install renderer and Jost
         run: |
           sudo apt-get update
-          sudo apt-get install --yes inkscape
+          sudo apt-get install --yes poppler-utils
           mkdir -p "$HOME/.local/share/fonts"
           curl --fail --location \
             'https://raw.githubusercontent.com/google/fonts/main/ofl/jost/Jost%5Bwght%5D.ttf' \
             --output "$HOME/.local/share/fonts/Jost.ttf"
           fc-cache --force
-          inkscape --version
+          google-chrome --version
+          pdftocairo -v
           fc-match Jost | grep --ignore-case jost
       - name: Generate standalone SVG variants
         run: python3 tools/export-logo-variants.py include/cyprus-choral-club.svg build/logo
       - name: Export print and raster formats
-        run: |
-          for source in build/logo/*.svg; do
-            outlined="${source%.svg}.outlined.svg"
-            inkscape "$source" \
-              --export-text-to-path \
-              --export-plain-svg \
-              --export-filename="$outlined"
-            mv "$outlined" "$source"
-            inkscape "$source" \
-              --export-area-page \
-              --export-filename="${source%.svg}.eps"
-            inkscape "$source" \
-              --export-area-page \
-              --export-filename="${source%.svg}.pdf"
-            inkscape "$source" \
-              --export-area-page \
-              --export-width=3000 \
-              --export-height=3000 \
-              --export-filename="${source%.svg}.png"
-          done
+        run: python3 tools/render-logo-formats.py build/logo
 
       - name: Use compact logo in scores
         run: cp build/logo/cyprus-choral-club-compact.eps include/cyprus-choral-club.eps
@@ -53,7 +35,7 @@ jobs:
           path: |
             ./*.pdf
             ./*.midi
-          key: scores-v3-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'tools/export-logo-variants.py') }}
+          key: scores-v4-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'tools/export-logo-variants.py', 'tools/render-logo-formats.py') }}
 
       - name: Restore rendered audio
         id: audio-cache
