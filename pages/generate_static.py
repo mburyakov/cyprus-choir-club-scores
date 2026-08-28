@@ -89,7 +89,12 @@ def main():
         midi_outputs = [f for f in ly_root_list if f.name.endswith(".midi") and f.name.startswith(ly_source_prefix)]
         for midi_output in midi_outputs:
             mp3_name = midi_output.name.removesuffix('.midi') + ".mp3"
-            subprocess.run(["vlc", "-I" "dummy", midi_output.name, "--sout", "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=" + mp3_name + "}", "--sout-keep", "vlc://quit"])
+            if not (ly_root / mp3_name).exists():
+                subprocess.run([
+                    "vlc", "-I", "dummy", midi_output.name,
+                    "--sout", "#transcode{acodec=mp3,ab=128}:std{access=file,mux=dummy,dst=" + mp3_name + "}",
+                    "--sout-keep", "vlc://quit"
+                ], cwd=ly_root, check=True)
             index_to_insert_list = [item_file for item_file in item_files if item_file.get("pdf_name", "").removesuffix('.pdf') == midi_output.name.removesuffix('.midi')]
             if len(index_to_insert_list) > 0:
                 index_to_insert_list[0]["has_midi"] = True
@@ -118,7 +123,8 @@ def main():
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
 
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
-    shutil.copy(project_root / "include" / "cyprus-choral-club.svg", out_root / "cyprus-choral-club.svg")
+    shutil.copy(project_root / "build" / "logo" / "cyprus-choral-club-compact.svg", out_root)
+    shutil.copy(project_root / "build" / "logo" / "cyprus-choral-club-ring.svg", out_root)
 
 if __name__ == "__main__":
     main()

@@ -1,12 +1,69 @@
 name: compile-all-scores
 run-name: Compiling lilypond scores for Cyprus Choir Club
-on: [push]
+on:
+  workflow_dispatch:
+  push:
 jobs:
+  logo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Inkscape and Jost
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes inkscape fonts-jost
+          inkscape --version
+          fc-match Jost | grep --ignore-case jost
+      - name: Generate standalone SVG variants
+        run: python3 tools/export-logo-variants.py include/cyprus-choral-club.svg build/logo
+      - name: Export EPS with text converted to paths
+        run: |
+          for source in build/logo/*.svg; do
+            inkscape "$source" \
+              --export-area-page \
+              --export-text-to-path \
+              --export-filename="${source%.svg}.eps"
+          done
+      - name: Upload logo variants
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyprus-choral-club-logo
+          path: build/logo/
+          if-no-files-found: error
+
   build:
+    needs: logo
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      - name: Download logo variants
+        uses: actions/download-artifact@v5
+        with:
+          name: cyprus-choral-club-logo
+          path: build/logo
+
+      - name: Use compact logo in scores
+        run: cp build/logo/cyprus-choral-club-compact.eps include/cyprus-choral-club.eps
+
+      - name: Restore compiled scores
+        id: scores-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./*.pdf
+            ./*.midi
+          key: scores-v3-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'tools/export-logo-variants.py') }}
+
+      - name: Restore rendered audio
+        id: audio-cache
+        uses: actions/cache@v4
+        with:
+          path: ./*.mp3
+          key: audio-v1-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly') }}
+
       - uses: codello/setup-lilypond@main
+        if: steps.scores-cache.outputs.cache-hit != 'true'
         with:
           lilypond-version: 2.24
       - name: Setup Python
@@ -17,12 +74,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install jinja2 mido
-      - uses: awalsh128/cache-apt-pkgs-action@v1.6.0
+      - name: Install MIDI renderer
+        if: steps.audio-cache.outputs.cache-hit != 'true'
+        uses: awalsh128/cache-apt-pkgs-action@v1.6.0
         with:
           packages: vlc vlc-plugin-fluidsynth fluid-soundfont-gs
           version: 1.0
           execute_install_scripts: true
       - name: Build Lilypond scores
+        if: steps.scores-cache.outputs.cache-hit != 'true'
         run: lilypond *.ly
       - name: Generate index pages
         run: python3 pages/generate_static.py
