@@ -1,9 +1,8 @@
-*.pdf
 *.midi
 *.mid
-*.mp3
-.venv
+*.pdf
+/tools/.venv
 /.idea
-/out
+/build
 /web/dist
 /web/node_modules

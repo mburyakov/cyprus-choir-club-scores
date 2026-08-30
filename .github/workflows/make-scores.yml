@@ -8,25 +8,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - name: Install renderer and Jost
+      - name: Check bundled EPS
+        run: python3 tools/build_logo.py --check
+      - name: Install logo renderer
         run: |
           sudo apt-get update
           sudo apt-get install --yes poppler-utils
-          mkdir -p "$HOME/.local/share/fonts"
-          curl --fail --location \
-            'https://raw.githubusercontent.com/google/fonts/main/ofl/jost/Jost%5Bwght%5D.ttf' \
-            --output "$HOME/.local/share/fonts/Jost.ttf"
-          fc-cache --force
           google-chrome --version
           pdftops -v
-          fc-match Jost | grep --ignore-case jost
-      - name: Generate standalone SVG variants
-        run: python3 tools/export-logo-variants.py include/cyprus-choral-club.svg build/logo
-      - name: Export print and raster formats
-        run: python3 tools/render-logo-formats.py build/logo --font "$HOME/.local/share/fonts/Jost.ttf"
-
-      - name: Use compact logo in scores
-        run: cp build/logo/cyprus-choral-club-compact.eps include/cyprus-choral-club.eps
+      - name: Build logo
+        run: python3 tools/build_logo.py
 
       - name: Restore compiled scores
         id: scores-cache
@@ -35,14 +26,14 @@ jobs:
           path: |
             ./*.pdf
             ./*.midi
-          key: scores-v4-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'tools/export-logo-variants.py', 'tools/render-logo-formats.py') }}
+          key: scores-v4-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'build/fonts/Jost.ttf', 'tools/build_logo.py', 'tools/export-logo-variants.py', 'tools/render-logo-formats.py') }}
 
       - name: Restore rendered audio
         id: audio-cache
         uses: actions/cache@v4
         with:
-          path: ./*.mp3
-          key: audio-v1-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly') }}
+          path: build/audio/*.mp3
+          key: audio-v2-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'tools/build_midi.py', 'tools/build_media.py') }}
 
       - uses: codello/setup-lilypond@main
         if: steps.scores-cache.outputs.cache-hit != 'true'
@@ -55,7 +46,7 @@ jobs:
       - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r pages/requirements.txt
+          pip install -r tools/requirements.txt
       - name: Install MIDI renderer
         if: steps.audio-cache.outputs.cache-hit != 'true'
         uses: awalsh128/cache-apt-pkgs-action@v1.6.0
@@ -66,8 +57,10 @@ jobs:
       - name: Build Lilypond scores
         if: steps.scores-cache.outputs.cache-hit != 'true'
         run: lilypond *.ly
-      - name: Generate index pages
-        run: python3 pages/generate_static.py
+      - name: Build MIDI mixes
+        run: python3 tools/build_midi.py
+      - name: Build media
+        run: python3 tools/build_media.py
       - uses: actions/setup-node@v5
         with:
           node-version: 24
