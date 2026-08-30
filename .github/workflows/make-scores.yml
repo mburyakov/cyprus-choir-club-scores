@@ -18,12 +18,12 @@ jobs:
             --output "$HOME/.local/share/fonts/Jost.ttf"
           fc-cache --force
           google-chrome --version
-          pdftocairo -v
+          pdftops -v
           fc-match Jost | grep --ignore-case jost
       - name: Generate standalone SVG variants
         run: python3 tools/export-logo-variants.py include/cyprus-choral-club.svg build/logo
       - name: Export print and raster formats
-        run: python3 tools/render-logo-formats.py build/logo
+        run: python3 tools/render-logo-formats.py build/logo --font "$HOME/.local/share/fonts/Jost.ttf"
 
       - name: Use compact logo in scores
         run: cp build/logo/cyprus-choral-club-compact.eps include/cyprus-choral-club.eps

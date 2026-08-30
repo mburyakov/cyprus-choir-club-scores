@@ -2,6 +2,7 @@
 """Render browser-compatible SVG files to portable publication formats."""
 
 import argparse
+import base64
 import html
 import shutil
 import subprocess
@@ -34,25 +35,38 @@ def find_browser() -> str:
     raise SystemExit("Google Chrome or Chromium is required")
 
 
+def embed_font(svg: Path, font: Path) -> None:
+    encoded = base64.b64encode(font.read_bytes()).decode("ascii")
+    font_face = (
+        "<style>@font-face{font-family:Jost;"
+        f"src:url(data:font/ttf;base64,{encoded}) format('truetype');"
+        "font-style:normal;font-weight:100 900}</style>"
+    )
+    contents = svg.read_text()
+    if "<defs>" not in contents:
+        raise SystemExit(f"No <defs> element in {svg}")
+    svg.write_text(contents.replace("<defs>", f"<defs>\n  {font_face}", 1))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=Path)
+    parser.add_argument("--font", required=True, type=Path)
     args = parser.parse_args()
     browser = find_browser()
 
-    for command in ("pdftops", "pdftocairo"):
+    for command in ("pdftops",):
         if not shutil.which(command):
             raise SystemExit(f"{command} is required (install the Poppler package)")
 
     for svg in sorted(args.directory.glob("*.svg")):
-        source_svg = svg.with_suffix(".source.svg")
         page = svg.with_suffix(".html")
         pdf = svg.with_suffix(".pdf")
         eps = svg.with_suffix(".eps")
         png_stem = svg.with_suffix("")
 
-        svg.rename(source_svg)
-        page.write_text(PAGE.format(html.escape(source_svg.name, quote=True)))
+        embed_font(svg, args.font)
+        page.write_text(PAGE.format(html.escape(svg.name, quote=True)))
         run(
             browser, "--headless", "--no-sandbox", "--disable-gpu",
             "--allow-file-access-from-files", "--no-pdf-header-footer",
@@ -65,8 +79,6 @@ def main() -> None:
             f"--screenshot={png_stem.with_suffix('.png').resolve()}", page.resolve().as_uri(),
         )
         run("pdftops", "-eps", str(pdf), str(eps))
-        run("pdftocairo", "-svg", str(pdf), str(svg))
-        source_svg.unlink()
         page.unlink()
 
 
