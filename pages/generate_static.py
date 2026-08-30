@@ -7,8 +7,36 @@ import shutil
 import sys
 import json
 
-import jinja2
 import mido
+import yaml
+
+
+def load_catalogs(project_root):
+    catalogs = {}
+    for catalog_path in sorted((project_root / "catalogs").glob("*.yaml")):
+        catalog = yaml.safe_load(catalog_path.read_text())
+        if not isinstance(catalog, dict) or not isinstance(catalog.get("songs"), list):
+            raise ValueError(f"{catalog_path}: expected a mapping with a songs list")
+
+        paths = []
+        for entry in catalog["songs"]:
+            if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+                raise ValueError(f"{catalog_path}: every song must have a path")
+            relative_path = pathlib.PurePosixPath(entry["path"])
+            source_path = project_root / relative_path
+            if relative_path.is_absolute() or ".." in relative_path.parts:
+                raise ValueError(f"{catalog_path}: path must stay inside the project: {relative_path}")
+            if source_path.suffix != ".ly" or not source_path.is_file():
+                raise ValueError(f"{catalog_path}: LilyPond source not found: {relative_path}")
+            if relative_path.as_posix() in paths:
+                raise ValueError(f"{catalog_path}: duplicate song: {relative_path}")
+            paths.append(relative_path.as_posix())
+
+        catalogs[catalog_path.stem] = {
+            "title": catalog.get("title", catalog_path.stem),
+            "paths": paths,
+        }
+    return catalogs
 
 def adjust_track(track, channel, fraction):
     result = mido.MidiTrack()
@@ -50,6 +78,7 @@ def merge_midi_files(*args, output_path):
 def main():
     path_to_script = pathlib.Path(sys.argv[0])
     project_root = path_to_script.parent.parent
+    catalogs = load_catalogs(project_root)
 
     out_root = project_root / "out" / "pages" / "static"
 
@@ -64,16 +93,17 @@ def main():
     merge_midi_files(project_root / "yesterday-d-AA.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-AA-mixed-solo.midi")
     merge_midi_files(project_root / "yesterday-d-B.midi", project_root / "yesterday-d-all-mixin-solo.mid", output_path=project_root / "yesterday-d-B-mixed-solo.midi")
 
-    environment = jinja2.Environment(loader=jinja2.FileSystemLoader(project_root / "pages" / "templates"))
-    index_template = environment.get_template("index.html")
-    redirect_template = environment.get_template("redirect.html")
-    item_template = environment.get_template("item.html")
-    ly_root = project_root
-    ly_root_list = list(ly_root.iterdir())
-    ly_root_list.sort(reverse=True)
-    ly_sources = [f for f in ly_root_list if f.name.endswith(".ly")]
+    source_paths = dict.fromkeys(
+        path
+        for catalog in catalogs.values()
+        for path in catalog["paths"]
+    )
+    ly_sources = [project_root / path for path in source_paths]
     files = []
+    files_by_source = {}
     for ly_source in ly_sources:
+        ly_root = ly_source.parent
+        ly_root_list = sorted(ly_root.iterdir(), reverse=True)
         ly_text = ly_source.read_text()
         title_found = re.search("title = [^\n]*\"(.*)\"", ly_text)
         ly_source_prefix = ly_source.name.replace(".ly", "")
@@ -85,7 +115,7 @@ def main():
         pdf_outputs = [f for f in ly_root_list if f.name.endswith(".pdf") and f.name.startswith(ly_source_prefix)]
         for pdf_output in pdf_outputs:
             item_files.append({"has_pdf": True, "pdf_name": pdf_output.name, "display_name": pdf_output.name})
-            shutil.copy(ly_root / pdf_output, out_root / pdf_output.name)
+            shutil.copy(pdf_output, out_root / pdf_output.name)
         midi_outputs = [f for f in ly_root_list if f.name.endswith(".midi") and f.name.startswith(ly_source_prefix)]
         for midi_output in midi_outputs:
             mp3_name = midi_output.name.removesuffix('.midi') + ".mp3"
@@ -102,25 +132,22 @@ def main():
                 index_to_insert_list[0]["mp3_name"] = mp3_name
             else:
                 item_files.append({"has_midi": True, "midi_name": midi_output.name, "display_name": midi_output.name, "mp3_name": mp3_name})
-            shutil.copy(ly_root / midi_output.name, out_root / midi_output.name)
+            shutil.copy(midi_output, out_root / midi_output.name)
             shutil.copy(ly_root / mp3_name, out_root / mp3_name)
         item_data = {"name": ly_source_prefix, "display_name": display_name, "files": item_files}
-        item_page_content = item_template.render({ "item": item_data })
-        item_page = out_root / f"{ly_source_prefix}.html"
-        item_page.write_text(item_page_content)
         files.append(item_data)
+        files_by_source[ly_source.relative_to(project_root).as_posix()] = item_data
     for item_data in files:
         item_data["files_short"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T" in item_file["midi_name"] or "-B" in item_file["midi_name"])]
-    winter_event_files = [item_data for item_data in files if item_data["name"] in ["zivijo", "vilo-moja", "yesterday", "we-wish-you"]]
-    winter_index_page_content = index_template.render({ "items": winter_event_files})
-    redirect_page_content = redirect_template.render()
-    index_page_content = index_template.render({ "items": files })
-    (out_root / "index.html").write_text(index_page_content)
-    (out_root / "winter-event.html").write_text(winter_index_page_content)
-    (out_root / ".." / "winter-event.html").write_text(redirect_page_content)
-
-    (out_root / "winter-event.json").write_text(json.dumps(winter_event_files, ensure_ascii=False, indent=2))
+    catalog_data = {
+        name: {
+            "title": catalog["title"],
+            "items": [files_by_source[path]["name"] for path in catalog["paths"]],
+        }
+        for name, catalog in catalogs.items()
+    }
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
+    (out_root / "catalogs.json").write_text(json.dumps(catalog_data, ensure_ascii=False, indent=2))
 
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
     for logo in (project_root / "build" / "logo").iterdir():

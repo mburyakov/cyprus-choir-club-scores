@@ -17,30 +17,55 @@ export type Item = {
   files_short: ItemFile[]
 }
 
+type Catalog = {
+  title: string
+  items: string[]
+}
+
+type Catalogs = Record<string, Catalog>
+
 function useItems() {
   const [items, setItems] = useState<Item[] | null>(null)
   useEffect(() => {
     fetch('static/items.json')
-      .then(res => {
-        if (!res.ok) throw new Error(`Failed to load items.json: ${res.status}`)
-        return res.json()
-      })
+      .then(res => res.json())
       .then((data: Item[]) => setItems(data))
   }, [])
   return items
 }
 
-function Index() {
+function useCatalogs() {
+  const [catalogs, setCatalogs] = useState<Catalogs | null>(null)
+  useEffect(() => {
+    fetch('static/catalogs.json')
+      .then(res => res.json())
+      .then((data: Catalogs) => setCatalogs(data))
+  }, [])
+  return catalogs
+}
+
+function CatalogView({ catalogName }: { catalogName?: string }) {
+  const params = useParams()
   const items = useItems()
-  if (!items) return <div>Loading…</div>
+  const catalogs = useCatalogs()
+  const name = catalogName ?? params.catalogName ?? 'index'
+  const catalog = catalogs?.[name]
+  useEffect(() => {
+    if (catalog) document.title = catalog.title
+  }, [catalog])
+  if (!items || !catalogs) return <div>Loading…</div>
+  if (!catalog) return <div>Catalog not found</div>
+  const catalogItems = catalog.items
+    .map(itemName => items.find(item => item.name === itemName))
+    .filter((item): item is Item => item !== undefined)
   return (
     <div>
       <h1>
-        Scores of Cyprus Choral Club:
+        {catalog.title}:
         <img src="static/cyprus-choral-club-ring.svg" alt="Cyprus Choral Club" width={100} />
       </h1>
       <ul>
-        {items.map(it => (
+        {catalogItems.map(it => (
           <li key={it.name}>
             <Link to={`/item/${it.name}`}>{it.display_name}</Link>
             <ul>
@@ -122,7 +147,8 @@ function ItemView() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<CatalogView catalogName="index" />} />
+      <Route path="/catalog/:catalogName" element={<CatalogView />} />
       <Route path="/item/:name" element={<ItemView />} />
       <Route path="/midiplayer" element={<NativeMidiPlayer />} />
     </Routes>

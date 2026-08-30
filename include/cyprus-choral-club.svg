@@ -23,6 +23,7 @@
    .single-storey-a { font-feature-settings: "ss01"; }
    .variant-compact .external-ring,
    .variant-compact .text-ring,
+   .variant-compact .text-concentric,
    .variant-ring .text-compact { display: none; }
   </style>
 
@@ -52,7 +53,7 @@
    <text class="single-storey-a" fill="var(--color-cyprus-outline)" font-family="Jost, Futura, sans-serif" font-size="76.25px" font-weight="bold" text-anchor="middle" textLength="1160" lengthAdjust="spacing"><textPath xlink:href="#text-compact.baseline" startOffset="75%">Cyprus<tspan letter-spacing="30px"> </tspan>Choral<tspan letter-spacing="10px"> </tspan>Club</textPath></text>
   </g>
   <g id="text-concentric">
-   <path id="text-concentric.baseline" transform="scale(705)" d="M1 0A1 1 0 1 0-1 0A1 1 0 1 0 1 0" fill="none"/>
+   <path id="text-concentric.baseline" transform="scale(702)" d="M1 0A1 1 0 1 0-1 0A1 1 0 1 0 1 0" fill="none"/>
    <text fill="var(--color-burgundy)" font-family="Jost, Futura, sans-serif" font-size="90px" font-weight="bold" style="font-variant-caps:small-caps" textLength="750" lengthAdjust="spacing" text-anchor="middle"><textPath xlink:href="#text-concentric.baseline" startOffset="75%"><tspan fill="var(--color-red)" dy="5">C</tspan><tspan dy="-5">on</tspan><tspan fill="var(--color-red)" dy="5">C</tspan><tspan dy="-5">entri</tspan><tspan fill="var(--color-red)" dy="5">C</tspan></textPath></text>
   </g>
 

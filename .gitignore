@@ -1,6 +1,7 @@
 *.pdf
 *.midi
 *.mid
+*.mp3
 .venv
 /.idea
 /out
