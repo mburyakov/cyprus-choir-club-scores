@@ -100,7 +100,6 @@ def main():
     )
     ly_sources = [project_root / path for path in source_paths]
     files = []
-    files_by_source = {}
     for ly_source in ly_sources:
         ly_root = ly_source.parent
         ly_root_list = sorted(ly_root.iterdir(), reverse=True)
@@ -136,18 +135,9 @@ def main():
             shutil.copy(ly_root / mp3_name, out_root / mp3_name)
         item_data = {"name": ly_source_prefix, "display_name": display_name, "files": item_files}
         files.append(item_data)
-        files_by_source[ly_source.relative_to(project_root).as_posix()] = item_data
     for item_data in files:
         item_data["files_short"] = [item_file for item_file in item_data["files"] if item_file.get("has_pdf", False) == True or not ("-S" in item_file["midi_name"] or "-A" in item_file["midi_name"] or "-T" in item_file["midi_name"] or "-B" in item_file["midi_name"])]
-    catalog_data = {
-        name: {
-            "title": catalog["title"],
-            "items": [files_by_source[path]["name"] for path in catalog["paths"]],
-        }
-        for name, catalog in catalogs.items()
-    }
     (out_root / "items.json").write_text(json.dumps(files, ensure_ascii=False, indent=2))
-    (out_root / "catalogs.json").write_text(json.dumps(catalog_data, ensure_ascii=False, indent=2))
 
     shutil.copytree(project_root / "pages" / "midiplayer", out_root / "midiplayer")
     for logo in (project_root / "build" / "logo").iterdir():

@@ -24,6 +24,26 @@ type Catalog = {
 
 type Catalogs = Record<string, Catalog>
 
+type CatalogSource = {
+  title?: string
+  songs: {path: string}[]
+}
+
+const catalogSources = import.meta.glob<CatalogSource>('../../catalogs/*.yaml', {
+  eager: true,
+  import: 'default',
+})
+
+const catalogs: Catalogs = Object.fromEntries(
+  Object.entries(catalogSources).map(([file, catalog]) => {
+    const name = file.split('/').pop()!.replace(/\.yaml$/, '')
+    return [name, {
+      title: catalog.title ?? name,
+      items: catalog.songs.map(song => song.path.split('/').pop()!.replace(/\.ly$/, '')),
+    }]
+  }),
+)
+
 function useItems() {
   const [items, setItems] = useState<Item[] | null>(null)
   useEffect(() => {
@@ -34,26 +54,15 @@ function useItems() {
   return items
 }
 
-function useCatalogs() {
-  const [catalogs, setCatalogs] = useState<Catalogs | null>(null)
-  useEffect(() => {
-    fetch('static/catalogs.json')
-      .then(res => res.json())
-      .then((data: Catalogs) => setCatalogs(data))
-  }, [])
-  return catalogs
-}
-
 function CatalogView({ catalogName }: { catalogName?: string }) {
   const params = useParams()
   const items = useItems()
-  const catalogs = useCatalogs()
   const name = catalogName ?? params.catalogName ?? 'index'
-  const catalog = catalogs?.[name]
+  const catalog = catalogs[name]
   useEffect(() => {
     if (catalog) document.title = catalog.title
   }, [catalog])
-  if (!items || !catalogs) return <div>Loading…</div>
+  if (!items) return <div>Loading…</div>
   if (!catalog) return <div>Catalog not found</div>
   const catalogItems = catalog.items
     .map(itemName => items.find(item => item.name === itemName))
