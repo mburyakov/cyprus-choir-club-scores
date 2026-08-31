@@ -22,7 +22,7 @@ img {{ display: block; }}
 
 
 def run(*command: str) -> None:
-    subprocess.run(command, check=True)
+    subprocess.run(command, check=True, timeout=60)
 
 
 def find_browser() -> str:
@@ -54,6 +54,12 @@ def main() -> None:
     parser.add_argument("--font", required=True, type=Path)
     args = parser.parse_args()
     browser = find_browser()
+    browser_args = (
+        browser, "--headless", "--no-sandbox", "--disable-gpu",
+        "--disable-background-networking", "--disable-component-update",
+        "--disable-sync", "--no-first-run", "--no-default-browser-check",
+        "--allow-file-access-from-files",
+    )
 
     for command in ("pdftops",):
         if not shutil.which(command):
@@ -68,14 +74,12 @@ def main() -> None:
         embed_font(svg, args.font)
         page.write_text(PAGE.format(html.escape(svg.name, quote=True)))
         run(
-            browser, "--headless", "--no-sandbox", "--disable-gpu",
-            "--allow-file-access-from-files", "--no-pdf-header-footer",
+            *browser_args, "--no-pdf-header-footer",
             f"--print-to-pdf={pdf.resolve()}", page.resolve().as_uri(),
         )
         run(
-            browser, "--headless", "--no-sandbox", "--disable-gpu",
-            "--allow-file-access-from-files", "--hide-scrollbars",
-            "--run-all-compositor-stages-before-draw", "--window-size=3000,3000",
+            *browser_args, "--hide-scrollbars", "--virtual-time-budget=10000",
+            "--window-size=3000,3000",
             f"--screenshot={png_stem.with_suffix('.png').resolve()}", page.resolve().as_uri(),
         )
         run("pdftops", "-eps", str(pdf), str(eps))
