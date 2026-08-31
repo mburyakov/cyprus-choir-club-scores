@@ -26,7 +26,9 @@ def run(*command: str) -> None:
 
 
 def find_browser() -> str:
-    for command in ("google-chrome", "chromium", "chromium-browser"):
+    for command in (
+        "chromium-headless-shell", "google-chrome", "chromium", "chromium-browser",
+    ):
         if path := shutil.which(command):
             return path
     macos_chrome = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
@@ -69,10 +71,11 @@ def main() -> None:
         page = svg.with_suffix(".html")
         pdf = svg.with_suffix(".pdf")
         eps = svg.with_suffix(".eps")
-        png_stem = svg.with_suffix("")
+        png = svg.with_suffix(".png")
 
         embed_font(svg, args.font)
         page.write_text(PAGE.format(html.escape(svg.name, quote=True)))
+        png.unlink(missing_ok=True)
         run(
             *browser_args, "--no-pdf-header-footer",
             f"--print-to-pdf={pdf.resolve()}", page.resolve().as_uri(),
@@ -80,7 +83,7 @@ def main() -> None:
         run(
             *browser_args, "--hide-scrollbars", "--virtual-time-budget=10000",
             "--window-size=3000,3000",
-            f"--screenshot={png_stem.with_suffix('.png').resolve()}", page.resolve().as_uri(),
+            f"--screenshot={png.resolve()}", page.resolve().as_uri(),
         )
         run("pdftops", "-eps", str(pdf), str(eps))
         page.unlink()
