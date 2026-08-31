@@ -1,23 +1,27 @@
 {
   "name": "LilyPond Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "options": ["--platform=linux/amd64"]
+  },
+  "runArgs": ["--platform=linux/amd64"],
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/web/node_modules,type=volume"
+  ],
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "settings": {
-        "python-envs": false,
-      }
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
     },
     "./local-features/lilypond": {
       "version": "stable"
     }
   },
-  "postCreateCommand": [
-    "python -m venv .venv && . .venv/bin/activate && pip install -r pages/requirements.txt",
-    "lilypond --version"
-  ],
+  "postCreateCommand": "python -m venv ~/.venv && ~/.venv/bin/pip install -r tools/requirements.txt && npm --prefix web ci",
   "customizations": {
     "vscode": {
       "extensions": [
+        "jeandeaual.lilypond-syntax",
         "mando.lilypond-pdf-preview"
       ]
     }

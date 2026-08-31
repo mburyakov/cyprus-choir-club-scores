@@ -8,67 +8,18 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - name: Check bundled EPS
-        run: python3 tools/build_logo.py --check
-      - name: Install logo renderer
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes poppler-utils
-          google-chrome --version
-          pdftops -v
-      - name: Build logo
-        run: python3 tools/build_logo.py
-
-      - name: Restore compiled scores
-        id: scores-cache
-        uses: actions/cache@v4
+      - name: Build in dev container
+        uses: devcontainers/ci@v0.3
         with:
-          path: |
-            ./*.pdf
-            ./*.midi
-          key: scores-v4-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'include/cyprus-choral-club.svg', 'build/fonts/Jost.ttf', 'tools/build_logo.py', 'tools/export-logo-variants.py', 'tools/render-logo-formats.py') }}
-
-      - name: Restore rendered audio
-        id: audio-cache
-        uses: actions/cache@v4
-        with:
-          path: build/audio/*.mp3
-          key: audio-v2-${{ runner.os }}-${{ hashFiles('*.ly', 'include/*.ly', 'tools/build_midi.py', 'tools/build_media.py') }}
-
-      - uses: codello/setup-lilypond@main
-        if: steps.scores-cache.outputs.cache-hit != 'true'
-        with:
-          lilypond-version: 2.24
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.9
-      - name: Install python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r tools/requirements.txt
-      - name: Install MIDI renderer
-        if: steps.audio-cache.outputs.cache-hit != 'true'
-        uses: awalsh128/cache-apt-pkgs-action@v1.6.0
-        with:
-          packages: vlc vlc-plugin-fluidsynth fluid-soundfont-gs
-          version: 1.0
-          execute_install_scripts: true
-      - name: Build Lilypond scores
-        if: steps.scores-cache.outputs.cache-hit != 'true'
-        run: lilypond *.ly
-      - name: Build MIDI mixes
-        run: python3 tools/build_midi.py
-      - name: Build media
-        run: python3 tools/build_media.py
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - run: npm install
-        working-directory: web
-      - name: Compile vite app
-        run: npm run build
-        working-directory: web
+          runCmd: |
+            set -eu
+            rm -rf build web/dist
+            python3 tools/build_logo.py --check
+            python3 tools/build_logo.py
+            lilypond *.ly
+            ~/.venv/bin/python tools/build_midi.py
+            ~/.venv/bin/python tools/build_media.py
+            npm --prefix web run build
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3

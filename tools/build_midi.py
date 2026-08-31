@@ -45,7 +45,7 @@ def merge_midi_files(*inputs, output_path):
 def main():
     project_root = Path(__file__).resolve().parent.parent
     solo = project_root / "yesterday-d-all-mixin-solo.mid"
-    output = project_root / "build" / "midi"
+    output = project_root / "build" / "midi-mix"
     output.mkdir(parents=True, exist_ok=True)
     for part in ("all", "S", "A", "AA", "B"):
         merge_midi_files(

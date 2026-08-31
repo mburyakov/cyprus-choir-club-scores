@@ -42,7 +42,7 @@ def main():
 
     out_root = project_root / "build" / "media"
     audio_root = project_root / "build" / "audio"
-    midi_root = project_root / "build" / "midi"
+    midi_root = project_root / "build" / "midi-mix"
 
     if out_root.exists():
         shutil.rmtree(out_root)
@@ -85,7 +85,7 @@ def main():
             mp3_output = audio_root / mp3_name
             if not mp3_output.exists():
                 subprocess.run([
-                    vlc, "-I", "dummy", midi_output.name,
+                    vlc, "-I", "dummy", midi_output,
                     "--sout", f"#transcode{{acodec=mp3,ab=128}}:std{{access=file,mux=dummy,dst={mp3_output}}}",
                     "--sout-keep", "vlc://quit"
                 ], cwd=ly_root, check=True)
