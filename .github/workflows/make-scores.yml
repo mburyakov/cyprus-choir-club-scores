@@ -25,6 +25,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
+      - name: Upload Cloudflare Pages artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-pages
+          path: web/dist
+          retention-days: 1
 
   deploy:
     needs: build
@@ -42,3 +48,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy-cloudflare:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download site
+        uses: actions/download-artifact@v5
+        with:
+          name: cloudflare-pages
+          path: site/scores
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=${{ github.ref_name }}

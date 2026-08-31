@@ -17,7 +17,7 @@
       "version": "stable"
     }
   },
-  "postCreateCommand": "python -m venv ~/.venv && ~/.venv/bin/pip install -r tools/requirements.txt && npm --prefix web ci",
+  "postCreateCommand": "python -m venv ~/.venv && ~/.venv/bin/pip install -r tools/requirements.txt && sudo chown -R vscode:vscode web/node_modules && npm --prefix web ci",
   "customizations": {
     "vscode": {
       "extensions": [

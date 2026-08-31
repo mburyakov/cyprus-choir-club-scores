@@ -1,6 +1,7 @@
 *.midi
 *.mid
 *.pdf
+.wrangler
 /tools/.venv
 /.idea
 /build
