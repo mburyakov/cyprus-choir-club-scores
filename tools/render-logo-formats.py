@@ -63,7 +63,7 @@ def main() -> None:
         "--allow-file-access-from-files",
     )
 
-    for command in ("pdftops",):
+    for command in ("pdftocairo", "pdftops"):
         if not shutil.which(command):
             raise SystemExit(f"{command} is required (install the Poppler package)")
 
@@ -81,9 +81,8 @@ def main() -> None:
             f"--print-to-pdf={pdf.resolve()}", page.resolve().as_uri(),
         )
         run(
-            *browser_args, "--hide-scrollbars", "--virtual-time-budget=10000",
-            "--window-size=3000,3000",
-            f"--screenshot={png.resolve()}", page.resolve().as_uri(),
+            "pdftocairo", "-png", "-singlefile", "-scale-to", "3000",
+            str(pdf), str(png.with_suffix("")),
         )
         run("pdftops", "-eps", str(pdf), str(eps))
         page.unlink()
