@@ -1,4 +1,4 @@
-\version "2.24.4"
+\version "2.24"
 \language "deutsch"
 
 taglineLanguage = "français"
