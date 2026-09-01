@@ -11,6 +11,7 @@ jobs:
       - name: Build in dev container
         uses: devcontainers/ci@v0.3
         with:
+          push: never
           runCmd: |
             set -eu
             rm -rf build web/dist
